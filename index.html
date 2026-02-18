@@ -1,0 +1,3066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="My Ledger"/>
+<meta name="application-name" content="My Ledger"/>
+<meta name="description" content="Personal pay-cycle money tracker — income, expenses, savings & credit cards."/>
+<meta name="theme-color" id="theme-color-meta" content="#080810"/>
+<link rel="manifest" id="pwa-manifest-link"/>
+<link rel="apple-touch-icon" id="pwa-apple-icon"/>
+<title>My Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════════════
+   THEMES
+══════════════════════════════════════════ */
+:root{
+  --bg:#080810;--bg1:#0f0f1a;--bg2:#141420;--bg3:#1a1a28;
+  --border:#1e1e30;--border2:#252538;
+  --text:#ede8e0;--text2:#8a8598;--text3:#45435a;
+  --accent:#d4a853;--accent2:#f0c878;--accent-dim:#d4a85322;
+  --green:#4fd87c;--green-dim:#4fd87c18;
+  --red:#f06464;--red-dim:#f0646418;
+  --blue:#7b8fff;--blue-dim:#7b8fff18;
+  --nav-h:74px;
+  --grain:0.35;
+}
+body.theme-pink{
+  --bg:#1a0a14;--bg1:#240f1c;--bg2:#2e1426;--bg3:#381929;
+  --border:#4a1f38;--border2:#5c2846;
+  --text:#ffe8f5;--text2:#c490b0;--text3:#7a4060;
+  --accent:#f472b6;--accent2:#fb7cc6;--accent-dim:#f472b622;
+  --green:#34d399;--green-dim:#34d39918;
+  --red:#f87171;--red-dim:#f8717118;
+  --blue:#a78bfa;--blue-dim:#a78bfa18;
+}
+body.theme-white{
+  --bg:#f5f4f0;--bg1:#ffffff;--bg2:#f0ede8;--bg3:#e8e4de;
+  --border:#ddd8d0;--border2:#ccc8c0;
+  --text:#1a1814;--text2:#6b6560;--text3:#a09890;
+  --accent:#b8860b;--accent2:#d4a020;--accent-dim:#b8860b15;
+  --green:#16a34a;--green-dim:#16a34a15;
+  --red:#dc2626;--red-dim:#dc262615;
+  --blue:#2563eb;--blue-dim:#2563eb15;
+  --grain:0.1;
+}
+
+/* ══════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:var(--bg);}
+body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);overscroll-behavior:none;transition:background .3s,color .3s;}
+body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:var(--grain,0.35);}
+#app{position:fixed;inset:0;display:flex;flex-direction:column;max-width:430px;margin:0 auto;}
+.view{position:absolute;inset:0;bottom:var(--nav-h);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;transition:opacity .25s,transform .25s;}
+.view::-webkit-scrollbar{display:none;}
+.view.hidden{opacity:0;pointer-events:none;transform:translateY(12px);}
+
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:40;background:linear-gradient(to bottom,var(--bg) 82%,transparent);padding:calc(env(safe-area-inset-top,0px) + 16px) 20px 0;}
+.top-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.top-title{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:900;letter-spacing:-.5px;line-height:1.1;}
+.top-title span{color:var(--accent);}
+.top-sub{font-size:.67rem;color:var(--text3);margin-top:4px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;}
+.top-date{font-size:.72rem;color:var(--text2);background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:5px 9px;font-weight:600;}
+.icon-btn{background:var(--bg1);border:1.5px solid var(--border2);border-radius:10px;width:34px;height:34px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text2);transition:all .18s;}
+.icon-btn:active{border-color:var(--accent);}
+
+/* ── CYCLE NAV ── */
+.cycle-nav{display:flex;align-items:center;gap:10px;padding:0 20px 10px;}
+.mnav-btn{width:34px;height:34px;border-radius:10px;border:1.5px solid var(--border2);background:var(--bg1);color:var(--text2);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;}
+.mnav-btn:active{background:var(--bg2);border-color:var(--accent);color:var(--accent);}
+.mnav-btn:disabled{opacity:.2;pointer-events:none;}
+.cycle-center{flex:1;text-align:center;}
+.cycle-label{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--text);}
+.cycle-range{font-size:.62rem;color:var(--text3);font-weight:500;margin-top:2px;}
+
+/* ── PERIOD TABS ── */
+.period-tabs{display:flex;gap:6px;padding:0 20px 10px;overflow-x:auto;scrollbar-width:none;}
+.period-tabs::-webkit-scrollbar{display:none;}
+.ptab{flex-shrink:0;padding:7px 14px;border-radius:99px;font-size:.7rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--text3);white-space:nowrap;transition:all .2s;}
+.ptab.active{background:var(--accent);color:var(--bg);border-color:var(--accent);box-shadow:0 0 16px var(--accent-dim);}
+
+/* ── HERO ── */
+.hero-card{margin:0 20px 12px;background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:22px;padding:20px 22px 18px;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;top:-40px;right:-40px;width:130px;height:130px;background:radial-gradient(circle,var(--accent-dim) 0%,transparent 70%);pointer-events:none;}
+.hero-label{font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:5px;}
+.hero-amount{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;letter-spacing:-1px;line-height:1;margin-bottom:14px;}
+.hero-amount .sign{font-size:1.3rem;color:var(--text3);margin-right:2px;}
+/* Amount remaining hint */
+.amt-remaining{font-size:.68rem;font-weight:700;margin-top:5px;padding:0 2px;display:flex;align-items:center;gap:5px;}
+.amt-remaining.ok{color:var(--green);}
+.amt-remaining.warn{color:var(--accent);}
+.amt-remaining.over{color:var(--red);}
+.amt-err{background:var(--red-dim);color:var(--red);border:1px solid var(--border2);border-radius:9px;padding:7px 12px;font-size:.75rem;font-weight:700;margin-top:6px;display:none;}
+.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.hero-stat{background:var(--bg);border-radius:12px;padding:10px 12px;}
+.hs-label{font-size:.58rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:700;margin-bottom:3px;}
+.hs-val{font-size:.88rem;font-weight:700;font-family:'Playfair Display',serif;}
+.c-inc{color:var(--green);}.c-exp{color:var(--red);}.c-sav{color:var(--accent);}
+.c-pos{color:var(--green);}.c-neg{color:var(--red);}
+
+/* ── STREAK ── */
+.streak-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent-dim);border:1px solid var(--border2);border-radius:99px;padding:4px 10px;font-size:.67rem;font-weight:700;color:var(--accent);margin-bottom:10px;}
+
+/* ── BUDGET ── */
+.budget-section{margin:0 20px 12px;}
+.budget-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+.budget-title{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);}
+.budget-edit{font-size:.67rem;color:var(--accent);cursor:pointer;font-weight:600;}
+.budget-bar-row{margin-bottom:7px;}
+.budget-bar-meta{display:flex;justify-content:space-between;margin-bottom:3px;}
+.budget-bar-name{font-size:.72rem;font-weight:600;color:var(--text2);}
+.budget-bar-nums{font-size:.67rem;color:var(--text3);}
+.budget-track{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;}
+.budget-fill{height:100%;border-radius:99px;transition:width .6s ease;}
+
+/* ── SEARCH ── */
+.search-wrap{padding:0 20px 8px;position:relative;}
+.search-input{width:100%;background:var(--bg1);border:1.5px solid var(--border2);border-radius:12px;padding:10px 14px 10px 38px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;}
+.search-input:focus{border-color:var(--accent);}
+.search-input::placeholder{color:var(--text3);}
+.search-icon{position:absolute;left:33px;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none;line-height:1;display:flex;align-items:center;}
+.search-clear{position:absolute;right:33px;top:50%;transform:translateY(-50%);font-size:.75rem;cursor:pointer;color:var(--text3);background:var(--bg3);border:none;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;}
+
+/* ── FILTER CHIPS ── */
+.filter-wrap{display:flex;gap:6px;overflow-x:auto;padding:0 20px 10px;scrollbar-width:none;}
+.filter-wrap::-webkit-scrollbar{display:none;}
+.filter-chip{flex-shrink:0;padding:6px 13px;border-radius:99px;font-size:.7rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--text3);white-space:nowrap;transition:all .18s;}
+.fc-all{border-color:var(--accent)!important;color:var(--accent)!important;background:var(--accent-dim)!important;}
+.fc-income{border-color:var(--green)!important;color:var(--green)!important;background:var(--green-dim)!important;}
+.fc-expense{border-color:var(--red)!important;color:var(--red)!important;background:var(--red-dim)!important;}
+.fc-savings{border-color:var(--accent)!important;color:var(--accent)!important;background:var(--accent-dim)!important;}
+.fc-recurring{border-color:var(--blue)!important;color:var(--blue)!important;background:var(--blue-dim)!important;}
+
+/* ── FEED CARDS ── */
+.feed-body{padding:0 20px 24px;}
+.date-group{margin-bottom:4px;}
+.date-hdr{display:flex;align-items:center;gap:10px;padding:12px 0 7px;}
+.date-hdr-label{font-size:.67rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);flex-shrink:0;}
+.date-hdr-line{flex:1;height:1px;background:var(--border);}
+.date-hdr-total{font-size:.67rem;font-weight:700;color:var(--text3);}
+.tx-wrap{position:relative;margin-bottom:8px;}
+
+.tx{display:flex;align-items:center;gap:12px;background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:13px 15px;cursor:pointer;transition:border-color .2s,background .15s;position:relative;overflow:hidden;z-index:1;will-change:transform;}
+.tx.open{border-color:var(--border2);background:var(--bg2);}
+.tx-glow{position:absolute;left:-20px;top:50%;transform:translateY(-50%);width:60px;height:60px;border-radius:50%;pointer-events:none;opacity:.35;}
+.tx-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;position:relative;z-index:1;}
+.tx-icon.income{background:var(--green-dim);}
+.tx-icon.expense{background:var(--red-dim);}
+.tx-icon.savings{background:var(--accent-dim);}
+.tx-body{flex:1;min-width:0;z-index:1;}
+.tx-name{font-size:.87rem;font-weight:600;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:5px;}
+.tx-note{font-size:.71rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tx-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;z-index:1;}
+.tx-amt{font-family:'Playfair Display',serif;font-size:.98rem;font-weight:700;}
+.recur-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;}
+.tx-recur-tag{font-size:.58rem;color:var(--blue);font-weight:700;}
+.tx-actions{display:flex;gap:8px;padding:2px 0 10px;}
+.act{flex:1;padding:10px;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;border:1.5px solid;transition:all .15s;}
+.act-edit{color:var(--accent);border-color:var(--accent-dim);background:var(--accent-dim);}
+.act-del{color:var(--red);border-color:var(--red-dim);background:var(--red-dim);}
+.act-cancel{color:var(--text3);border-color:var(--border);background:transparent;}
+.act-confirm{color:var(--red);border-color:var(--red-dim);background:var(--red-dim);}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px;color:var(--text3);text-align:center;gap:12px;}
+.empty-icon{font-size:2.8rem;}
+.empty-txt{font-size:.84rem;line-height:1.7;}
+
+/* ── DASHBOARD ── */
+.dash-body{padding-bottom:20px;}
+.section{padding:0 20px;margin-bottom:24px;}
+.section-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:4px;}
+.section-sub{font-size:.71rem;color:var(--text3);margin-bottom:12px;}
+
+/* HIGHLIGHTS ROW */
+.hl-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.hl-row::-webkit-scrollbar{display:none;}
+.hl-mini{flex-shrink:0;width:140px;background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:14px;}
+.hl-mini-icon{font-size:1.3rem;margin-bottom:6px;}
+.hl-mini-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:700;margin-bottom:4px;}
+.hl-mini-val{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;margin-bottom:2px;}
+.hl-mini-sub{font-size:.65rem;color:var(--text3);}
+
+/* SIDE BY SIDE */
+.sbs-card{background:var(--bg1);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
+.sbs-header{display:grid;grid-template-columns:100px 1fr 1fr 80px;background:var(--bg2);border-bottom:1px solid var(--border);padding:9px 14px;gap:4px;}
+.sbs-th{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);}
+.sbs-th.right{text-align:right;}
+.sbs-th.cur{color:var(--accent);}
+.sbs-row{display:grid;grid-template-columns:100px 1fr 1fr 80px;padding:11px 14px;border-bottom:1px solid var(--border);gap:4px;align-items:center;}
+.sbs-row:last-child{border-bottom:none;}
+.sbs-label{font-size:.72rem;color:var(--text3);font-weight:600;}
+.sbs-val{font-size:.82rem;font-weight:700;font-family:'Playfair Display',serif;text-align:right;}
+.sbs-delta{font-size:.7rem;font-weight:700;text-align:right;white-space:nowrap;}
+.d-up{color:var(--green);}
+.d-dn{color:var(--red);}
+.d-neu{color:var(--text3);}
+
+/* TREND CHART */
+.chart-card{background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:16px 12px 12px;overflow:hidden;}
+.metric-tabs{display:flex;gap:5px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;}
+.metric-tabs::-webkit-scrollbar{display:none;}
+.metric-tab{flex-shrink:0;padding:6px 12px;border-radius:99px;font-size:.68rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--text3);transition:all .18s;}
+.mt-inc{border-color:var(--green)!important;color:var(--green)!important;background:var(--green-dim)!important;}
+.mt-exp{border-color:var(--red)!important;color:var(--red)!important;background:var(--red-dim)!important;}
+.mt-sav{border-color:var(--accent)!important;color:var(--accent)!important;background:var(--accent-dim)!important;}
+.mt-net{border-color:var(--blue)!important;color:var(--blue)!important;background:var(--blue-dim)!important;}
+.bars{display:flex;align-items:flex-end;gap:5px;height:110px;margin-bottom:6px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;}
+.bar-col-val{font-size:.52rem;font-weight:700;margin-bottom:3px;white-space:nowrap;text-align:center;}
+.bar-col-track{flex:1;width:100%;display:flex;align-items:flex-end;}
+.bar-rect{width:100%;border-radius:5px 5px 2px 2px;min-height:4px;transition:height .5s cubic-bezier(.34,1.56,.64,1);}
+.bar-col-name{font-size:.52rem;color:var(--text3);font-weight:700;margin-top:5px;text-align:center;}
+.bar-col.is-cur .bar-col-name{color:var(--accent);}
+
+/* DONUT */
+.donut-card{background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:16px;}
+.donut-row{display:flex;align-items:center;gap:16px;}
+.donut-legend{flex:1;}
+.donut-item{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.donut-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.donut-name{font-size:.72rem;font-weight:600;color:var(--text2);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.donut-val{font-size:.72rem;font-weight:700;}
+.donut-pct{font-size:.6rem;color:var(--text3);}
+
+/* SAVINGS RING */
+.ring-card{display:flex;align-items:center;gap:18px;background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:16px 18px;}
+.ring-label{font-size:.62rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-weight:700;margin-bottom:4px;}
+.ring-pct{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;line-height:1;}
+.ring-sub{font-size:.69rem;color:var(--text3);margin-top:4px;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;height:var(--nav-h);background:linear-gradient(to top,var(--bg) 60%,transparent);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding:10px 16px 0;gap:8px;z-index:50;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:14px;cursor:pointer;border:none;background:transparent;transition:all .18s;}
+.nav-btn.active{background:var(--bg2);}
+.nav-icon{font-size:1.25rem;line-height:1;}
+.nav-lbl{font-size:.57rem;font-weight:700;color:var(--text3);letter-spacing:.6px;text-transform:uppercase;}
+.nav-btn.active .nav-lbl{color:var(--text);}
+.fab-wrap{flex-shrink:0;display:flex;align-items:flex-start;}
+.fab{width:56px;height:56px;border-radius:18px;background:var(--accent);border:none;font-size:1.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px var(--accent-dim),0 8px 40px #00000050;transition:transform .15s;margin-top:-8px;color:var(--bg);font-weight:900;}
+.fab:active{transform:scale(.92);}
+
+/* SETTINGS */
+.settings-card{background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;}
+.settings-icon{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.settings-body{flex:1;min-width:0;}
+.settings-title{font-family:'Playfair Display',serif;font-size:.98rem;font-weight:700;margin-bottom:3px;}
+.settings-desc{font-size:.74rem;color:var(--text3);line-height:1.6;margin-bottom:10px;}
+.settings-btn{display:block;width:100%;padding:11px 14px;border-radius:11px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;border:none;text-align:center;transition:all .18s;}
+.settings-btn:active{transform:scale(.97);}
+.btn-accent{background:var(--accent-dim);color:var(--accent);border:1.5px solid var(--border2);}
+.btn-green{background:var(--green-dim);color:var(--green);border:1.5px solid var(--border2);}
+.btn-red{background:var(--red-dim);color:var(--red);border:1.5px solid var(--border2);}
+.btn-blue{background:var(--blue-dim);color:var(--blue);border:1.5px solid var(--border2);}
+
+/* THEME PICKER */
+.theme-row{display:flex;gap:10px;margin-top:4px;}
+.theme-btn{flex:1;padding:10px 6px;border-radius:12px;font-size:.75rem;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all .2s;text-align:center;}
+.theme-btn.dark{background:#141420;color:#ede8e0;border-color:#252538;}
+.theme-btn.pink{background:#2e1426;color:#f472b6;border-color:#5c2846;}
+.theme-btn.white{background:#f0ede8;color:#1a1814;border-color:#ccc8c0;}
+.theme-btn.active-theme{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent-dim);}
+
+/* CYCLE MODE SELECTOR */
+.cycle-mode-row{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.cycle-mode-opt{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--border);cursor:pointer;transition:all .18s;}
+.cycle-mode-opt.selected{border-color:var(--accent);background:var(--accent-dim);}
+.cmo-radio{width:16px;height:16px;border-radius:50%;border:2px solid var(--text3);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+.cycle-mode-opt.selected .cmo-radio{border-color:var(--accent);}
+.cmo-radio-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:none;}
+.cycle-mode-opt.selected .cmo-radio-dot{display:block;}
+.cmo-text{}
+.cmo-title{font-size:.85rem;font-weight:700;color:var(--text);}
+.cmo-sub{font-size:.7rem;color:var(--text3);margin-top:2px;}
+
+/* CYCLE SETUP FIELDS */
+.cycle-fields{background:var(--bg2);border-radius:12px;padding:12px;margin-top:8px;display:flex;flex-direction:column;gap:8px;}
+.cf-row{display:flex;align-items:center;gap:8px;}
+.cf-label{font-size:.75rem;font-weight:600;color:var(--text2);flex:1;}
+.cf-input{background:var(--bg1);border:1.5px solid var(--border2);border-radius:9px;padding:7px 11px;color:var(--text);font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;outline:none;width:70px;text-align:center;}
+.cf-input:focus{border-color:var(--accent);}
+.cf-note{font-size:.68rem;color:var(--text3);line-height:1.5;}
+
+/* BOTTOM SHEET */
+.sheet-overlay{position:fixed;inset:0;background:#00000080;z-index:100;opacity:0;pointer-events:none;transition:opacity .25s;}
+.sheet-overlay.active{opacity:1;pointer-events:all;}
+.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:430px;background:var(--bg1);border-radius:24px 24px 0 0;z-index:101;transition:transform .3s cubic-bezier(.32,0,.67,0);max-height:92vh;overflow-y:auto;scrollbar-width:none;padding-bottom:env(safe-area-inset-bottom,20px);}
+.sheet::-webkit-scrollbar{display:none;}
+.sheet.open{transform:translateX(-50%) translateY(0);}
+.sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:12px auto 0;}
+.sheet-header{padding:13px 20px 5px;display:flex;align-items:center;justify-content:space-between;}
+.sheet-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;}
+.sheet-title em{color:var(--accent);font-style:normal;}
+.sheet-close{background:var(--bg2);border:1.5px solid var(--border2);border-radius:10px;width:31px;height:31px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);}
+.add-body{padding:6px 20px 28px;}
+.form-section{margin-bottom:16px;}
+.form-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.form-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+.date-field{width:100%;background:var(--bg2);border:1.5px solid var(--border2);border-radius:13px;padding:12px 15px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.93rem;font-weight:500;outline:none;-webkit-appearance:none;transition:border-color .2s;}
+.date-field:focus{border-color:var(--accent);}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.cat-tile{background:var(--bg2);border:1.5px solid var(--border);border-radius:14px;padding:10px 6px 8px;text-align:center;cursor:pointer;transition:all .18s;}
+.cat-tile.sel-income{border-color:var(--green);background:var(--green-dim);box-shadow:0 0 14px var(--green-dim);}
+.cat-tile.sel-expense{border-color:var(--red);background:var(--red-dim);box-shadow:0 0 14px var(--red-dim);}
+.cat-tile.sel-savings{border-color:var(--accent);background:var(--accent-dim);box-shadow:0 0 14px var(--accent-dim);}
+.cat-icon{font-size:1.25rem;display:block;margin-bottom:3px;}
+.cat-name{font-size:.6rem;color:var(--text3);font-weight:600;}
+.cat-tile.sel-income .cat-name{color:var(--green);}
+.cat-tile.sel-expense .cat-name{color:var(--red);}
+.cat-tile.sel-savings .cat-name{color:var(--accent);}
+.amt-wrap{background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:3px 16px;display:flex;align-items:center;transition:border-color .2s;}
+.amt-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.amt-sym{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--text3);padding-right:4px;padding-top:2px;}
+.amt-input{flex:1;background:transparent;border:none;outline:none;font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--text);padding:11px 0;width:100%;}
+.amt-input::placeholder{color:var(--border2);}
+.note-field{width:100%;background:var(--bg2);border:1.5px solid var(--border2);border-radius:13px;padding:12px 15px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;outline:none;resize:none;transition:border-color .2s;}
+.note-field:focus{border-color:var(--accent);}
+.note-field::placeholder{color:var(--text3);}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:1.5px solid var(--border2);border-radius:13px;padding:12px 15px;}
+.toggle-label{font-size:.87rem;font-weight:600;color:var(--text);}
+.toggle-sub{font-size:.69rem;color:var(--text3);}
+.toggle{width:44px;height:25px;background:var(--bg3);border-radius:99px;position:relative;cursor:pointer;border:1.5px solid var(--border2);transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--blue);border-color:var(--blue);}
+.toggle::after{content:'';position:absolute;width:17px;height:17px;background:#fff;border-radius:50%;top:2px;left:2px;transition:transform .2s;}
+.toggle.on::after{transform:translateX(19px);}
+.save-btn{width:100%;padding:16px;border:none;border-radius:14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.93rem;font-weight:700;cursor:pointer;transition:all .18s;letter-spacing:.3px;margin-top:6px;}
+.save-btn:active{transform:scale(.98);}
+.save-btn:disabled{opacity:.25;pointer-events:none;}
+.btn-income{background:var(--green);color:#fff;}
+.btn-expense{background:var(--red);color:#fff;}
+.btn-savings{background:var(--accent);color:var(--bg);}
+.toast{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--green-dim);color:var(--green);border:1px solid var(--border2);border-radius:11px;padding:9px 16px;font-size:.8rem;font-weight:700;margin-bottom:12px;animation:fadeUp .3s ease;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.date-err{background:var(--red-dim);color:var(--red);border:1px solid var(--border2);border-radius:11px;padding:9px 15px;font-size:.8rem;font-weight:600;margin-bottom:12px;display:none;}
+
+/* BUDGET MODAL */
+.budget-modal{display:none;position:fixed;inset:0;z-index:200;background:#00000090;align-items:flex-end;justify-content:center;}
+.budget-modal.open{display:flex;}
+.bm-inner{background:var(--bg1);border-radius:22px 22px 0 0;width:100%;max-width:430px;padding:18px 20px 40px;max-height:80vh;overflow-y:auto;scrollbar-width:none;}
+.bm-inner::-webkit-scrollbar{display:none;}
+.bm-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:3px;}
+.bm-sub{font-size:.72rem;color:var(--text3);margin-bottom:16px;}
+.bm-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.bm-icon{width:28px;height:28px;border-radius:8px;background:var(--red-dim);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.bm-name{font-size:.85rem;font-weight:600;flex:1;}
+.bm-field{width:88px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:9px;padding:7px 10px;color:var(--text);font-family:'Playfair Display',serif;font-size:.93rem;font-weight:700;outline:none;text-align:right;}
+.bm-field:focus{border-color:var(--accent);}
+.bm-save{width:100%;padding:13px;border:none;border-radius:13px;background:var(--accent);color:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;margin-top:8px;}
+
+/* SAVINGS GOAL FIELD */
+.goal-wrap{position:relative;}
+.goal-input{width:100%;background:var(--bg2);border:1.5px solid var(--accent-dim);border-radius:13px;padding:12px 15px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;}
+.goal-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.goal-input::placeholder{color:var(--text3);}
+.goal-suggestions{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg1);border:1.5px solid var(--border2);border-radius:13px;z-index:50;overflow:hidden;box-shadow:0 8px 24px #00000050;display:none;}
+.goal-suggestions.open{display:block;}
+.goal-sug-item{padding:10px 15px;font-size:.85rem;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s;}
+.goal-sug-item:active,.goal-sug-item:hover{background:var(--bg2);}
+.goal-sug-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.goal-tag{display:inline-flex;align-items:center;gap:4px;background:var(--accent-dim);border:1px solid var(--border2);border-radius:6px;padding:2px 7px;font-size:.62rem;font-weight:700;color:var(--accent);margin-left:4px;}
+
+/* SAVINGS GOALS DASHBOARD SECTION */
+.goals-grid{display:flex;flex-direction:column;gap:8px;}
+.goal-card{background:var(--bg1);border:1px solid var(--border);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:14px;}
+.goal-card-rank{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:var(--text3);width:24px;text-align:center;flex-shrink:0;}
+.goal-card-body{flex:1;min-width:0;}
+.goal-card-name{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:3px;}
+.goal-card-meta{font-size:.67rem;color:var(--text3);}
+.goal-card-amt{font-family:'Playfair Display',serif;font-size:1rem;font-weight:900;color:var(--accent);text-align:right;flex-shrink:0;}
+.goal-bar-track{height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-top:6px;}
+.goal-bar-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .6s ease;}
+
+/* ══ CREDIT CARD ══ */
+--purple:#a855f7;--purple-dim:#a855f718;
+.cc-section{margin:10px 20px 12px;}
+.cc-header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.cc-title{font-size:.62rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);font-weight:700;}
+.cc-add-btn{font-size:.67rem;color:var(--accent);cursor:pointer;font-weight:700;background:var(--accent-dim);border:1px solid var(--border2);border-radius:7px;padding:4px 9px;}
+.cc-card{background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:14px 15px;margin-bottom:7px;position:relative;overflow:hidden;}
+.cc-card::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:radial-gradient(circle,#a855f718 0%,transparent 70%);pointer-events:none;}
+.cc-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.cc-card-name{font-size:.88rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;}
+.cc-chip{font-size:.55rem;background:#a855f720;color:#a855f7;border:1px solid #a855f730;border-radius:5px;padding:2px 6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.cc-pay-btn{font-size:.67rem;font-weight:700;padding:5px 11px;border-radius:9px;border:1.5px solid var(--border2);background:var(--green-dim);color:var(--green);cursor:pointer;}
+.cc-amounts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px;}
+.cc-amt-box{background:var(--bg2);border-radius:10px;padding:8px 10px;}
+.cc-amt-lbl{font-size:.55rem;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);font-weight:700;margin-bottom:3px;}
+.cc-amt-val{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:700;}
+.cc-bar-row{display:flex;align-items:center;gap:8px;}
+.cc-bar-track{flex:1;height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;}
+.cc-bar-fill{height:100%;border-radius:99px;transition:width .6s ease;}
+.cc-bar-pct{font-size:.62rem;font-weight:700;color:var(--text3);flex-shrink:0;min-width:28px;text-align:right;}
+.cc-del-btn{font-size:.65rem;color:var(--red);cursor:pointer;font-weight:600;padding:3px 7px;border-radius:6px;background:var(--red-dim);border:none;}
+/* credit toggle in form */
+.cc-picker-wrap{margin-top:10px;display:none;}
+.cc-picker-wrap.open{display:block;}
+.cc-picker{width:100%;background:var(--bg2);border:1.5px solid var(--border2);border-radius:13px;padding:12px 15px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;outline:none;}
+.cc-picker:focus{border-color:#a855f7;}
+.cc-hint{margin-top:6px;font-size:.7rem;color:#a855f7;font-weight:600;display:flex;align-items:center;gap:5px;}
+/* credit tag on transaction cards */
+.cc-tag{display:inline-flex;align-items:center;gap:4px;background:#a855f718;border:1px solid #a855f730;border-radius:6px;padding:2px 7px;font-size:.58rem;font-weight:700;color:#a855f7;margin-left:4px;}
+/* pay modal */
+.pay-modal{display:none;position:fixed;inset:0;z-index:200;background:#00000090;align-items:flex-end;justify-content:center;}
+.pay-modal.open{display:flex;}
+.pay-inner{background:var(--bg1);border-radius:22px 22px 0 0;width:100%;max-width:430px;padding:20px 20px 40px;}
+.pay-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;margin-bottom:3px;}
+.pay-sub{font-size:.73rem;color:var(--text3);margin-bottom:16px;}
+.pay-balance{background:var(--bg2);border-radius:13px;padding:12px 15px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.pay-balance-lbl{font-size:.72rem;color:var(--text3);}
+.pay-balance-val{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#a855f7;}
+.pay-save{width:100%;padding:14px;border:none;border-radius:13px;background:#a855f7;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;margin-top:4px;}
+/* ══ ONBOARDING ══ */
+.ob-overlay{position:fixed;inset:0;z-index:900;background:#00000090;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.ob-overlay.active{opacity:1;pointer-events:all;}
+.ob-sheet{width:100%;max-width:430px;background:var(--bg1);border-radius:24px 24px 0 0;padding:0 0 env(safe-area-inset-bottom,24px);height:88vh;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,0,.67,0);box-sizing:border-box;}
+.ob-overlay.active .ob-sheet{transform:translateY(0);}
+.ob-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:14px auto 0;flex-shrink:0;}
+.ob-pages{position:relative;flex:1;overflow:hidden;width:100%;min-height:0;}
+.ob-page{position:absolute;inset:0;padding:20px 24px 10px;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;box-sizing:border-box;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease;transform:translateX(40px);}
+.ob-page::-webkit-scrollbar{display:none;}
+.ob-page.active{opacity:1;pointer-events:all;transform:translateX(0);}
+.ob-emoji{font-size:2.8rem;margin-bottom:12px;text-align:center;}
+.ob-title{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:900;text-align:center;margin-bottom:6px;line-height:1.2;}
+.ob-title em{color:var(--accent);font-style:normal;}
+.ob-sub{font-size:.78rem;color:var(--text3);text-align:center;line-height:1.7;margin-bottom:18px;}
+.ob-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+.ob-step{display:flex;align-items:flex-start;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:13px 14px;}
+.ob-step-icon{font-size:1.3rem;flex-shrink:0;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.ob-step-icon.c-acc{background:var(--accent-dim);}
+.ob-step-icon.c-grn{background:var(--green-dim);}
+.ob-step-icon.c-red{background:var(--red-dim);}
+.ob-step-icon.c-blu{background:var(--blue-dim);}
+.ob-step-body{}
+.ob-step-title{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:2px;}
+.ob-step-desc{font-size:.72rem;color:var(--text3);line-height:1.6;}
+.ob-step-desc strong{color:var(--text2);}
+.ob-tip{background:var(--accent-dim);border:1px solid var(--border2);border-radius:13px;padding:11px 14px;font-size:.74rem;color:var(--text2);line-height:1.65;margin-bottom:16px;}
+.ob-tip strong{color:var(--accent);}
+/* footer */
+.ob-footer{flex-shrink:0;padding:12px 24px 6px;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--border);}
+.ob-dots{display:flex;justify-content:center;gap:6px;}
+.ob-dot{width:7px;height:7px;border-radius:99px;background:var(--border2);transition:all .25s;}
+.ob-dot.active{background:var(--accent);width:20px;}
+.ob-btn-row{display:flex;gap:8px;}
+.ob-btn{flex:1;padding:13px;border:none;border-radius:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.ob-btn:active{transform:scale(.97);}
+.ob-btn-primary{background:var(--accent);color:var(--bg);}
+.ob-btn-secondary{background:var(--bg2);color:var(--text2);border:1.5px solid var(--border2);}
+.ob-btn-ghost{background:transparent;color:var(--text3);font-size:.75rem;text-align:center;padding:6px;}
+
+/* ── GUIDE: page tag ── */
+.ob-page-tag{font-size:.65rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent);font-weight:700;text-align:center;margin-bottom:8px;}
+
+/* ── GUIDE: inline tip ── */
+.ob-inline-tip{font-size:.7rem;color:var(--text3);text-align:center;line-height:1.6;padding:8px 12px;background:var(--bg2);border-radius:10px;border:1px solid var(--border);}
+.ob-inline-tip strong{color:var(--text2);}
+
+/* ── GUIDE: theme cards ── */
+.ob-theme-cards{display:flex;gap:10px;}
+.ob-theme-card{flex:1;background:var(--bg2);border:2px solid var(--border);border-radius:16px;padding:12px 8px 10px;cursor:pointer;transition:all .2s;text-align:center;}
+.ob-theme-card.active-g{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.ob-theme-preview{border-radius:10px;border:1.5px solid;padding:10px 8px 8px;margin-bottom:8px;}
+.ob-theme-prev-bar{height:6px;border-radius:99px;width:70%;}
+.ob-theme-prev-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.ob-theme-name{font-size:.75rem;font-weight:700;color:var(--text);margin-bottom:2px;}
+.ob-theme-sub{font-size:.62rem;color:var(--text3);line-height:1.4;}
+
+/* ── GUIDE: setup block ── */
+.ob-setup-block{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:8px;}
+.ob-setup-label{font-size:.75rem;font-weight:700;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.6px;}
+
+/* ── GUIDE: history limit controls ── */
+.ob-limit-row{display:flex;align-items:center;gap:12px;justify-content:center;}
+.ob-limit-minus,.ob-limit-plus{width:38px;height:38px;border-radius:50%;border:2px solid var(--border2);background:var(--bg1);color:var(--text);font-size:1.3rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0;}
+.ob-limit-minus:active,.ob-limit-plus:active{border-color:var(--accent);color:var(--accent);}
+.ob-limit-display{display:flex;align-items:baseline;gap:5px;}
+.ob-limit-num{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--accent);line-height:1;}
+.ob-limit-unit{font-size:.72rem;font-weight:600;color:var(--text3);}
+.ob-limit-hint{font-size:.7rem;color:var(--text3);line-height:1.6;text-align:center;}
+
+/* ── GUIDE: preset chips ── */
+.ob-limit-presets,.ob-goal-chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+.ob-chip{padding:7px 14px;border-radius:99px;border:1.5px solid var(--border2);background:var(--bg1);color:var(--text3);font-size:.72rem;font-weight:700;cursor:pointer;transition:all .18s;white-space:nowrap;}
+.ob-chip:active,.ob-chip-sel{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+
+/* ── GUIDE: goal preview ── */
+.ob-goal-preview{font-size:.78rem;color:var(--text2);line-height:1.5;}
+/* ══ PWA INSTALL BANNER ══ */
+.pwa-banner{position:fixed;bottom:calc(var(--nav-h) + 10px);left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:398px;background:var(--bg1);border:1.5px solid var(--border2);border-radius:18px;padding:14px 16px;z-index:300;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px #00000060;animation:slideUp .35s cubic-bezier(.34,1.56,.64,1);}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.pwa-banner-icon{width:46px;height:46px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.pwa-banner-text{flex:1;min-width:0;}
+.pwa-banner-title{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:2px;}
+.pwa-banner-sub{font-size:.68rem;color:var(--text3);line-height:1.4;}
+.pwa-banner-install{flex-shrink:0;padding:8px 14px;border-radius:10px;border:none;background:var(--accent);color:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.pwa-banner-install:active{transform:scale(.95);}
+.pwa-banner-close{flex-shrink:0;width:24px;height:24px;border-radius:50%;border:none;background:var(--bg3);color:var(--text3);font-size:.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+/* ios install sheet */
+.ios-install-sheet{position:fixed;inset:0;z-index:500;background:#00000085;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.ios-install-sheet.open{opacity:1;pointer-events:all;}
+.ios-install-inner{width:100%;max-width:430px;background:var(--bg1);border-radius:24px 24px 0 0;padding:20px 22px calc(env(safe-area-inset-bottom,20px) + 20px);transform:translateY(100%);transition:transform .35s cubic-bezier(.32,0,.67,0);}
+.ios-install-sheet.open .ios-install-inner{transform:translateY(0);}
+.ios-step{display:flex;align-items:flex-start;gap:13px;margin-bottom:14px;}
+.ios-step-num{width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--bg);font-size:.72rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.ios-step-text{font-size:.83rem;color:var(--text2);line-height:1.55;}
+.ios-step-text strong{color:var(--text);}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ FEED VIEW ══ -->
+<div class="view" id="view-feed">
+  <div class="topbar">
+    <div class="top-row">
+      <div>
+        <div class="top-title">My <span>Ledger</span></div>
+        <div class="top-sub" id="cycle-mode-label">Pay-cycle tracker</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;">
+        <div class="top-date" id="top-date-label"></div>
+        <button class="icon-btn" onclick="nav('settings')">⚙️</button>
+      </div>
+    </div>
+    <div class="cycle-nav">
+      <button class="mnav-btn" id="mnav-prev" onclick="shiftCycle(-1)">‹</button>
+      <div class="cycle-center">
+        <div class="cycle-label" id="cycle-label"></div>
+        <div class="cycle-range" id="cycle-range"></div>
+      </div>
+      <button class="mnav-btn" id="mnav-next" onclick="shiftCycle(1)">›</button>
+    </div>
+    <div class="period-tabs" id="period-tabs"></div>
+  </div>
+
+  <div style="padding:0 20px 10px;">
+    <div id="streak-area"></div>
+    <div class="hero-card">
+      <div class="hero-label" id="hero-label">Remaining this cycle</div>
+      <div class="hero-amount" id="hero-net">
+        <span class="sign" id="hero-sign"></span><span id="hero-net-val">0</span>
+      </div>
+      <div class="hero-grid">
+        <div class="hero-stat"><div class="hs-label">Income</div><div class="hs-val c-inc" id="hero-income">0</div></div>
+        <div class="hero-stat"><div class="hs-label">Spent</div><div class="hs-val c-exp" id="hero-expense">0</div></div>
+        <div class="hero-stat"><div class="hs-label">Saved</div><div class="hs-val c-sav" id="hero-savings">0</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="credit-area"></div>
+  <div id="budget-area"></div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-input" id="search-input" placeholder="Search transactions…" oninput="onSearch()"/>
+    <button class="search-clear" id="search-clear" onclick="clearSearch()" style="display:none;">✕</button>
+  </div>
+  <div class="filter-wrap" id="filter-chips"></div>
+  <div class="feed-body" id="feed-list"></div>
+</div>
+
+<!-- ══ DASHBOARD VIEW ══ -->
+<div class="view hidden" id="view-dashboard">
+  <div class="topbar">
+    <div class="top-row">
+      <div><div class="top-title">Dash<span>board</span></div><div class="top-sub">Trends & insights</div></div>
+    </div>
+  </div>
+  <div class="dash-body" id="dash-content"></div>
+</div>
+
+<!-- ══ SETTINGS VIEW ══ -->
+<div class="view hidden" id="view-settings">
+  <div class="topbar" style="padding-bottom:14px;">
+    <div class="top-row">
+      <div><div class="top-title">Set<span>tings</span></div><div class="top-sub">Preferences & backup</div></div>
+      <button class="icon-btn" onclick="nav('feed')">✕</button>
+    </div>
+  </div>
+  <div style="padding:0 20px 100px;">
+
+    <!-- SHOW GUIDE -->
+    <div class="settings-card">
+      <div class="settings-icon" style="background:var(--accent-dim)">📖</div>
+      <div class="settings-body">
+        <div class="settings-title">User Guide</div>
+        <div class="settings-desc">New to My Ledger? Revisit the setup guide anytime to learn how everything works and how to customise it for your situation.</div>
+        <button class="settings-btn btn-accent" onclick="obOpen();nav('feed')">📖 Open Guide</button>
+      </div>
+    </div>
+
+    <!-- THEME -->
+    <div class="settings-card">
+      <div class="settings-icon" style="background:var(--accent-dim)">🎨</div>
+      <div class="settings-body">
+        <div class="settings-title">Theme</div>
+        <div class="settings-desc">Choose your app look.</div>
+        <div class="theme-row">
+          <button class="theme-btn dark" onclick="setTheme('dark')" id="theme-dark">🌙 Dark</button>
+          <button class="theme-btn pink" onclick="setTheme('pink')" id="theme-pink">🌸 Pink</button>
+          <button class="theme-btn white" onclick="setTheme('white')" id="theme-white">☀️ Light</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAY CYCLE -->
+    <div class="settings-card">
+      <div class="settings-icon" style="background:var(--accent-dim)">📅</div>
+      <div class="settings-body">
+        <div class="settings-title">Pay Cycle Setup</div>
+        <div class="settings-desc">Choose how your pay cycle works. All data stays intact when you change this.</div>
+        <div class="cycle-mode-row">
+          <div class="cycle-mode-opt" id="cmo-monthly" onclick="selectCycleMode('monthly')">
+            <div class="cmo-radio"><div class="cmo-radio-dot"></div></div>
+            <div class="cmo-text"><div class="cmo-title">Once a month</div><div class="cmo-sub">e.g. every 25th → 24th of next month</div></div>
+          </div>
+          <div class="cycle-mode-opt" id="cmo-bimonthly" onclick="selectCycleMode('bimonthly')">
+            <div class="cmo-radio"><div class="cmo-radio-dot"></div></div>
+            <div class="cmo-text"><div class="cmo-title">Twice a month</div><div class="cmo-sub">e.g. 1st–15th and 16th–end of month</div></div>
+          </div>
+          <div class="cycle-mode-opt" id="cmo-custom" onclick="selectCycleMode('custom')">
+            <div class="cmo-radio"><div class="cmo-radio-dot"></div></div>
+            <div class="cmo-text"><div class="cmo-title">Custom days</div><div class="cmo-sub">Set any start and end day you want</div></div>
+          </div>
+        </div>
+
+        <!-- Monthly fields -->
+        <div class="cycle-fields" id="fields-monthly" style="display:none;">
+          <div class="cf-row"><span class="cf-label">Pay day (day of month)</span><input class="cf-input" id="pay-day" type="number" min="1" max="28" value="25"/></div>
+          <div class="cf-note">Cycle runs from your pay day to one day before next pay day.</div>
+        </div>
+
+        <!-- Bi-monthly fields -->
+        <div class="cycle-fields" id="fields-bimonthly" style="display:none;">
+          <div class="cf-note" style="margin-bottom:4px;">Works for same-month <em>and</em> cross-month splits (e.g. 25→10 next month).</div>
+          <div class="cf-row"><span class="cf-label">Period A — start day</span><input class="cf-input" id="bi-s1" type="number" min="1" max="31" value="25" oninput="updateBiPreview()"/></div>
+          <div class="cf-row"><span class="cf-label">Period A — end day</span><input class="cf-input" id="bi-e1" type="number" min="1" max="31" value="10" oninput="updateBiPreview()"/></div>
+          <div class="cf-row"><span class="cf-label">Period B — start day</span><input class="cf-input" id="bi-s2" type="number" min="1" max="31" value="11" oninput="updateBiPreview()"/></div>
+          <div class="cf-row"><span class="cf-label">Period B — end day</span><input class="cf-input" id="bi-e2" type="number" min="1" max="31" value="24" oninput="updateBiPreview()"/></div>
+          <div class="cf-note" id="bi-preview" style="margin-top:4px;color:var(--accent);font-weight:600;"></div>
+        </div>
+
+        <!-- Custom fields -->
+        <div class="cycle-fields" id="fields-custom" style="display:none;">
+          <div class="cf-row"><span class="cf-label">Cycle start day</span><input class="cf-input" id="cust-start" type="number" min="1" max="28" value="1"/></div>
+          <div class="cf-row"><span class="cf-label">Cycle length (days)</span><input class="cf-input" id="cust-len" type="number" min="7" max="90" value="30"/></div>
+          <div class="cf-note">e.g. start=1, length=14 → fortnightly from 1st.</div>
+        </div>
+
+        <button class="settings-btn btn-accent" style="margin-top:10px;" onclick="saveCycleSettings()">Save Cycle Settings</button>
+      </div>
+    </div>
+
+    <!-- CURRENCY -->
+    <div class="settings-card">
+      <div class="settings-icon" style="background:var(--blue-dim)">💱</div>
+      <div class="settings-body">
+        <div class="settings-title">Currency Symbol</div>
+        <div class="settings-desc">Shown everywhere across the app.</div>
+        <div style="display:flex;gap:8px;">
+          <input class="cf-input" id="currency-input" type="text" maxlength="4" placeholder="₱" style="width:70px;"/>
+          <button class="settings-btn btn-blue" style="flex:1;margin:0;" onclick="saveCurrency()">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CYCLE HISTORY LIMIT -->
+    <div class="settings-card">
+      <div class="settings-icon" style="background:var(--blue-dim)">🗂</div>
+      <div class="settings-body">
+        <div class="settings-title">Cycle History Limit</div>
+        <div class="settings-desc">
+          Max number of cycles to keep. Oldest cycles are <strong>automatically deleted</strong> when the limit is reached — the current cycle is always kept.<br/>
+          <span style="color:var(--text3);font-size:.68rem;">Min: 3 · Max: 60 · Default: 24</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input class="cf-input" id="cycle-limit-input" type="number" min="3" max="60" value="24" style="width:76px;"/>
+          <span style="font-size:.75rem;color:var(--text3);flex:1;">cycles stored</span>
+          <button class="settings-btn btn-blue" style="margin:0;padding:11px 16px;" onclick="saveCycleLimit()">Apply</button>
+        </div>
+        <div id="cycle-limit-preview" style="margin-top:8px;font-size:.7rem;color:var(--text3);line-height:1.6;"></div>
+      </div>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="settings-card">
+      <div class="settings-icon" style="background:var(--accent-dim)">📤</div>
+      <div class="settings-body">
+        <div class="settings-title">Export All Data</div>
+        <div class="settings-desc">Exports <strong>everything</strong>: all transactions, budgets, currency, theme, and cycle settings — as a single <code>.json</code> backup file.<br/><br/>Your data auto-saves in the browser after every change. Use Export when switching devices or clearing your browser.</div>
+        <button class="settings-btn btn-accent" onclick="exportData()">📤 Download Full Backup (.json)</button>
+      </div>
+    </div>
+
+    <!-- IMPORT -->
+    <div class="settings-card">
+      <div class="settings-icon" style="background:var(--green-dim)">📥</div>
+      <div class="settings-body">
+        <div class="settings-title">Import Data</div>
+        <div class="settings-desc">Load a backup file. Merges with current data — no duplicates.</div>
+        <label class="settings-btn btn-green" style="cursor:pointer;">
+          Choose ledger-data.json
+          <input type="file" accept=".json" style="display:none;" onchange="importData(event)"/>
+        </label>
+      </div>
+    </div>
+
+    <!-- CLEAR -->
+    <div class="settings-card">
+      <div class="settings-icon" style="background:var(--red-dim)">🗑</div>
+      <div class="settings-body">
+        <div class="settings-title">Clear All Data</div>
+        <div class="settings-desc">Permanently delete everything. Export a backup first!</div>
+        <button class="settings-btn btn-red" onclick="clearAllData()">Delete Everything</button>
+      </div>
+    </div>
+
+    <!-- CREDIT CARDS -->
+    <div class="settings-card">
+      <div class="settings-icon" style="background:#a855f718">💳</div>
+      <div class="settings-body">
+        <div class="settings-title">Credit Cards</div>
+        <div class="settings-desc">Add your credit cards. When adding an expense, you can choose to charge it to a card instead of your cash balance. Pay the bill later to restore the card's available credit.</div>
+        <div id="cc-settings-list" style="margin-bottom:10px;"></div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <input class="cf-input" id="cc-name-input" type="text" maxlength="20" placeholder="Card name" style="flex:1;width:auto;text-align:left;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;"/>
+          <input class="cf-input" id="cc-limit-input" type="number" min="1" placeholder="Limit" style="width:90px;"/>
+        </div>
+        <button class="settings-btn btn-blue" style="background:#a855f718;color:#a855f7;border-color:#a855f730;" onclick="addCreditCard()">+ Add Card</button>
+      </div>
+    </div>
+
+    <div id="settings-toast" style="display:none;margin-top:14px;" class="toast">✓ Done!</div>
+    <div id="settings-err" style="display:none;margin-top:14px;" class="date-err">⚠️ Invalid file.</div>
+
+    <div style="margin-top:10px;background:var(--bg1);border:1px solid var(--border);border-radius:16px;padding:15px 17px;">
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-weight:700;margin-bottom:8px;">Your data summary</div>
+      <div id="settings-stats" style="font-size:.82rem;color:var(--text2);line-height:1.9;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BOTTOM NAV ══ -->
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-feed" onclick="nav('feed')">
+    <span class="nav-icon">🏠</span><span class="nav-lbl">Feed</span>
+  </button>
+  <div class="fab-wrap"><button class="fab" onclick="openSheet()">＋</button></div>
+  <button class="nav-btn" id="nav-dashboard" onclick="nav('dashboard')">
+    <span class="nav-icon">📊</span><span class="nav-lbl">Dashboard</span>
+  </button>
+</div>
+
+<!-- ══ PWA INSTALL BANNER ══ -->
+<div class="pwa-banner" id="pwa-banner" style="display:none;">
+  <div class="pwa-banner-icon" id="pwa-banner-icon"></div>
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-title">Install My Ledger</div>
+    <div class="pwa-banner-sub" id="pwa-banner-sub">Add to home screen for the best experience</div>
+  </div>
+  <button class="pwa-banner-install" id="pwa-banner-btn" onclick="pwaInstall()">Install</button>
+  <button class="pwa-banner-close" onclick="pwaDismiss()">✕</button>
+</div>
+
+<!-- ══ iOS INSTALL SHEET ══ -->
+<div class="ios-install-sheet" id="ios-install-sheet" onclick="closeIosSheet(event)">
+  <div class="ios-install-inner">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <div id="ios-sheet-icon" style="width:52px;height:52px;border-radius:13px;flex-shrink:0;"></div>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;">Install My Ledger</div>
+        <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Add to your Home Screen</div>
+      </div>
+      <button style="margin-left:auto;background:var(--bg2);border:1.5px solid var(--border2);border-radius:8px;padding:5px 10px;font-size:.7rem;font-weight:700;color:var(--text3);cursor:pointer;" onclick="closeIosSheet()">Done</button>
+    </div>
+    <div class="ios-step">
+      <div class="ios-step-num">1</div>
+      <div class="ios-step-text">Tap the <strong>Share button</strong> <span style="font-size:1.1rem;">⬆️</span> at the bottom of your Safari browser bar</div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-step-num">2</div>
+      <div class="ios-step-text">Scroll down and tap <strong>"Add to Home Screen"</strong> <span style="font-size:1rem;">➕</span></div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-step-num">3</div>
+      <div class="ios-step-text">Tap <strong>"Add"</strong> in the top-right corner — My Ledger will appear on your home screen like a native app ✅</div>
+    </div>
+    <div style="background:var(--accent-dim);border:1px solid var(--border2);border-radius:12px;padding:10px 14px;font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.6;">
+      💡 <strong style="color:var(--accent)">Works offline</strong> — your data is stored on your device, not the cloud. No login needed.
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ ONBOARDING ══ -->
+<div class="ob-overlay" id="ob-overlay">
+  <div class="ob-sheet">
+    <div class="ob-handle"></div>
+    <div class="ob-pages" id="ob-pages">
+
+      <!-- ── SLIDE 1: Welcome / What the app does ── -->
+      <div class="ob-page">
+        <div style="height:4px;"></div>
+        <div class="ob-emoji" style="font-size:3rem;">📒</div>
+        <div class="ob-title">Meet <em>My Ledger</em></div>
+        <div class="ob-sub">Your personal pay-cycle money tracker — built to fit <strong style="color:var(--accent)">how you actually get paid</strong>, not the calendar.</div>
+        <div class="ob-steps" style="gap:9px;">
+          <div class="ob-step">
+            <div class="ob-step-icon c-acc">💼</div>
+            <div class="ob-step-body">
+              <div class="ob-step-title">Track income, expenses &amp; savings</div>
+              <div class="ob-step-desc">Log any transaction in seconds. Pick a category, enter an amount, add a note — that's it. Everything auto-saves.</div>
+            </div>
+          </div>
+          <div class="ob-step">
+            <div class="ob-step-icon c-grn">📅</div>
+            <div class="ob-step-body">
+              <div class="ob-step-title">Organised by your pay cycle</div>
+              <div class="ob-step-desc">Money is grouped by <strong>pay period</strong> — monthly, twice-monthly, or any custom interval — so your balance always makes sense.</div>
+            </div>
+          </div>
+          <div class="ob-step">
+            <div class="ob-step-icon c-blu">📊</div>
+            <div class="ob-step-body">
+              <div class="ob-step-title">Trends &amp; insights on the Dashboard</div>
+              <div class="ob-step-desc">Cycle comparisons, spending breakdown, savings rate, and goal progress — all in one view.</div>
+            </div>
+          </div>
+          <div class="ob-step">
+            <div class="ob-step-icon c-red">📤</div>
+            <div class="ob-step-body">
+              <div class="ob-step-title">Your data, your control</div>
+              <div class="ob-step-desc">No account needed. Data lives in your browser. Export a full JSON backup anytime to keep it safe.</div>
+            </div>
+          </div>
+        </div>
+        <div class="ob-tip" style="margin-top:10px;margin-bottom:0;">
+          <strong>4 quick steps ahead:</strong> choose a theme · set your pay cycle · pick a savings goal · set up credit cards — then you're ready to track. 🚀
+        </div>
+      </div>
+
+      <!-- ── SLIDE 2: Theme (interactive) ── -->
+      <div class="ob-page">
+        <div style="height:4px;"></div>
+        <div class="ob-page-tag">Step 1 of 4 · Theme</div>
+        <div class="ob-emoji">🎨</div>
+        <div class="ob-title">Choose Your <em>Look</em></div>
+        <div class="ob-sub">Tap any card below — the <strong style="color:var(--accent)">whole app changes instantly</strong>. Try them all before you decide.</div>
+        <div class="ob-theme-cards" style="gap:10px;">
+          <div class="ob-theme-card" id="g-theme-dark" onclick="gSetTheme('dark')" style="flex:1;">
+            <div class="ob-theme-preview" style="background:#141420;border-color:#252538;padding:11px 10px 9px;">
+              <div class="ob-theme-prev-bar" style="background:#d4a853;margin-bottom:7px;"></div>
+              <div style="display:flex;gap:5px;">
+                <div class="ob-theme-prev-dot" style="background:#4fd87c;"></div>
+                <div class="ob-theme-prev-dot" style="background:#f06464;"></div>
+                <div class="ob-theme-prev-dot" style="background:#7b8fff;"></div>
+              </div>
+            </div>
+            <div class="ob-theme-name">🌙 Dark</div>
+            <div class="ob-theme-sub">Easy on the eyes at night</div>
+          </div>
+          <div class="ob-theme-card" id="g-theme-pink" onclick="gSetTheme('pink')" style="flex:1;">
+            <div class="ob-theme-preview" style="background:#2e1426;border-color:#5c2846;padding:11px 10px 9px;">
+              <div class="ob-theme-prev-bar" style="background:#f472b6;margin-bottom:7px;"></div>
+              <div style="display:flex;gap:5px;">
+                <div class="ob-theme-prev-dot" style="background:#34d399;"></div>
+                <div class="ob-theme-prev-dot" style="background:#f87171;"></div>
+                <div class="ob-theme-prev-dot" style="background:#a78bfa;"></div>
+              </div>
+            </div>
+            <div class="ob-theme-name">🌸 Pink</div>
+            <div class="ob-theme-sub">Warm tones, vibrant accents</div>
+          </div>
+          <div class="ob-theme-card" id="g-theme-white" onclick="gSetTheme('white')" style="flex:1;">
+            <div class="ob-theme-preview" style="background:#f0ede8;border-color:#ccc8c0;padding:11px 10px 9px;">
+              <div class="ob-theme-prev-bar" style="background:#b8860b;margin-bottom:7px;"></div>
+              <div style="display:flex;gap:5px;">
+                <div class="ob-theme-prev-dot" style="background:#16a34a;"></div>
+                <div class="ob-theme-prev-dot" style="background:#dc2626;"></div>
+                <div class="ob-theme-prev-dot" style="background:#2563eb;"></div>
+              </div>
+            </div>
+            <div class="ob-theme-name">☀️ Light</div>
+            <div class="ob-theme-sub">Clean, bright, minimal</div>
+          </div>
+        </div>
+        <div class="ob-tip" style="margin-top:14px;">💡 <strong>Tip:</strong> You can change your theme anytime in <strong>⚙️ Settings</strong>.</div>
+        <div class="ob-inline-tip" style="margin-top:8px;">Theme is saved when you tap <strong>Save &amp; Next →</strong></div>
+      </div>
+
+      <!-- ── SLIDE 3: Pay Cycle (interactive) ── -->
+      <div class="ob-page">
+        <div style="height:4px;"></div>
+        <div class="ob-page-tag">Step 2 of 4 · Pay Cycle</div>
+        <div class="ob-emoji">📅</div>
+        <div class="ob-title">When Do You Get <em>Paid?</em></div>
+        <div class="ob-sub">Transactions are grouped by <strong style="color:var(--accent)">pay period</strong>, not calendar month — so your balance always reflects your real financial cycle.</div>
+        <div class="ob-setup-block">
+          <div class="ob-setup-label">Select your pay frequency</div>
+          <div class="cycle-mode-row" style="gap:7px;">
+            <div class="cycle-mode-opt" id="g-cmo-monthly" onclick="gSelectCycleMode('monthly')">
+              <div class="cmo-radio"><div class="cmo-radio-dot"></div></div>
+              <div class="cmo-text">
+                <div class="cmo-title">Once a month</div>
+                <div class="cmo-sub">e.g. paid on the 25th every month</div>
+              </div>
+            </div>
+            <div class="cycle-mode-opt" id="g-cmo-bimonthly" onclick="gSelectCycleMode('bimonthly')">
+              <div class="cmo-radio"><div class="cmo-radio-dot"></div></div>
+              <div class="cmo-text">
+                <div class="cmo-title">Twice a month</div>
+                <div class="cmo-sub">e.g. 25th–10th and 11th–24th</div>
+              </div>
+            </div>
+            <div class="cycle-mode-opt" id="g-cmo-custom" onclick="gSelectCycleMode('custom')">
+              <div class="cmo-radio"><div class="cmo-radio-dot"></div></div>
+              <div class="cmo-text">
+                <div class="cmo-title">Custom interval</div>
+                <div class="cmo-sub">Weekly, fortnightly, any length</div>
+              </div>
+            </div>
+          </div>
+          <!-- Monthly fields -->
+          <div class="cycle-fields" id="g-fields-monthly" style="display:none;">
+            <div class="cf-row">
+              <span class="cf-label">Which day of month do you get paid?</span>
+              <input class="cf-input" id="g-pay-day" type="number" min="1" max="28" value="25"/>
+            </div>
+            <div class="cf-note">💡 e.g. enter 25 → cycle runs 25th → 24th of next month.</div>
+          </div>
+          <!-- Bi-monthly fields -->
+          <div class="cycle-fields" id="g-fields-bimonthly" style="display:none;">
+            <div class="cf-note" style="margin-bottom:6px;">💡 Supports cross-month splits (e.g. 25th → 10th next month).</div>
+            <div class="cf-row"><span class="cf-label">Period A — starts on day</span><input class="cf-input" id="g-bi-s1" type="number" min="1" max="31" value="25"/></div>
+            <div class="cf-row"><span class="cf-label">Period A — ends on day</span><input class="cf-input" id="g-bi-e1" type="number" min="1" max="31" value="10"/></div>
+            <div class="cf-row"><span class="cf-label">Period B — starts on day</span><input class="cf-input" id="g-bi-s2" type="number" min="1" max="31" value="11"/></div>
+            <div class="cf-row"><span class="cf-label">Period B — ends on day</span><input class="cf-input" id="g-bi-e2" type="number" min="1" max="31" value="24"/></div>
+          </div>
+          <!-- Custom fields -->
+          <div class="cycle-fields" id="g-fields-custom" style="display:none;">
+            <div class="cf-note" style="margin-bottom:6px;">💡 e.g. start = 1, length = 14 → fortnightly from the 1st.</div>
+            <div class="cf-row"><span class="cf-label">Cycle starts on which day of month?</span><input class="cf-input" id="g-cust-start" type="number" min="1" max="28" value="1"/></div>
+            <div class="cf-row"><span class="cf-label">How many days in each cycle?</span><input class="cf-input" id="g-cust-len" type="number" min="7" max="90" value="30"/></div>
+          </div>
+        </div>
+        <div class="ob-inline-tip" style="margin-top:10px;">Saved when you tap <strong>Save &amp; Next →</strong> · Changeable anytime in ⚙️ Settings.</div>
+      </div>
+
+      <!-- ── SLIDE 4: History Limit + Savings Goal (combined) ── -->
+      <div class="ob-page">
+        <div style="height:4px;"></div>
+        <div class="ob-page-tag">Step 3 of 4 · History &amp; Goal</div>
+        <div class="ob-emoji">🎯</div>
+        <div class="ob-title">History &amp; Your <em>First Goal</em></div>
+        <div class="ob-sub">Two quick picks — how far back to store cycles, and what you're saving for.</div>
+        <!-- History limit -->
+        <div class="ob-setup-block" style="margin-bottom:12px;">
+          <div class="ob-setup-label">🗂 How many past cycles to keep?</div>
+          <div class="ob-limit-row" style="margin:8px 0 8px;">
+            <button class="ob-limit-minus" onclick="gAdjLimit(-1)">−</button>
+            <div class="ob-limit-display">
+              <span class="ob-limit-num" id="g-limit-num">24</span>
+              <span class="ob-limit-unit">cycles</span>
+            </div>
+            <button class="ob-limit-plus" onclick="gAdjLimit(1)">+</button>
+          </div>
+          <div class="ob-limit-presets" style="justify-content:center;">
+            <button class="ob-chip" onclick="gSetLimit(6)">6 mo</button>
+            <button class="ob-chip" onclick="gSetLimit(12)">1 yr</button>
+            <button class="ob-chip ob-chip-sel" onclick="gSetLimit(24)">2 yrs ⭐</button>
+            <button class="ob-chip" onclick="gSetLimit(36)">3 yrs</button>
+          </div>
+          <div class="ob-limit-hint" id="g-limit-hint" style="margin-top:7px;"></div>
+        </div>
+        <!-- Savings goal -->
+        <div class="ob-setup-block">
+          <div class="ob-setup-label">🎯 What's your #1 savings goal right now?</div>
+          <div class="ob-goal-chips" style="margin-bottom:8px;gap:6px;">
+            <button class="ob-chip" onclick="gPickGoal('Emergency Fund')">🛡 Emergency</button>
+            <button class="ob-chip" onclick="gPickGoal('Vacation')">✈️ Vacation</button>
+            <button class="ob-chip" onclick="gPickGoal('New Phone')">📱 Phone</button>
+            <button class="ob-chip" onclick="gPickGoal('Car')">🚗 Car</button>
+            <button class="ob-chip" onclick="gPickGoal('House')">🏠 House</button>
+            <button class="ob-chip" onclick="gPickGoal('Education')">🎓 Education</button>
+          </div>
+          <input class="goal-input" id="g-savings-goal-input"
+            type="text" maxlength="40"
+            placeholder="Or type your own goal…"
+            oninput="gOnGoalType()"
+            style="width:100%;"/>
+          <div class="ob-goal-preview" id="g-goal-preview" style="margin-top:8px;font-size:.78rem;">🛡 Defaults to "Emergency Fund" if left blank</div>
+        </div>
+        <div class="ob-inline-tip" style="margin-top:10px;">Saved when you tap <strong>Save &amp; Next →</strong></div>
+      </div>
+
+      <!-- ── SLIDE 5: Credit Cards (optional) ── -->
+      <div class="ob-page">
+        <div style="height:4px;"></div>
+        <div class="ob-page-tag">Step 4 of 4 · Credit Cards <span style="color:var(--text3);font-weight:400;">(optional)</span></div>
+        <div class="ob-emoji">💳</div>
+        <div class="ob-title">Do You Have <em>Credit Cards?</em></div>
+        <div class="ob-sub">Add your cards so the app can track your <strong style="color:var(--accent)">credit limit</strong> and <strong style="color:var(--accent)">outstanding balance</strong>. Charge expenses to a card instead of your cash, then pay the bill when you're ready.</div>
+
+        <!-- How it works steps -->
+        <div class="ob-steps" style="gap:7px;margin-bottom:14px;">
+          <div class="ob-step">
+            <div class="ob-step-icon" style="background:#a855f718;font-size:1rem;">💳</div>
+            <div class="ob-step-body">
+              <div class="ob-step-title">Set your credit limit</div>
+              <div class="ob-step-desc">Enter your card's total credit limit — e.g. ₱10,000. The app tracks how much of it you've used.</div>
+            </div>
+          </div>
+          <div class="ob-step">
+            <div class="ob-step-icon" style="background:#a855f718;font-size:1rem;">📊</div>
+            <div class="ob-step-body">
+              <div class="ob-step-title">Enter what you owe today</div>
+              <div class="ob-step-desc">Already have a balance? Enter it so your available credit is accurate from day one. Leave it 0 if the card is clear.</div>
+            </div>
+          </div>
+          <div class="ob-step">
+            <div class="ob-step-icon" style="background:var(--green-dim);font-size:1rem;">✅</div>
+            <div class="ob-step-body">
+              <div class="ob-step-title">Pay the bill to restore credit</div>
+              <div class="ob-step-desc">When you pay your bill, tap <strong>Pay Bill</strong> — it deducts from your cash and restores your available credit automatically.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add card form -->
+        <div class="ob-setup-block">
+          <div class="ob-setup-label">Add a card</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <input class="cf-input" id="g-cc-name" type="text" maxlength="20"
+              placeholder="Card name  (e.g. BDO Visa, GCash)"
+              style="width:100%;text-align:left;font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;padding:10px 13px;"/>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:700;margin-bottom:5px;">Credit Limit</div>
+                <input class="cf-input" id="g-cc-limit" type="number" min="1" placeholder="e.g. 10000"
+                  style="width:100%;text-align:left;font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;" oninput="gUpdateCCHint()"/>
+              </div>
+              <div>
+                <div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:700;margin-bottom:5px;">Owe Right Now</div>
+                <input class="cf-input" id="g-cc-balance" type="number" min="0" placeholder="0 if clear"
+                  style="width:100%;text-align:left;font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;" oninput="gUpdateCCHint()"/>
+              </div>
+            </div>
+            <div id="g-cc-form-hint" style="font-size:.68rem;color:var(--text3);line-height:1.5;display:none;padding:7px 10px;background:var(--bg2);border-radius:9px;border:1px solid var(--border);"></div>
+            <button style="width:100%;padding:12px;border-radius:11px;border:1.5px solid #a855f730;background:#a855f718;color:#a855f7;font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:700;cursor:pointer;transition:all .18s;" onclick="gAddCreditCard()">+ Add This Card</button>
+          </div>
+        </div>
+
+        <!-- Added cards list -->
+        <div id="g-cc-list" style="margin-top:10px;display:flex;flex-direction:column;gap:7px;"></div>
+
+        <div class="ob-inline-tip" style="margin-top:10px;">
+          <strong>Optional</strong> — you can skip and add cards anytime in <strong>⚙️ Settings → Credit Cards</strong>.
+        </div>
+      </div>
+
+
+    </div><!-- end ob-pages -->
+
+    <div class="ob-footer">
+      <div class="ob-dots" id="ob-dots"></div>
+      <div class="ob-btn-row">
+        <button class="ob-btn ob-btn-secondary" id="ob-back" onclick="obNav(-1)" style="display:none;">← Back</button>
+        <button class="ob-btn ob-btn-primary" id="ob-next" onclick="obNav(1)">Let's Go →</button>
+      </div>
+      <button class="ob-btn ob-btn-ghost" id="ob-skip" onclick="obClose()">Skip · come back anytime via ⚙️ Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BOTTOM SHEET ══ -->
+<div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
+<div class="sheet" id="add-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title" id="sheet-title">Log a <em>Transaction</em></div>
+    <button class="sheet-close" onclick="closeSheet()">✕</button>
+  </div>
+  <div class="add-body">
+    <div id="add-toast" class="toast" style="display:none;">✓ Saved!</div>
+    <div id="date-err" class="date-err">⛔ Future dates not allowed.</div>
+    <div class="form-section"><div class="form-lbl">Date</div><input type="date" class="date-field" id="f-date" onchange="const ck=getCycleKey(this.value||todayStr());_sheetAvailable=getCycleAvailable(ck,editingId||null);updateRemainingHint();updateSaveBtn();"/></div>
+    <div class="form-section"><div class="form-lbl">Category</div><div class="cat-grid" id="cat-grid"></div></div>
+    <div class="form-section"><div class="form-lbl">Amount</div>
+      <div class="amt-wrap"><span class="amt-sym" id="amt-sym">₱</span><input type="number" inputmode="decimal" class="amt-input" id="f-amount" placeholder="0" min="0" oninput="this.value=this.value.replace(/[^0-9.]/g,'');if(parseFloat(this.value)<0)this.value='';onAmountInput()"/></div>
+      <div class="amt-remaining" id="amt-remaining" style="display:none;"></div>
+      <div class="amt-err" id="amt-err">⛔ Not enough remaining balance.</div>
+    </div>
+    <div class="form-section"><div class="form-lbl">Note <span style="color:var(--text3);font-size:.6rem;font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></div>
+      <textarea class="note-field" id="f-note" rows="2" placeholder="e.g. Grab to work, groceries…"></textarea>
+    </div>
+    <!-- SAVINGS GOAL — shown only when Savings category is selected -->
+    <div class="form-section" id="savings-goal-section" style="display:none;">
+      <div class="form-lbl">Savings Goal <span id="goal-lbl-hint" style="color:var(--accent);font-size:.6rem;font-weight:600;text-transform:none;letter-spacing:0;">What are you saving for?</span></div>
+      <div class="goal-wrap">
+        <input type="text" class="goal-input" id="f-savings-goal" placeholder="Defaults to Emergency Fund if left blank"
+          autocomplete="off"
+          oninput="onGoalInput()"
+          onfocus="onGoalFocus()"
+          onblur="onGoalBlur()"/>
+        <div class="goal-suggestions" id="goal-suggestions"></div>
+      </div>
+      <div id="goal-first-hint" style="display:none;margin-top:6px;font-size:.72rem;color:var(--accent);font-weight:600;">
+        🎯 First savings entry! Give it a goal name or leave blank for "Emergency Fund".
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="toggle-row">
+        <div><div class="toggle-label">🔄 Recurring</div><div class="toggle-sub">Monthly recurring transaction</div></div>
+        <div class="toggle" id="recur-toggle" onclick="toggleRecur()"></div>
+      </div>
+    </div>
+    <div class="form-section" id="credit-toggle-section" style="display:none;">
+      <div class="toggle-row">
+        <div><div class="toggle-label">💳 Pay with Credit Card</div><div class="toggle-sub">Charges to card, not your balance</div></div>
+        <div class="toggle" id="credit-toggle" onclick="toggleCredit()"></div>
+      </div>
+      <div class="cc-picker-wrap" id="cc-picker-wrap">
+        <select class="cc-picker" id="f-credit-card"></select>
+        <div class="cc-hint" id="cc-hint"></div>
+      </div>
+    </div>
+    <button class="save-btn" id="save-btn" onclick="saveTransaction()">Save</button>
+  </div>
+</div>
+
+<!-- ══ BUDGET MODAL ══ -->
+<div class="budget-modal" id="budget-modal" onclick="closeBudgetModal(event)">
+  <div class="bm-inner" onclick="e=>e.stopPropagation()">
+    <div class="sheet-handle" style="margin:0 auto 14px;"></div>
+    <div class="bm-title">Budget per Cycle</div>
+    <div class="bm-sub">Set spending limits per category (0 = no limit)</div>
+    <div id="budget-inputs"></div>
+    <button class="bm-save" onclick="saveBudgets()">Save Budgets ✓</button>
+  </div>
+</div>
+
+<!-- ══ CREDIT PAY MODAL ══ -->
+<div class="pay-modal" id="pay-modal" onclick="closePayModal(event)">
+  <div class="pay-inner" onclick="e=>e.stopPropagation()">
+    <div class="sheet-handle" style="margin:0 auto 14px;"></div>
+    <div class="pay-title">💳 Pay Credit Card Bill</div>
+    <div class="pay-sub" id="pay-modal-sub">Paying this will deduct from your balance and restore your card's available credit.</div>
+    <div class="pay-balance">
+      <span class="pay-balance-lbl">Card Outstanding</span>
+      <span class="pay-balance-val" id="pay-modal-owed">₱0</span>
+    </div>
+    <div class="pay-balance" style="border:1.5px solid var(--green);background:var(--green-dim);margin-top:-6px;">
+      <span class="pay-balance-lbl" style="color:var(--green);">Your Cash Available</span>
+      <span class="pay-balance-val" style="color:var(--green);" id="pay-cash-avail">₱0</span>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div class="form-lbl" style="margin-bottom:8px;">Payment Amount</div>
+      <div class="amt-wrap"><span class="amt-sym" id="pay-sym">₱</span><input type="number" inputmode="decimal" class="amt-input" id="pay-amount" placeholder="0" min="0" style="font-size:2rem;padding:8px 0;" oninput="updatePayHint()"/></div>
+      <div style="display:flex;gap:7px;margin-top:8px;">
+        <button style="flex:1;padding:7px;border-radius:9px;font-size:.7rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text2);" onclick="setPayQuick('full')">Pay Full Bill</button>
+        <button style="flex:1;padding:7px;border-radius:9px;font-size:.7rem;font-weight:700;cursor:pointer;border:1.5px solid var(--green);background:var(--green-dim);color:var(--green);" onclick="setPayQuick('max')">Max I Can Pay</button>
+      </div>
+      <div id="pay-hint" style="margin-top:8px;font-size:.7rem;color:var(--text3);line-height:1.5;"></div>
+    </div>
+    <input type="hidden" id="pay-card-id"/>
+    <button class="pay-save" onclick="submitCreditPayment()">Pay Now ✓</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  CONSTANTS
+// ════════════════════════════════════════════════════════════
+const CATS = [
+  {k:'salary',      l:'Salary',      i:'💼', t:'income'},
+  {k:'freelance',   l:'Freelance',   i:'🛠️', t:'income'},
+  {k:'side_income', l:'Side Income', i:'✨',  t:'income'},
+  {k:'gift',        l:'Gift/Bonus',  i:'🎁', t:'income'},
+  {k:'transport',   l:'Transport',   i:'🚌', t:'expense'},
+  {k:'food',        l:'Food',        i:'🍜', t:'expense'},
+  {k:'shopping',    l:'Shopping',    i:'🛍️', t:'expense'},
+  {k:'rent',        l:'Rent',        i:'🏠', t:'expense'},
+  {k:'utilities',   l:'Bills',       i:'💡', t:'expense'},
+  {k:'health',      l:'Health',      i:'💊', t:'expense'},
+  {k:'entertain',   l:'Fun',         i:'🎬', t:'expense'},
+  {k:'savings',     l:'Savings',     i:'🏦', t:'savings'},
+  {k:'other',       l:'Other',       i:'📦', t:'expense'},
+];
+const EXPENSE_CATS = CATS.filter(c=>c.t==='expense');
+const FULL_M  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const SHORT_M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DONUT_COLORS = ['#f06464','#d4a853','#7b8fff','#4fd87c','#f0a864','#c084fc','#64c8f0','#f0d464','#84f064'];
+
+// ════════════════════════════════════════════════════════════
+//  LOAD STATE — everything persists to localStorage
+// ════════════════════════════════════════════════════════════
+let transactions   = JSON.parse(localStorage.getItem('ledger_txs')     || '[]');
+let budgets        = JSON.parse(localStorage.getItem('ledger_budgets')  || '{}');
+let currencySymbol = localStorage.getItem('ledger_currency')            || '₱';
+let activeTheme    = localStorage.getItem('ledger_theme')               || 'dark';
+let creditCards    = JSON.parse(localStorage.getItem('ledger_cc')       || '[]');
+
+// Cycle config
+let cycleMode      = localStorage.getItem('ledger_cycleMode')           || 'monthly';
+let cycleConfig    = JSON.parse(localStorage.getItem('ledger_cycleConfig') || JSON.stringify({
+  monthly:   { payDay: 25 },
+  bimonthly: { s1:25, e1:10, s2:11, e2:24 },
+  custom:    { start:1, len:30 }
+}));
+let cycleLimit     = Math.max(3, parseInt(localStorage.getItem('ledger_cycleLimit') || '24'));
+
+// UI state
+let currentView  = 'feed';
+let activeCycleKey = null;
+let selectedCat  = 'transport';
+let editingId    = null;
+let expandedTx   = null;
+let deleteConfirm= null;
+let dashMetric   = 'income';
+let searchQuery  = '';
+let activeFilter = 'all';
+let isRecurring  = false;
+let isCreditPay  = false;
+let sheetOpen    = false;
+
+// ════════════════════════════════════════════════════════════
+//  PERSIST HELPERS — called after every mutation
+// ════════════════════════════════════════════════════════════
+function persist(){
+  localStorage.setItem('ledger_txs',        JSON.stringify(transactions));
+  localStorage.setItem('ledger_budgets',     JSON.stringify(budgets));
+  localStorage.setItem('ledger_currency',    currencySymbol);
+  localStorage.setItem('ledger_theme',       activeTheme);
+  localStorage.setItem('ledger_cycleMode',   cycleMode);
+  localStorage.setItem('ledger_cycleConfig', JSON.stringify(cycleConfig));
+  localStorage.setItem('ledger_cycleLimit',  String(cycleLimit));
+  localStorage.setItem('ledger_cc',          JSON.stringify(creditCards));
+}
+
+// ════════════════════════════════════════════════════════════
+//  CYCLE LIMIT — trim oldest cycles, keep newest N
+// ════════════════════════════════════════════════════════════
+function enforceCycleLimit(){
+  const cycleKeys = [...new Set(transactions.map(t => getCycleKey(t.date)))]
+    .sort((a,b) => cycleRange(b).start.localeCompare(cycleRange(a).start)); // newest first by start date
+
+  if(cycleKeys.length <= cycleLimit) return 0;
+
+  const curKey = currentCycleKey();
+  const keepSet = new Set(cycleKeys.slice(0, cycleLimit));
+  keepSet.add(curKey);
+
+  const before = transactions.length;
+  transactions = transactions.filter(t => keepSet.has(getCycleKey(t.date)));
+  return before - transactions.length;
+}
+// ════════════════════════════════════════════════════════════
+function ymd(y,m,d){ return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function todayStr(){ const d=new Date(); return ymd(d.getFullYear(),d.getMonth()+1,d.getDate()); }
+function daysInMonth(y,m){ return new Date(y,m,0).getDate(); }
+
+// ════════════════════════════════════════════════════════════
+//  CYCLE ENGINE
+//  A cycle key is an arbitrary string that uniquely identifies
+//  one pay period. We use different formats per mode:
+//   monthly:   "YYYY-MM"        (the month the cycle starts)
+//   bimonthly: "YYYY-MM-A"/"YYYY-MM-B"  (A=first half, B=second)
+//   custom:    "YYYY-MM-DD"     (the start date of the custom cycle)
+// ════════════════════════════════════════════════════════════
+
+/** Returns {start:"YYYY-MM-DD", end:"YYYY-MM-DD"} for a given cycle key */
+function cycleRange(ck){
+  if(cycleMode==='monthly'){
+    const [y,m]  = ck.split('-').map(Number);
+    const pd     = cycleConfig.monthly.payDay;
+    const nm     = m===12?1:m+1, ny=m===12?y+1:y;
+    return { start: ymd(y,m,pd), end: ymd(ny,nm,pd-1) };
+  }
+  if(cycleMode==='bimonthly'){
+    const parts = ck.split('-');
+    const y=parseInt(parts[0]), m=parseInt(parts[1]), half=parts[2];
+    const {s1,e1,s2,e2} = cycleConfig.bimonthly;
+    if(half==='A'){
+      // Cross-month when start > end (e.g. 25->10 next month)
+      const crossMonth = s1 > e1;
+      const endM = crossMonth ? (m===12?1:m+1) : m;
+      const endY = (crossMonth && m===12) ? y+1 : y;
+      return { start:ymd(y,m,s1), end:ymd(endY,endM,e1) };
+    }
+    // Period B: same month, explicit end day
+    return { start:ymd(y,m,s2), end:ymd(y,m,e2||daysInMonth(y,m)) };
+  }
+  // custom: ck is start date "YYYY-MM-DD"
+  const {len} = cycleConfig.custom;
+  const startD = new Date(ck+'T00:00:00');
+  const endD   = new Date(startD); endD.setDate(startD.getDate()+len-1);
+  return { start:ck, end:ymd(endD.getFullYear(),endD.getMonth()+1,endD.getDate()) };
+}
+
+/** Return cycle key for a given date string */
+function getCycleKey(dateStr){
+  const [y,m,d] = dateStr.split('-').map(Number);
+  if(cycleMode==='monthly'){
+    const pd = cycleConfig.monthly.payDay;
+    if(d>=pd) return `${y}-${String(m).padStart(2,'0')}`;
+    const pm=m===1?12:m-1, py=m===1?y-1:y;
+    return `${py}-${String(pm).padStart(2,'0')}`;
+  }
+  if(cycleMode==='bimonthly'){
+    const {s1,e1,s2,e2} = cycleConfig.bimonthly;
+    const crossMonth = s1 > e1; // e.g. 25->10
+    if(crossMonth){
+      // Period A spans two months: starts on s1, ends on e1 of NEXT month
+      // A date belongs to period A if:
+      //   day >= s1  (in the start month)  → key = that month
+      //   day <= e1  (in the end month)    → key = previous month
+      // Period B: s2..e2 within same month
+      if(d >= s2 && d <= e2) return `${y}-${String(m).padStart(2,'0')}-B`;
+      if(d >= s1) return `${y}-${String(m).padStart(2,'0')}-A`;
+      // day < s2 and day <= e1 → belongs to prev month's period A
+      const pm=m===1?12:m-1, py=m===1?y-1:y;
+      return `${py}-${String(pm).padStart(2,'0')}-A`;
+    } else {
+      // Same-month split (e.g. 1-15, 16-31)
+      const half = d >= s2 ? 'B' : 'A';
+      return `${y}-${String(m).padStart(2,'0')}-${half}`;
+    }
+  }
+  // custom: find which cycle start this date falls in
+  const {start,len} = cycleConfig.custom;
+  const epoch = new Date('2020-01-01T00:00:00');
+  const target= new Date(dateStr+'T00:00:00');
+  const diff  = Math.floor((target-epoch)/(86400000));
+  const cycleN= Math.floor(diff/len);
+  const cs    = new Date(epoch); cs.setDate(epoch.getDate()+cycleN*len);
+  return ymd(cs.getFullYear(),cs.getMonth()+1,cs.getDate());
+}
+
+/** Current cycle key (where today falls) */
+function currentCycleKey(){ return getCycleKey(todayStr()); }
+
+/** Shift a cycle key by delta (-1=prev, +1=next) */
+function shiftKey(ck, delta){
+  if(cycleMode==='monthly'){
+    const [y,m]=ck.split('-').map(Number);
+    let nm=m+delta, ny=y;
+    if(nm>12){nm-=12;ny++;} if(nm<1){nm+=12;ny--;}
+    return `${ny}-${String(nm).padStart(2,'0')}`;
+  }
+  if(cycleMode==='bimonthly'){
+    const parts=ck.split('-'), y=parseInt(parts[0]),m=parseInt(parts[1]),half=parts[2];
+    const crossMonth = cycleConfig.bimonthly.s1 > cycleConfig.bimonthly.e1;
+    if(delta===1){
+      if(half==='B'){
+        // B(m) → A(m) for both modes
+        return `${y}-${String(m).padStart(2,'0')}-A`;
+      } else {
+        // A(m) → B(m+1) cross-month | A(m) → B(m) same-month
+        if(crossMonth){ const nm=m===12?1:m+1, ny=m===12?y+1:y; return `${ny}-${String(nm).padStart(2,'0')}-B`; }
+        return `${y}-${String(m).padStart(2,'0')}-B`;
+      }
+    } else {
+      if(half==='A'){
+        // A(m) → B(m) cross-month | A(m) → B(m-1) same-month
+        if(crossMonth) return `${y}-${String(m).padStart(2,'0')}-B`;
+        const pm=m===1?12:m-1, py=m===1?y-1:y; return `${py}-${String(pm).padStart(2,'0')}-B`;
+      } else {
+        // B(m) → A(m-1) cross-month | B(m) → A(m) same-month
+        if(crossMonth){ const pm=m===1?12:m-1, py=m===1?y-1:y; return `${py}-${String(pm).padStart(2,'0')}-A`; }
+        return `${y}-${String(m).padStart(2,'0')}-A`;
+      }
+    }
+  }
+  // custom
+  const {len}=cycleConfig.custom;
+  const d=new Date(ck+'T00:00:00'); d.setDate(d.getDate()+delta*len);
+  return ymd(d.getFullYear(),d.getMonth()+1,d.getDate());
+}
+
+/** Human readable label for a cycle key */
+function cycleLabel(ck, short=false){
+  if(cycleMode==='monthly'){
+    const [y,m]=ck.split('-').map(Number);
+    return `${(short?SHORT_M:FULL_M)[m-1]} ${y}`;
+  }
+  if(cycleMode==='bimonthly'){
+    // Use the actual start/end dates from cycleRange for a clear label
+    const r=cycleRange(ck);
+    const [sy,sm,sd]=r.start.split('-').map(Number);
+    const [ey,em,ed]=r.end.split('-').map(Number);
+    if(short){
+      // e.g. "Dec 25–Jan 10" or "Jan 11–24"
+      const sameMonth=sm===em&&sy===ey;
+      return sameMonth
+        ? `${SHORT_M[sm-1]} ${sd}–${ed}`
+        : `${SHORT_M[sm-1]} ${sd}–${SHORT_M[em-1]} ${ed}`;
+    }
+    return `${SHORT_M[sm-1]} ${sd} – ${SHORT_M[em-1]} ${ed}, ${ey}`;
+  }
+  const r=cycleRange(ck);
+  const [,sm,sd]=r.start.split('-').map(Number);
+  const [,em,ed]=r.end.split('-').map(Number);
+  return `${SHORT_M[sm-1]} ${sd}–${SHORT_M[em-1]} ${ed}`;
+}
+
+/** Range string shown under the cycle label */
+function cycleRangeStr(ck){
+  const r=cycleRange(ck);
+  const [sy,sm,sd]=r.start.split('-').map(Number);
+  const [ey,em,ed]=r.end.split('-').map(Number);
+  return `${SHORT_M[sm-1]} ${sd}, ${sy} → ${SHORT_M[em-1]} ${ed}, ${ey}`;
+}
+
+/** All unique cycle keys from stored transactions — only cycles with data, capped by cycleLimit */
+function allCycleKeys(){
+  const keys=[...new Set(transactions.map(t=>getCycleKey(t.date)))];
+  const cur=currentCycleKey();
+  if(!keys.includes(cur)) keys.push(cur);
+  // Sort by actual start date (newest first), NOT by key string
+  const sorted = keys.sort((a,b)=>cycleRange(b).start.localeCompare(cycleRange(a).start));
+  const limited = sorted.slice(0, cycleLimit);
+  if(!limited.includes(cur)) limited[limited.length-1] = cur;
+  return limited;
+}
+
+/** Transactions belonging to a specific cycle */
+function cycleTxs(ck){
+  const {start,end}=cycleRange(ck);
+  return transactions.filter(t=>t.date>=start&&t.date<=end);
+}
+
+// ════════════════════════════════════════════════════════════
+//  STATS
+// ════════════════════════════════════════════════════════════
+function cycleStats(ck){
+  const txs=cycleTxs(ck);
+  const income  = txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  // Cash expenses = regular non-credit expenses + credit bill payments
+  const expense = txs.filter(t=>(t.type==='expense' && !t.creditCardId) || t.type==='credit_payment').reduce((s,t)=>s+t.amount,0);
+  const creditExp = txs.filter(t=>t.type==='expense' && t.creditCardId).reduce((s,t)=>s+t.amount,0);
+  const savings = txs.filter(t=>t.type==='savings').reduce((s,t)=>s+t.amount,0);
+  return {income,expense,creditExp,savings,net:income-expense-savings,rate:income>0?(savings/income)*100:0};
+}
+
+/** Available balance for current cycle — used to cap new entries */
+function getCycleAvailable(ck, excludeId=null){
+  const txs = cycleTxs(ck).filter(t => excludeId ? t.id !== excludeId : true);
+  const income  = txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  // Cash expenses: regular expenses NOT paid by credit card + credit card bill payments
+  const expense = txs.filter(t=>(t.type==='expense' && !t.creditCardId) || t.type==='credit_payment').reduce((s,t)=>s+t.amount,0);
+  const savings = txs.filter(t=>t.type==='savings').reduce((s,t)=>s+t.amount,0);
+  return income - expense - savings;
+}
+
+// ════════════════════════════════════════════════════════════
+//  FORMATTERS
+// ════════════════════════════════════════════════════════════
+function fmt(n,dec=2){ return Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec}); }
+function fmtS(n){ return Math.abs(n)>=1000?`${currencySymbol}${(Math.abs(n)/1000).toFixed(1)}k`:`${currencySymbol}${fmt(n,0)}`; }
+function c$(n){ return `${currencySymbol}${fmt(n,0)}`; }
+function formatDate(ds){
+  const [y,m,d]=ds.split('-').map(Number);
+  const dt=new Date(y,m-1,d),tod=new Date(); tod.setHours(0,0,0,0);
+  const yes=new Date(tod); yes.setDate(tod.getDate()-1);
+  if(dt.getTime()===tod.getTime()) return 'Today';
+  if(dt.getTime()===yes.getTime()) return 'Yesterday';
+  return `${SHORT_M[m-1]} ${d}`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  SAVINGS GOALS
+// ════════════════════════════════════════════════════════════
+/** Normalize goal name: trim + Title Case */
+function normGoal(s){
+  return s.trim().toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+}
+
+/** All unique goal names across all transactions (case-insensitive deduped) */
+function getSavingsGoals(){
+  const seen=new Map();
+  transactions.filter(t=>t.type==='savings'&&t.savingsGoal)
+    .forEach(t=>{ const k=t.savingsGoal.toLowerCase(); if(!seen.has(k)) seen.set(k,t.savingsGoal); });
+  return [...seen.values()].sort((a,b)=>a.localeCompare(b));
+}
+
+/** Goals data: total saved per goal across ALL stored transactions */
+function goalsData(){
+  const map=new Map();
+  transactions.filter(t=>t.type==='savings'&&t.savingsGoal).forEach(t=>{
+    const k=t.savingsGoal.toLowerCase();
+    if(!map.has(k)) map.set(k,{name:t.savingsGoal,total:0,count:0,last:t.date});
+    const g=map.get(k);
+    g.total+=t.amount;
+    g.count++;
+    if(t.date>g.last) g.last=t.date;
+  });
+  return [...map.values()].sort((a,b)=>b.total-a.total);
+}
+
+let _goalBlurTimer=null;
+function onGoalInput(){
+  const q=document.getElementById('f-savings-goal').value.toLowerCase();
+  const all=getSavingsGoals();
+  const filtered=q ? all.filter(g=>g.toLowerCase().includes(q)) : all;
+  renderGoalSuggestions(filtered);
+}
+function onGoalFocus(){
+  const all=getSavingsGoals();
+  renderGoalSuggestions(all);
+}
+function onGoalBlur(){
+  // delay so click on suggestion registers first
+  _goalBlurTimer=setTimeout(()=>closeGoalSuggestions(),200);
+}
+function renderGoalSuggestions(goals){
+  const box=document.getElementById('goal-suggestions');
+  if(!goals.length){ box.classList.remove('open'); return; }
+  box.innerHTML=goals.map(g=>`
+    <div class="goal-sug-item" onmousedown="pickGoal('${g.replace(/'/g,"\\'")}')">
+      <div class="goal-sug-dot"></div>${g}
+    </div>`).join('');
+  box.classList.add('open');
+}
+function pickGoal(g){
+  clearTimeout(_goalBlurTimer);
+  document.getElementById('f-savings-goal').value=g;
+  closeGoalSuggestions();
+}
+function closeGoalSuggestions(){
+  document.getElementById('goal-suggestions')?.classList.remove('open');
+}
+// ════════════════════════════════════════════════════════════
+function calcStreak(){
+  if(!transactions.length) return 0;
+  const dates=new Set(transactions.map(t=>t.date));
+  let streak=0, check=new Date();
+  if(!dates.has(todayStr())) check.setDate(check.getDate()-1);
+  while(true){
+    const d=ymd(check.getFullYear(),check.getMonth()+1,check.getDate());
+    if(dates.has(d)){streak++;check.setDate(check.getDate()-1);}else break;
+  }
+  return streak;
+}
+
+// ════════════════════════════════════════════════════════════
+//  THEME
+// ════════════════════════════════════════════════════════════
+function setTheme(t){
+  activeTheme=t;
+  document.body.className='theme-'+t;
+  ['dark','pink','white'].forEach(x=>{
+    document.getElementById('theme-'+x)?.classList.toggle('active-theme',x===t);
+  });
+  const tc={'dark':'#080810','pink':'#1a0a14','white':'#f5f4f0'};
+  document.getElementById('theme-color-meta').content=tc[t]||'#080810';
+  persist();
+}
+
+// ════════════════════════════════════════════════════════════
+//  CYCLE SETTINGS UI
+// ════════════════════════════════════════════════════════════
+function selectCycleMode(mode){
+  ['monthly','bimonthly','custom'].forEach(m=>{
+    document.getElementById('cmo-'+m).classList.toggle('selected',m===mode);
+    document.getElementById('fields-'+m).style.display=m===mode?'flex':'none';
+    document.getElementById('fields-'+m).style.flexDirection='column';
+  });
+  if(mode==='bimonthly') updateBiPreview();
+}
+/** Live preview of bi-monthly cycle dates shown in settings */
+function updateBiPreview(){
+  const s1=parseInt(document.getElementById('bi-s1')?.value)||25;
+  const e1=parseInt(document.getElementById('bi-e1')?.value)||10;
+  const s2=parseInt(document.getElementById('bi-s2')?.value)||11;
+  const e2=parseInt(document.getElementById('bi-e2')?.value)||24;
+  const cross=s1>e1;
+  const preview=document.getElementById('bi-preview');
+  if(!preview) return;
+  const aRange=cross
+    ? `Period A: ${s1}th → ${e1}th of next month`
+    : `Period A: ${s1}th → ${e1}th (same month)`;
+  const bRange=`Period B: ${s2}th → ${e2}th (same month)`;
+  preview.innerHTML=`📅 ${aRange}<br/>📅 ${bRange}`;
+}
+function saveCycleSettings(){
+  const prevMode=cycleMode;
+  cycleMode=document.querySelector('.cycle-mode-opt.selected')?.id.replace('cmo-','')||'monthly';
+  if(cycleMode==='monthly'){
+    cycleConfig.monthly.payDay=Math.min(28,Math.max(1,parseInt(document.getElementById('pay-day').value)||25));
+  } else if(cycleMode==='bimonthly'){
+    cycleConfig.bimonthly.s1=parseInt(document.getElementById('bi-s1').value)||25;
+    cycleConfig.bimonthly.e1=parseInt(document.getElementById('bi-e1').value)||10;
+    cycleConfig.bimonthly.s2=parseInt(document.getElementById('bi-s2').value)||11;
+    cycleConfig.bimonthly.e2=parseInt(document.getElementById('bi-e2').value)||24;
+  } else {
+    cycleConfig.custom.start=parseInt(document.getElementById('cust-start').value)||1;
+    cycleConfig.custom.len  =Math.max(7,parseInt(document.getElementById('cust-len').value)||30);
+  }
+  persist();
+  activeCycleKey=currentCycleKey();
+  showSettingsToast('📅 Cycle settings saved!');
+  renderFeed();
+}
+function renderSettingsInputs(){
+  // restore fields
+  selectCycleMode(cycleMode);
+  document.getElementById('pay-day').value   = cycleConfig.monthly.payDay;
+  document.getElementById('bi-s1').value     = cycleConfig.bimonthly.s1;
+  document.getElementById('bi-e1').value     = cycleConfig.bimonthly.e1;
+  document.getElementById('bi-s2').value     = cycleConfig.bimonthly.s2;
+  document.getElementById('bi-e2').value     = cycleConfig.bimonthly.e2||24;
+  updateBiPreview();
+  document.getElementById('cust-start').value= cycleConfig.custom.start;
+  document.getElementById('cust-len').value  = cycleConfig.custom.len;
+  document.getElementById('currency-input').value = currencySymbol;
+  document.getElementById('cycle-limit-input').value = cycleLimit;
+  updateCycleLimitPreview();
+  const inp = document.getElementById('cycle-limit-input');
+  inp.oninput = updateCycleLimitPreview;
+  ['dark','pink','white'].forEach(x=>{
+    document.getElementById('theme-'+x)?.classList.toggle('active-theme',x===activeTheme);
+  });
+}
+function updateCycleLimitPreview(){
+  const raw = parseInt(document.getElementById('cycle-limit-input')?.value);
+  const val = isNaN(raw)?cycleLimit:Math.max(3,Math.min(60,raw));
+  const existingKeys = [...new Set(transactions.map(t=>getCycleKey(t.date)))]
+    .sort((a,b)=>cycleRange(b).start.localeCompare(cycleRange(a).start));
+  const existing = existingKeys.length;
+  const curKey = currentCycleKey();
+  const preview = document.getElementById('cycle-limit-preview');
+  if(!preview) return;
+  if(existing === 0){
+    preview.innerHTML = `Currently no cycles stored.`;
+    return;
+  }
+  if(existing <= val){
+    preview.innerHTML = `You have <strong>${existing}</strong> cycle${existing!==1?'s':''} stored — all will be kept.`;
+    return;
+  }
+  const willDelete = existing - val;
+  const oldestKept = existingKeys[val-1] ? cycleLabel(existingKeys[val-1]) : '—';
+  const willRemove = existingKeys.slice(val).filter(k=>k!==curKey);
+  preview.innerHTML = `⚠️ <strong>${willDelete}</strong> oldest cycle${willDelete!==1?'s':''} will be deleted. Oldest kept: <strong>${oldestKept}</strong>.`;
+  preview.style.color = 'var(--red)';
+  if(existing <= val) preview.style.color = 'var(--text3)';
+}
+
+// ════════════════════════════════════════════════════════════
+//  NAV
+// ════════════════════════════════════════════════════════════
+function nav(v){
+  currentView=v;
+  document.querySelectorAll('.view').forEach(el=>el.classList.add('hidden'));
+  document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById(`view-${v}`).classList.remove('hidden');
+  if(v!=='settings'){ const nb=document.getElementById(`nav-${v}`); if(nb)nb.classList.add('active'); }
+  if(v==='feed')      renderFeed();
+  if(v==='dashboard') renderDash();
+  if(v==='settings')  renderSettings();
+}
+
+// ════════════════════════════════════════════════════════════
+//  BOTTOM SHEET
+// ════════════════════════════════════════════════════════════
+function openSheet(tx=null){
+  editingId=null; isRecurring=false; isCreditPay=false;
+  const df=document.getElementById('f-date');
+
+  // Set date bounds based on which cycle we're adding to
+  const targetCk = tx ? getCycleKey(tx.date) : activeCycleKey;
+  const curKey   = currentCycleKey();
+  const isCurCycle = targetCk === curKey;
+  const {start:cStart, end:cEnd} = cycleRange(targetCk);
+
+  if(isCurCycle){
+    // Current cycle: min = cycle start, max = today
+    df.min = cStart;
+    df.max = todayStr();
+    df.value = tx ? tx.date : todayStr();
+  } else {
+    // Past cycle: locked to cycle's start → end only
+    df.min = cStart;
+    df.max = cEnd;
+    df.value = tx ? tx.date : cEnd; // default to last day of that cycle
+  }
+
+  document.getElementById('f-amount').value='';
+  document.getElementById('f-note').value='';
+  document.getElementById('f-savings-goal').value='';
+  document.getElementById('savings-goal-section').style.display='none';
+  document.getElementById('add-toast').style.display='none';
+  document.getElementById('date-err').style.display='none';
+  selectedCat='transport';
+  if(tx){
+    editingId=tx.id; df.value=tx.date;
+    document.getElementById('f-amount').value=tx.amount;
+    document.getElementById('f-note').value=tx.note||'';
+    document.getElementById('f-savings-goal').value=tx.savingsGoal||'';
+    selectedCat=tx.category; isRecurring=!!tx.recurring;
+    if(tx.category==='savings') document.getElementById('savings-goal-section').style.display='block';
+    document.getElementById('sheet-title').innerHTML='Edit <em>Transaction</em>';
+  } else { document.getElementById('sheet-title').innerHTML='Log a <em>Transaction</em>'; }
+  document.getElementById('amt-remaining').style.display='none';
+  document.getElementById('amt-err').style.display='none';
+  document.getElementById('amt-sym').textContent=currencySymbol;
+  document.getElementById('recur-toggle').className='toggle'+(isRecurring?' on':'');
+  // Credit toggle
+  document.getElementById('credit-toggle').className='toggle';
+  document.getElementById('cc-picker-wrap').classList.remove('open');
+  // Show credit toggle section only for expenses and if cards exist
+  const hasCCs = creditCards.length > 0;
+  // Compute available balance for the cycle
+  _sheetAvailable = getCycleAvailable(targetCk, editingId||null);
+  buildCatGrid(); updateSaveBtn(); updateRemainingHint();
+  updateCreditToggleVisibility();
+  populateCardPicker();
+  document.getElementById('sheet-overlay').classList.add('active');
+  document.getElementById('add-sheet').classList.add('open');
+  sheetOpen=true;
+}
+function closeSheet(){
+  document.getElementById('sheet-overlay').classList.remove('active');
+  document.getElementById('add-sheet').classList.remove('open');
+  sheetOpen=false; expandedTx=null;
+}
+function toggleRecur(){ isRecurring=!isRecurring; document.getElementById('recur-toggle').className='toggle'+(isRecurring?' on':''); }
+function toggleCredit(){
+  isCreditPay=!isCreditPay;
+  document.getElementById('credit-toggle').className='toggle'+(isCreditPay?' on':'');
+  const wrap=document.getElementById('cc-picker-wrap');
+  if(isCreditPay){ wrap.classList.add('open'); populateCardPicker(); }
+  else { wrap.classList.remove('open'); }
+  updateRemainingHint(); updateSaveBtn();
+}
+function updateCreditToggleVisibility(){
+  const cat=CATS.find(c=>c.k===selectedCat);
+  const isExp = cat && cat.t==='expense';
+  const sec=document.getElementById('credit-toggle-section');
+  if(isExp && creditCards.length>0){ sec.style.display='block'; }
+  else { sec.style.display='none'; isCreditPay=false; document.getElementById('credit-toggle').className='toggle'; document.getElementById('cc-picker-wrap').classList.remove('open'); }
+}
+function populateCardPicker(){
+  const sel=document.getElementById('f-credit-card');
+  sel.innerHTML=creditCards.map(c=>{
+    const info=getCardInfo(c.id);
+    return `<option value="${c.id}">${c.name} — ${currencySymbol}${fmt(info.available,0)} available</option>`;
+  }).join('');
+  updateCCHint();
+}
+function updateCCHint(){
+  if(!isCreditPay) return;
+  const cardId=document.getElementById('f-credit-card')?.value;
+  if(!cardId) return;
+  const info=getCardInfo(cardId);
+  const hint=document.getElementById('cc-hint');
+  const amt=parseFloat(document.getElementById('f-amount').value)||0;
+  const after=info.available-amt;
+  if(after<0){
+    hint.textContent=`⛔ Exceeds available credit by ${currencySymbol}${fmt(Math.abs(after),0)}`;
+    hint.style.color='var(--red)';
+  } else {
+    hint.textContent=`💳 ${currencySymbol}${fmt(after,0)} will remain available on this card`;
+    hint.style.color='#a855f7';
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  CATEGORIES
+// ════════════════════════════════════════════════════════════
+function buildCatGrid(){
+  document.getElementById('cat-grid').innerHTML=CATS.map(c=>`
+    <div class="cat-tile ${selectedCat===c.k?`sel-${c.t}`:''}\" onclick=\"selectCat('${c.k}')">
+      <span class="cat-icon">${c.i}</span><span class="cat-name">${c.l}</span>
+    </div>`).join('');
+  updateSaveBtn();
+}
+let _sheetAvailable = Infinity; // available balance when sheet opens
+
+function onAmountInput(){
+  updateSaveBtn();
+  updateRemainingHint();
+}
+
+function updateRemainingHint(){
+  const cat = CATS.find(c=>c.k===selectedCat);
+  const hintEl = document.getElementById('amt-remaining');
+  const errEl  = document.getElementById('amt-err');
+  // Income has no cap; credit card expense has no balance cap
+  if(!cat || cat.t==='income' || isCreditPay){
+    hintEl.style.display='none';
+    errEl.style.display='none';
+    if(isCreditPay) updateCCHint();
+    return;
+  }
+  const val = parseFloat(document.getElementById('f-amount').value)||0;
+  const avail = _sheetAvailable;
+  const left = avail - val;
+  hintEl.style.display = 'flex';
+  if(val <= 0){
+    hintEl.className='amt-remaining ok';
+    hintEl.textContent = `Available: ${c$(avail)}`;
+  } else if(left >= 0){
+    const cls = left < avail*0.2 ? 'warn' : 'ok';
+    hintEl.className=`amt-remaining ${cls}`;
+    hintEl.textContent = `${c$(left)} remaining after this`;
+    errEl.style.display='none';
+  } else {
+    hintEl.className='amt-remaining over';
+    hintEl.textContent = `Exceeds available balance by ${c$(Math.abs(left))}`;
+    errEl.style.display='block';
+  }
+}
+function selectCat(k){
+  selectedCat=k;
+  buildCatGrid();
+  const goalSection=document.getElementById('savings-goal-section');
+  if(goalSection) goalSection.style.display = k==='savings' ? 'block' : 'none';
+  if(k==='savings'){
+    const firstHint=document.getElementById('goal-first-hint');
+    if(firstHint) firstHint.style.display = getSavingsGoals().length===0 ? 'block':'none';
+  }
+  updateCreditToggleVisibility();
+  updateRemainingHint();
+}
+function updateSaveBtn(){
+  const cat=CATS.find(c=>c.k===selectedCat);
+  const btn=document.getElementById('save-btn');
+  btn.className=`save-btn btn-${cat?.t||'expense'}`;
+  btn.textContent=editingId?'Update Entry':`Save ${cat?.i||''} ${cat?.l||''}`;
+  const amt=parseFloat(document.getElementById('f-amount').value);
+  // Over-balance check is skipped if paying with credit card
+  const overBudget = cat && cat.t!=='income' && !isCreditPay && amt > 0 && amt > _sheetAvailable;
+  // Check credit limit if paying with credit
+  let overCredit=false;
+  if(isCreditPay && amt>0){
+    const cardId=document.getElementById('f-credit-card')?.value;
+    if(cardId){ const info=getCardInfo(cardId); overCredit=amt>info.available; }
+  }
+  btn.disabled=!amt||isNaN(amt)||amt<=0||overBudget||overCredit;
+}
+
+// ════════════════════════════════════════════════════════════
+//  SAVE / DELETE
+// ════════════════════════════════════════════════════════════
+function saveTransaction(){
+  const amount=parseFloat(document.getElementById('f-amount').value);
+  if(!amount||isNaN(amount)||amount<=0) return;
+  const chosenDate=document.getElementById('f-date').value;
+  const errEl=document.getElementById('date-err');
+  if(chosenDate>todayStr()){errEl.style.display='block';setTimeout(()=>errEl.style.display='none',3000);return;}
+  errEl.style.display='none';
+  const cat=CATS.find(c=>c.k===selectedCat);
+  // Hard guard: block going negative for expense/savings (unless using credit card)
+  if(cat.t!=='income' && !isCreditPay && amount > _sheetAvailable){
+    document.getElementById('amt-err').style.display='block';
+    return;
+  }
+  const id=editingId||Date.now();
+  const rawGoal=document.getElementById('f-savings-goal').value.trim();
+  // Default savings goal: "Emergency Fund" if none typed and no prior goals exist
+  let savingsGoal='';
+  if(cat.t==='savings'){
+    if(rawGoal){
+      savingsGoal=normGoal(rawGoal);
+    } else {
+      const existingGoals=getSavingsGoals();
+      savingsGoal=existingGoals.length>0?'Emergency Fund':'Emergency Fund';
+    }
+  }
+  // Credit card
+  let creditCardId=null;
+  if(isCreditPay && cat.t==='expense'){
+    creditCardId=document.getElementById('f-credit-card')?.value||null;
+  }
+  const tx={id,date:chosenDate,category:selectedCat,label:cat.l,icon:cat.i,type:cat.t,amount,note:document.getElementById('f-note').value.trim(),recurring:isRecurring,savingsGoal,creditCardId};
+  if(editingId) transactions=transactions.filter(t=>t.id!==editingId);
+  transactions.push(tx);
+  transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  enforceCycleLimit(); // auto-trim oldest cycles if over the limit
+  persist(); // auto-save everything
+  activeCycleKey=getCycleKey(tx.date);
+  expandedTx=null; deleteConfirm=null;
+  if(navigator.vibrate) navigator.vibrate(30);
+  document.getElementById('add-toast').style.display='flex';
+  setTimeout(()=>{closeSheet();renderFeed();},900);
+}
+function deleteTx(id){
+  transactions=transactions.filter(t=>t.id!==id);
+  persist(); deleteConfirm=null; expandedTx=null;
+  if(navigator.vibrate) navigator.vibrate([20,10,20]);
+  renderFeed();
+}
+
+// ════════════════════════════════════════════════════════════
+//  SEARCH & FILTER
+// ════════════════════════════════════════════════════════════
+function onSearch(){ searchQuery=document.getElementById('search-input').value.toLowerCase(); document.getElementById('search-clear').style.display=searchQuery?'flex':'none'; renderFeed(); }
+function clearSearch(){ document.getElementById('search-input').value=''; searchQuery=''; document.getElementById('search-clear').style.display='none'; renderFeed(); }
+function setFilter(f){ activeFilter=f; renderFilterChips(); renderFeed(); }
+function renderFilterChips(){
+  const fs=[{k:'all',l:'All'},{k:'income',l:'💼 Income'},{k:'expense',l:'💸 Spent'},{k:'savings',l:'🏦 Saved'},{k:'recurring',l:'🔄 Recurring'}];
+  document.getElementById('filter-chips').innerHTML=fs.map(f=>`<button class="filter-chip ${activeFilter===f.k?`fc-${f.k}`:''}\" onclick=\"setFilter('${f.k}')">${f.l}</button>`).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+//  BUDGET
+// ════════════════════════════════════════════════════════════
+function openBudgetModal(){
+  document.getElementById('budget-inputs').innerHTML=EXPENSE_CATS.map(c=>`
+    <div class="bm-row"><div class="bm-icon">${c.i}</div><div class="bm-name">${c.l}</div>
+    <input class="bm-field" type="number" id="bud-${c.k}" placeholder="0" value="${budgets[c.k]||''}"/></div>`).join('');
+  document.getElementById('budget-modal').classList.add('open');
+}
+function closeBudgetModal(e){ if(e&&e.target!==document.getElementById('budget-modal'))return; document.getElementById('budget-modal').classList.remove('open'); }
+function saveBudgets(){
+  EXPENSE_CATS.forEach(c=>{ const v=parseFloat(document.getElementById(`bud-${c.k}`)?.value)||0; if(v>0)budgets[c.k]=v; else delete budgets[c.k]; });
+  persist(); document.getElementById('budget-modal').classList.remove('open'); renderFeed();
+}
+function renderBudgets(){
+  const txs=cycleTxs(activeCycleKey).filter(t=>t.type==='expense');
+  const active=EXPENSE_CATS.filter(c=>budgets[c.k]);
+  if(!active.length){document.getElementById('budget-area').innerHTML='';return;}
+  const rows=active.map(c=>{
+    const spent=txs.filter(t=>t.category===c.k).reduce((s,t)=>s+t.amount,0);
+    const limit=budgets[c.k], pct=Math.min((spent/limit)*100,100);
+    const color=pct>=100?'var(--red)':pct>=80?'var(--accent)':'var(--green)';
+    return `<div class="budget-bar-row">
+      <div class="budget-bar-meta"><span class="budget-bar-name">${c.i} ${c.l}</span><span class="budget-bar-nums" style="color:${color}">${c$(spent)} / ${c$(limit)}</span></div>
+      <div class="budget-track"><div class="budget-fill" style="width:${pct}%;background:${color};"></div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('budget-area').innerHTML=`<div class="budget-section">
+    <div class="budget-label-row"><span class="budget-title">Budget Tracker</span><span class="budget-edit" onclick="openBudgetModal()">✏️ Edit</span></div>${rows}</div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  CREDIT CARD HELPERS
+// ════════════════════════════════════════════════════════════
+/** Returns {limit, used, available, pct} for a card */
+function getCardInfo(cardId){
+  const card = creditCards.find(c=>c.id===cardId);
+  if(!card) return {limit:0,used:0,available:0,pct:0};
+  // Used = sum of all credit card expenses for this card
+  const used = transactions
+    .filter(t=>t.creditCardId===cardId && t.type==='expense')
+    .reduce((s,t)=>s+t.amount,0);
+  // Restored = sum of all credit payments for this card
+  const paid = transactions
+    .filter(t=>t.creditCardId===cardId && t.type==='credit_payment')
+    .reduce((s,t)=>s+t.amount,0);
+  const net = Math.max(0, used - paid);
+  const available = Math.max(0, card.limit - net);
+  const pct = card.limit > 0 ? Math.min((net/card.limit)*100,100) : 0;
+  return {limit:card.limit, used:net, available, pct};
+}
+function addCreditCard(){
+  const name=(document.getElementById('cc-name-input').value||'').trim();
+  const limit=parseFloat(document.getElementById('cc-limit-input').value)||0;
+  if(!name||limit<=0){ showSettingsToast('⚠️ Enter a card name and limit.'); return; }
+  creditCards.push({id:String(Date.now()), name, limit});
+  document.getElementById('cc-name-input').value='';
+  document.getElementById('cc-limit-input').value='';
+  persist(); renderSettingsCCList(); showSettingsToast('💳 Card added!');
+}
+function removeCreditCard(id){
+  if(!confirm('Remove this card? Its transaction history will remain.')) return;
+  creditCards=creditCards.filter(c=>c.id!==id);
+  persist(); renderSettingsCCList(); showSettingsToast('Card removed.');
+}
+function renderSettingsCCList(){
+  const el=document.getElementById('cc-settings-list');
+  if(!el) return;
+  if(!creditCards.length){ el.innerHTML='<div style="font-size:.75rem;color:var(--text3);margin-bottom:6px;">No cards added yet.</div>'; return; }
+  el.innerHTML=creditCards.map(c=>{
+    const info=getCardInfo(c.id);
+    const color=info.pct>=90?'var(--red)':info.pct>=70?'var(--accent)':'var(--green)';
+    return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:6px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:.85rem;font-weight:700;color:var(--text);">💳 ${c.name}</span>
+        <button class="cc-del-btn" onclick="removeCreditCard('${c.id}')">Remove</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text3);margin-bottom:4px;">
+        <span>Used: <strong style="color:${color}">${currencySymbol}${fmt(info.used,0)}</strong></span>
+        <span>Available: <strong style="color:var(--green)">${currencySymbol}${fmt(info.available,0)}</strong></span>
+        <span>Limit: <strong style="color:var(--text2)">${currencySymbol}${fmt(info.limit,0)}</strong></span>
+      </div>
+      <div style="height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;">
+        <div style="height:100%;width:${info.pct}%;background:${color};border-radius:99px;transition:width .6s;"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openPayModal(cardId){
+  const card=creditCards.find(c=>c.id===cardId); if(!card) return;
+  const info=getCardInfo(cardId);
+  const curKey=currentCycleKey();
+  const cashAvail=Math.max(0, getCycleAvailable(curKey));
+  const maxPay=Math.min(info.used, cashAvail);
+  document.getElementById('pay-card-id').value=cardId;
+  document.getElementById('pay-modal-sub').textContent=`Payment deducts from your cash balance and restores ${card.name}'s credit.`;
+  document.getElementById('pay-modal-owed').textContent=`${currencySymbol}${fmt(info.used,0)}`;
+  document.getElementById('pay-cash-avail').textContent=`${currencySymbol}${fmt(cashAvail,0)}`;
+  const inp=document.getElementById('pay-amount');
+  inp.value='';
+  inp.max=maxPay;
+  document.getElementById('pay-sym').textContent=currencySymbol;
+  document.getElementById('pay-hint').textContent=cashAvail<=0?'⛔ No cash available this cycle to make a payment.':'';
+  const btn=document.querySelector('.pay-save');
+  if(btn){ btn.disabled=cashAvail<=0||info.used<=0; btn.style.opacity=cashAvail<=0||info.used<=0?'0.3':'1'; }
+  document.getElementById('pay-modal').classList.add('open');
+}
+function closePayModal(e){ if(e&&e.target!==document.getElementById('pay-modal'))return; document.getElementById('pay-modal').classList.remove('open'); }
+function setPayQuick(mode){
+  const cardId=document.getElementById('pay-card-id').value;
+  const info=getCardInfo(cardId);
+  const curKey=currentCycleKey();
+  const cashAvail=Math.max(0, getCycleAvailable(curKey));
+  let val;
+  if(mode==='full') val=Math.min(info.used, cashAvail);  // pay the full bill, capped by cash
+  else              val=Math.min(info.used, cashAvail);  // max = same logic
+  document.getElementById('pay-amount').value=val>0?fmt(val,0).replace(/,/g,''):'';
+  updatePayHint();
+}
+function updatePayHint(){
+  const cardId=document.getElementById('pay-card-id').value;
+  const info=getCardInfo(cardId);
+  const curKey=currentCycleKey();
+  const cashAvail=Math.max(0, getCycleAvailable(curKey));
+  const amt=parseFloat(document.getElementById('pay-amount').value)||0;
+  const hint=document.getElementById('pay-hint');
+  const btn=document.querySelector('.pay-save');
+  if(amt<=0){ hint.textContent=''; if(btn){btn.disabled=false;btn.style.opacity='1';}return; }
+  if(amt>cashAvail){
+    hint.textContent=`⛔ Exceeds your cash available by ${currencySymbol}${fmt(amt-cashAvail,0)}. Max: ${currencySymbol}${fmt(cashAvail,0)}`;
+    hint.style.color='var(--red)';
+    if(btn){btn.disabled=true;btn.style.opacity='0.3';}
+  } else if(amt>info.used){
+    hint.textContent=`⛔ Exceeds outstanding balance by ${currencySymbol}${fmt(amt-info.used,0)}`;
+    hint.style.color='var(--red)';
+    if(btn){btn.disabled=true;btn.style.opacity='0.3';}
+  } else {
+    const willRestore=Math.min(amt,info.used);
+    const newAvail=info.available+willRestore;
+    hint.textContent=`Card credit will become ${currencySymbol}${fmt(newAvail,0)} · Cash left: ${currencySymbol}${fmt(cashAvail-amt,0)}`;
+    hint.style.color='#a855f7';
+    if(btn){btn.disabled=false;btn.style.opacity='1';}
+  }
+}
+function submitCreditPayment(){
+  const cardId=document.getElementById('pay-card-id').value;
+  const amt=parseFloat(document.getElementById('pay-amount').value)||0;
+  if(!amt||amt<=0) return;
+  const card=creditCards.find(c=>c.id===cardId); if(!card) return;
+  const info=getCardInfo(cardId);
+  const curKey=currentCycleKey();
+  const cashAvail=Math.max(0, getCycleAvailable(curKey));
+  // Hard cap: cannot pay more than cash available or outstanding balance
+  if(amt>cashAvail||amt>info.used){ updatePayHint(); return; }
+  const tx={
+    id:Date.now(),
+    date:todayStr(),
+    category:'credit_payment',
+    label:`${card.name} Payment`,
+    icon:'💳',
+    type:'credit_payment',
+    amount:amt,
+    note:`Credit card payment — ${card.name}`,
+    recurring:false,
+    savingsGoal:'',
+    creditCardId:cardId
+  };
+  transactions.push(tx);
+  transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  persist();
+  document.getElementById('pay-modal').classList.remove('open');
+  renderFeed();
+  renderCreditSection();
+}
+function renderCreditSection(){
+  const el=document.getElementById('credit-area');
+  if(!el||!creditCards.length){if(el)el.innerHTML='';return;}
+  const pills=creditCards.map(c=>{
+    const info=getCardInfo(c.id);
+    const color=info.pct>=90?'var(--red)':info.pct>=70?'var(--accent)':'#a855f7';
+    const hasDebt=info.used>0;
+    return `<div style="flex-shrink:0;background:var(--bg1);border:1.5px solid ${hasDebt?color:'var(--border)'};border-radius:14px;padding:8px 12px;cursor:pointer;min-width:130px;" onclick="openPayModal('${c.id}')">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+        <span style="font-size:.7rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px;">&#x1F4B3; ${c.name}</span>
+        ${hasDebt?`<span style="font-size:.58rem;font-weight:700;background:${color}20;color:${color};border-radius:5px;padding:1px 5px;">Pay</span>`:'<span style="font-size:.58rem;color:var(--green);font-weight:700;">&#x2713; Clear</span>'}
+      </div>
+      <div style="height:3px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:4px;">
+        <div style="height:100%;width:${info.pct}%;background:${color};border-radius:99px;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:.62rem;">
+        <span style="color:${color};font-weight:700;">${fmtS(info.used)} used</span>
+        <span style="color:var(--text3);">${fmtS(info.available)} left</span>
+      </div>
+    </div>`;
+  }).join('');
+  el.innerHTML=`<div style="padding:0 20px 10px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+      <span style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);font-weight:700;">&#x1F4B3; Credit Cards</span>
+      <span style="font-size:.67rem;color:var(--accent);cursor:pointer;font-weight:700;" onclick="nav('settings')">Manage</span>
+    </div>
+    <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;-webkit-overflow-scrolling:touch;">${pills}</div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER FEED
+// ════════════════════════════════════════════════════════════
+function renderFeed(){
+  const now=new Date();
+  document.getElementById('top-date-label').textContent=`${SHORT_M[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  const modeLabels={monthly:'Pay-cycle tracker',bimonthly:'Bi-monthly tracker',custom:'Custom cycle tracker'};
+  document.getElementById('cycle-mode-label').textContent=modeLabels[cycleMode]||'Pay-cycle tracker';
+
+  const curKey=currentCycleKey();
+  if(!activeCycleKey) activeCycleKey=curKey;
+
+  const allKeys=allCycleKeys();
+  const idx=allKeys.indexOf(activeCycleKey);
+  document.getElementById('mnav-prev').disabled=idx>=allKeys.length-1;
+  document.getElementById('mnav-next').disabled=idx<=0||cycleRange(allKeys[idx-1]).start>cycleRange(curKey).start;
+  document.getElementById('cycle-label').textContent=cycleLabel(activeCycleKey);
+  document.getElementById('cycle-range').textContent=cycleRangeStr(activeCycleKey);
+
+  // Period tabs — 3 most recent cycles, oldest LEFT → newest RIGHT
+  const tabKeys=allKeys.slice(0,3).reverse();
+  document.getElementById('period-tabs').innerHTML=tabKeys.map(ck=>`
+    <button class="ptab ${activeCycleKey===ck?'active':''}\" onclick=\"setCycle('${ck}')">${cycleLabel(ck,true)}</button>`).join('');
+  // Auto-scroll tabs to keep active tab visible (latest on right)
+  requestAnimationFrame(()=>{
+    const tabs=document.getElementById('period-tabs');
+    const active=tabs.querySelector('.ptab.active');
+    if(active) active.scrollIntoView({inline:'nearest',block:'nearest'});
+  });
+
+  // Streak
+  const streak=calcStreak();
+  document.getElementById('streak-area').innerHTML=streak>=2?`<div class="streak-badge">🔥 ${streak}-day streak</div>`:'';
+
+  // Hero
+  const s=cycleStats(activeCycleKey);
+  const isCur=activeCycleKey===curKey;
+  document.getElementById('hero-label').textContent=isCur?'Remaining this cycle':`Total for ${cycleLabel(activeCycleKey,true)}`;
+  document.getElementById('hero-sign').textContent=currencySymbol;
+  document.getElementById('hero-net-val').textContent=fmt(s.net,0);
+  document.getElementById('hero-net').style.color=s.net>=0?'var(--green)':'var(--red)';
+  document.getElementById('hero-income').textContent=c$(s.income);
+  document.getElementById('hero-expense').textContent=c$(s.expense);
+  document.getElementById('hero-savings').textContent=c$(s.savings);
+
+  renderBudgets(); renderFilterChips(); renderCreditSection();
+
+  let txs=[...cycleTxs(activeCycleKey)];
+  if(searchQuery) txs=txs.filter(t=>(t.label+' '+(t.note||'')+' '+(t.savingsGoal||'')).toLowerCase().includes(searchQuery));
+  if(activeFilter==='income')    txs=txs.filter(t=>t.type==='income');
+  else if(activeFilter==='expense')  txs=txs.filter(t=>t.type==='expense');
+  else if(activeFilter==='savings')  txs=txs.filter(t=>t.type==='savings');
+  else if(activeFilter==='recurring') txs=txs.filter(t=>t.recurring);
+
+  const grouped={};
+  txs.forEach(t=>{(grouped[t.date]||(grouped[t.date]=[])).push(t);});
+  const dates=Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+  const list=document.getElementById('feed-list');
+
+  if(!dates.length){
+    list.innerHTML=`<div class="empty"><div class="empty-icon">${searchQuery?'🔍':'📭'}</div>
+      <div class="empty-txt">${searchQuery?`No results for "<strong>${searchQuery}</strong>"`:`Nothing logged yet for<br/><strong>${cycleLabel(activeCycleKey)}</strong>.<br/>Tap + to add your first entry!`}</div></div>`;
+    return;
+  }
+
+  list.innerHTML = dates.map(date=>{
+    const dt=grouped[date];
+    const dn=dt.reduce((s,t)=>s+(t.type==='income'?t.amount:-t.amount),0);
+    return `<div class="date-group">
+      <div class="date-hdr">
+        <span class="date-hdr-label">${formatDate(date)}</span>
+        <span class="date-hdr-line"></span>
+        <span class="date-hdr-total" style="color:${dn>=0?'var(--green)':'var(--red)'}">${dn>=0?'+':'-'}${currencySymbol}${fmt(Math.abs(dn),0)}</span>
+      </div>
+      ${dt.map(tx=>renderTxCard(tx)).join('')}
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.tx[data-id]').forEach(el=>{ /* tap-to-expand only */ });
+}
+
+function renderTxCard(tx){
+  const isOpen=expandedTx===tx.id, isDel=deleteConfirm===tx.id;
+  const glowC=tx.type==='income'?'var(--green-dim)':tx.type==='savings'?'var(--accent-dim)':tx.type==='credit_payment'?'#a855f718':'var(--red-dim)';
+  const amtC=tx.type==='income'?'var(--green)':tx.type==='savings'?'var(--accent)':tx.type==='credit_payment'?'#a855f7':'var(--red)';
+  const sign=tx.type==='income'?'+':'-';
+  // Credit card tag
+  let ccTag='';
+  if(tx.creditCardId){
+    const card=creditCards.find(c=>c.id===tx.creditCardId);
+    if(card) ccTag=`<span class="cc-tag">💳 ${card.name}</span>`;
+  }
+  if(tx.type==='credit_payment'){
+    const card=creditCards.find(c=>c.id===tx.creditCardId);
+    ccTag=`<span class="cc-tag">💳 ${card?card.name:'Card'} Payment</span>`;
+  }
+  let actions='';
+  if(isOpen&&!isDel) actions=`<div class="tx-actions"><button class="act act-edit" onclick="openSheet(getTx(${tx.id}))">✏️ Edit</button><button class="act act-del" onclick="setDel(${tx.id})">🗑 Delete</button></div>`;
+  if(isDel) actions=`<div class="tx-actions"><button class="act act-cancel" onclick="setDel(null)">Cancel</button><button class="act act-confirm" onclick="deleteTx(${tx.id})">Confirm Delete</button></div>`;
+  return `<div class="tx-wrap">
+    <div class="tx ${isOpen?'open':''}" data-id="${tx.id}" onclick="toggleTx(${tx.id})">
+      <div class="tx-glow" style="background:radial-gradient(circle,${glowC},transparent 70%)"></div>
+      <div class="tx-icon ${tx.type==='credit_payment'?'expense':tx.type}">${tx.icon}</div>
+      <div class="tx-body">
+        <div class="tx-name">${tx.recurring?'<span class="recur-dot"></span>':''} ${tx.label}${tx.savingsGoal?`<span class="goal-tag">🎯 ${tx.savingsGoal}</span>`:''}${ccTag}</div>
+        ${tx.note?`<div class="tx-note">${tx.note}</div>`:''}
+      </div>
+      <div class="tx-right">
+        <div class="tx-amt" style="color:${amtC}">${sign}${currencySymbol}${fmt(tx.amount)}</div>
+        ${tx.recurring?'<div class="tx-recur-tag">🔄 recurring</div>':''}
+      </div>
+    </div>
+    ${actions}
+  </div>`;
+}
+
+function getTx(id){ return transactions.find(t=>t.id===id); }
+function toggleTx(id){ if(deleteConfirm)return; expandedTx=expandedTx===id?null:id; renderFeed(); }
+function setDel(id){ deleteConfirm=id; renderFeed(); }
+function setCycle(ck){ activeCycleKey=ck; expandedTx=null; deleteConfirm=null; renderFeed(); }
+
+function shiftCycle(dir){
+  const all=allCycleKeys(), idx=all.indexOf(activeCycleKey);
+  const nidx=idx-dir;
+  if(nidx>=0&&nidx<all.length&&cycleRange(all[nidx]).start<=cycleRange(currentCycleKey()).start){ setCycle(all[nidx]); return; }
+  if(dir===-1){ const p=shiftKey(activeCycleKey,-1); if(cycleRange(p).start>='2020-01-01') setCycle(p); }
+}
+
+function setupMonthSwipe(){
+  const area=document.getElementById('view-feed');
+  let sx=0,moved=false;
+  area.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; moved=false; },{passive:true});
+  area.addEventListener('touchmove',e=>{ if(Math.abs(e.touches[0].clientX-sx)>10) moved=true; },{passive:true});
+  area.addEventListener('touchend',e=>{
+    if(!moved||sheetOpen) return;
+    const dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)<60) return;
+    if(dx<-60) shiftCycle(-1); else shiftCycle(1);
+  },{passive:true});
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER DASHBOARD
+// ════════════════════════════════════════════════════════════
+function renderDash(){
+  const dash=document.getElementById('dash-content');
+  if(!transactions.length){
+    dash.innerHTML=`<div class="empty" style="padding-top:80px;"><div class="empty-icon">📊</div><div class="empty-txt">No data yet.<br/>Add transactions first!</div></div>`;
+    return;
+  }
+
+  const curKey=currentCycleKey();
+  const prevKey=shiftKey(curKey,-1);
+  const curS=cycleStats(curKey), prevS=cycleStats(prevKey);
+
+  // ── Collect only cycles that have actual transaction data ──
+  const dataKeys=allCycleKeys().filter(ck=>{
+    const {start,end}=cycleRange(ck);
+    return transactions.some(t=>t.date>=start&&t.date<=end);
+  });
+  // For trend: up to 12, sorted oldest→newest
+  const trendKeys=dataKeys.slice().sort((a,b)=>cycleRange(a).start.localeCompare(cycleRange(b).start)).slice(-12);
+  const trendData=trendKeys.map(ck=>({ck,...cycleStats(ck)}));
+
+  // ── HIGHLIGHTS (only from cycles with data) ──
+  const nonEmpty=trendData.filter(d=>d.income>0||d.expense>0||d.savings>0);
+  let hlHtml='';
+  if(nonEmpty.length>=1){
+    const best    =[...nonEmpty].sort((a,b)=>b.savings-a.savings)[0];
+    const lowest  =[...nonEmpty].filter(d=>d.expense>0).sort((a,b)=>a.expense-b.expense)[0]||nonEmpty[0];
+    const topInc  =[...nonEmpty].sort((a,b)=>b.income-a.income)[0];
+    const bestRate=[...nonEmpty].filter(d=>d.income>0).sort((a,b)=>b.rate-a.rate)[0]||nonEmpty[0];
+    hlHtml=`<div class="section">
+      <div class="section-title">🏆 Highlights</div>
+      <div class="section-sub">Your personal bests across all cycles</div>
+      <div class="hl-row">
+        ${[
+          {icon:'🏆',label:'Most Saved',   val:cycleLabel(best.ck,true),    sub:fmtS(best.savings)+' saved',       c:'var(--accent)'},
+          {icon:'🎯',label:'Low Spending',  val:cycleLabel(lowest.ck,true),  sub:'Only '+fmtS(lowest.expense),      c:'var(--green)'},
+          {icon:'📈',label:'Best Income',   val:cycleLabel(topInc.ck,true),  sub:fmtS(topInc.income)+' earned',     c:'var(--blue)'},
+          {icon:'💡',label:'Best Rate',     val:cycleLabel(bestRate.ck,true),sub:bestRate.rate.toFixed(0)+'% saved',c:'var(--accent)'},
+        ].map(h=>`<div class="hl-mini">
+          <div class="hl-mini-icon">${h.icon}</div>
+          <div class="hl-mini-label">${h.label}</div>
+          <div class="hl-mini-val" style="color:${h.c}">${h.val}</div>
+          <div class="hl-mini-sub">${h.sub}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── LAST vs THIS (side-by-side) ──
+  function sbsDelta(cur,prev,lowerBetter=false){
+    const diff=cur-prev;
+    if(diff===0) return `<span class="sbs-delta d-neu">same</span>`;
+    const good=lowerBetter?diff<0:diff>0;
+    const cls=good?'d-up':'d-dn', arr=diff>0?'▲':'▼';
+    const pctStr=prev!==0?` ${(Math.abs(diff/prev)*100).toFixed(0)}%`:'';
+    return `<span class="sbs-delta ${cls}">${arr}${fmtS(Math.abs(diff))}${pctStr}</span>`;
+  }
+  const sbsRows=[
+    {label:'💼 Income', cur:curS.income,  prev:prevS.income,  col:'var(--green)',  low:false},
+    {label:'💸 Spent',  cur:curS.expense, prev:prevS.expense, col:'var(--red)',    low:true},
+    {label:'🏦 Saved',  cur:curS.savings, prev:prevS.savings, col:'var(--accent)', low:false},
+    {label:'📈 Rate',   cur:curS.rate,    prev:prevS.rate,    col:'var(--blue)',   low:false, isPct:true},
+    {label:'✅ Left',   cur:curS.net,     prev:prevS.net,     col:curS.net>=0?'var(--green)':'var(--red)', low:false, isNet:true},
+  ];
+  const fmtV=(v,r)=>r.isPct?v.toFixed(0)+'%':r.isNet?(v<0?'-':'')+fmtS(Math.abs(v)):fmtS(v);
+  const sbsHtml=`<div class="section">
+    <div class="section-title">Last vs This Cycle</div>
+    <div class="section-sub">${cycleLabel(prevKey,true)} → ${cycleLabel(curKey,true)} ★</div>
+    <div class="sbs-card">
+      <div class="sbs-header">
+        <div class="sbs-th">Metric</div>
+        <div class="sbs-th right">${cycleLabel(prevKey,true)}</div>
+        <div class="sbs-th right cur">${cycleLabel(curKey,true)} ★</div>
+        <div class="sbs-th right">Change</div>
+      </div>
+      ${sbsRows.map(r=>`
+      <div class="sbs-row">
+        <div class="sbs-label">${r.label}</div>
+        <div class="sbs-val" style="color:var(--text3)">${fmtV(r.prev,r)}</div>
+        <div class="sbs-val" style="color:${r.col}">${fmtV(r.cur,r)}</div>
+        ${sbsDelta(r.cur,r.prev,r.low)}
+      </div>`).join('')}
+    </div>
+  </div>`;
+
+  // ── SAVINGS RING ──
+  const rate=Math.min(curS.rate,100), r2=38, circ2=2*Math.PI*r2;
+  const ringHtml=`<div class="section">
+    <div class="section-title">Savings Rate</div>
+    <div class="section-sub">${cycleLabel(curKey)} · ${cycleRangeStr(curKey)}</div>
+    <div class="ring-card">
+      <svg width="96" height="96" viewBox="0 0 100 100" style="flex-shrink:0;">
+        <circle cx="50" cy="50" r="${r2}" fill="none" stroke="var(--bg3)" stroke-width="8"/>
+        <circle cx="50" cy="50" r="${r2}" fill="none" stroke="var(--accent)" stroke-width="8"
+          stroke-dasharray="${circ2*(rate/100)} ${circ2}" stroke-dashoffset="${circ2/4}" stroke-linecap="round"/>
+        <text x="50" y="50" text-anchor="middle" dominant-baseline="central"
+          style="font-family:'Playfair Display',serif;font-size:14px;font-weight:900;fill:var(--accent)">${Math.round(rate)}%</text>
+      </svg>
+      <div>
+        <div class="ring-label">This Cycle</div>
+        <div class="ring-pct" style="color:var(--accent)">${curS.rate.toFixed(1)}%</div>
+        <div class="ring-sub">of ${c$(curS.income)} earned<br/>saved ${c$(curS.savings)}</div>
+      </div>
+    </div>
+  </div>`;
+
+  // ── SAVINGS GOALS breakdown ──
+  const gData=goalsData();
+  let goalsHtml='';
+  if(gData.length){
+    const topTotal=gData[0].total||1;
+    const rows=gData.map((g,i)=>{
+      const barPct=Math.round((g.total/topTotal)*100);
+      const medals=['🥇','🥈','🥉'];
+      const rank=i<3?medals[i]:`${i+1}`;
+      return `<div class="goal-card">
+        <div class="goal-card-rank">${rank}</div>
+        <div class="goal-card-body">
+          <div class="goal-card-name">🎯 ${g.name}</div>
+          <div class="goal-card-meta">${g.count} deposit${g.count!==1?'s':''} · last ${formatDate(g.last)}</div>
+          <div class="goal-bar-track"><div class="goal-bar-fill" style="width:${barPct}%"></div></div>
+        </div>
+        <div class="goal-card-amt">${c$(g.total)}</div>
+      </div>`;
+    }).join('');
+    const grandTotal=gData.reduce((s,g)=>s+g.total,0);
+    goalsHtml=`<div class="section">
+      <div class="section-title">🎯 Savings Goals</div>
+      <div class="section-sub">All-time · ${gData.length} goal${gData.length!==1?'s':''} · ${c$(grandTotal)} total</div>
+      <div class="goals-grid">${rows}</div>
+    </div>`;
+  }
+
+  // ── DONUT ──
+  const expTxs=cycleTxs(curKey).filter(t=>t.type==='expense');
+  const catSpend={};
+  expTxs.forEach(t=>{catSpend[t.category]=(catSpend[t.category]||0)+t.amount;});
+  const totalSpend=Object.values(catSpend).reduce((a,b)=>a+b,0)||1;
+  const catEntries=Object.entries(catSpend).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  let donutHtml='';
+  if(catEntries.length){
+    const r=40,cx=50,cy=50; let off=0; const circ=2*Math.PI*r;
+    const paths=catEntries.map(([k,v],i)=>{ const d=circ*(v/totalSpend),g=circ-d; const p=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${DONUT_COLORS[i]}" stroke-width="18" stroke-dasharray="${d} ${g}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})" opacity=".85"/>`; off+=d; return p; }).join('');
+    const catMap=Object.fromEntries(CATS.map(c=>[c.k,c]));
+    const items=catEntries.slice(0,5).map(([k,v],i)=>`
+      <div class="donut-item"><div class="donut-dot" style="background:${DONUT_COLORS[i]}"></div>
+        <span class="donut-name">${catMap[k]?.i||''} ${catMap[k]?.l||k}</span>
+        <span class="donut-val" style="color:${DONUT_COLORS[i]}">${fmtS(v)}</span>
+        <span class="donut-pct">${Math.round((v/totalSpend)*100)}%</span>
+      </div>`).join('');
+    donutHtml=`<div class="section">
+      <div class="section-title">Spending Breakdown</div>
+      <div class="section-sub">${cycleLabel(curKey)} · Where the money went</div>
+      <div class="donut-card">
+        <div class="donut-row">
+          <svg width="96" height="96" viewBox="0 0 100 100" style="flex-shrink:0;">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg3)" stroke-width="18"/>
+            ${paths}
+            <text x="50" y="50" text-anchor="middle" dominant-baseline="central" style="font-family:'Playfair Display',serif;font-size:10px;font-weight:900;fill:var(--red)">${fmtS(totalSpend)}</text>
+          </svg>
+          <div class="donut-legend">${items}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ── TREND — only cycles with data ──
+  const metricColor={income:'var(--green)',expense:'var(--red)',savings:'var(--accent)',net:'var(--blue)'};
+  const metricClass={income:'mt-inc',expense:'mt-exp',savings:'mt-sav',net:'mt-net'};
+  const maxVal=Math.max(...trendData.map(d=>Math.abs(d[dashMetric])),1);
+  const barsHtml=trendData.length?trendData.map(d=>{
+    const val=d[dashMetric], pct=Math.max((Math.abs(val)/maxVal)*100,3);
+    const col=metricColor[dashMetric], isCur=d.ck===curKey;
+    return `<div class="bar-col ${isCur?'is-cur':''}">
+      <div class="bar-col-val" style="color:${isCur?'var(--accent)':col}">${fmtS(val)}</div>
+      <div class="bar-col-track"><div class="bar-rect" style="height:${pct}%;background:${isCur?'var(--accent)':col};opacity:${isCur?1:.7};${isCur?'box-shadow:0 0 8px var(--accent-dim)':''}"></div></div>
+      <div class="bar-col-name">${cycleLabel(d.ck,true).split(' ')[0]}</div>
+    </div>`;
+  }).join(''):'<div style="color:var(--text3);font-size:.8rem;padding:20px;text-align:center;">Log more cycles to see the trend</div>';
+
+  const trendHtml=`<div class="section">
+    <div class="section-title">${trendData.length}-Cycle Trend</div>
+    <div class="section-sub">Only cycles with data · <span style="color:var(--accent)">★ current</span></div>
+    <div class="metric-tabs">
+      ${[{k:'income',l:'💼 Income'},{k:'expense',l:'💸 Spent'},{k:'savings',l:'🏦 Saved'},{k:'net',l:'📊 Net'}]
+        .map(m=>`<button class="metric-tab ${dashMetric===m.k?metricClass[m.k]:''}\" onclick=\"setMetric('${m.k}')">${m.l}</button>`).join('')}
+    </div>
+    <div class="chart-card"><div class="bars">${barsHtml}</div></div>
+  </div>`;
+
+  // ── CREDIT CARDS SECTION ──
+  let creditHtml='';
+  if(creditCards.length){
+    const totalLimit=creditCards.reduce((s,c)=>s+c.limit,0);
+    const totalUsed=creditCards.reduce((s,c)=>s+getCardInfo(c.id).used,0);
+    const totalAvail=totalLimit-totalUsed;
+    const totalPct=totalLimit>0?Math.min((totalUsed/totalLimit)*100,100):0;
+    const totalColor=totalPct>=90?'var(--red)':totalPct>=70?'var(--accent)':'var(--green)';
+    const cardRows=creditCards.map(c=>{
+      const info=getCardInfo(c.id);
+      const col=info.pct>=90?'var(--red)':info.pct>=70?'var(--accent)':'var(--green)';
+      return `<div style="background:var(--bg2);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:.85rem;font-weight:700;color:var(--text);">💳 ${c.name}</span>
+          <button class="cc-pay-btn" onclick="openPayModal('${c.id}')">Pay Bill</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
+          <div style="text-align:center;"><div style="font-size:.6rem;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:2px;">Limit</div><div style="font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:var(--text2)">${fmtS(info.limit)}</div></div>
+          <div style="text-align:center;"><div style="font-size:.6rem;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:2px;">Used</div><div style="font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:${col}">${fmtS(info.used)}</div></div>
+          <div style="text-align:center;"><div style="font-size:.6rem;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:2px;">Available</div><div style="font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:var(--green)">${fmtS(info.available)}</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="flex:1;height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;"><div style="height:100%;width:${info.pct}%;background:${col};border-radius:99px;"></div></div>
+          <span style="font-size:.62rem;font-weight:700;color:${col};min-width:28px;text-align:right;">${Math.round(info.pct)}%</span>
+        </div>
+      </div>`;
+    }).join('');
+    creditHtml=`<div class="section">
+      <div class="section-title">💳 Credit Cards</div>
+      <div class="section-sub">Total: ${fmtS(totalUsed)} used of ${fmtS(totalLimit)} limit · <span style="color:var(--green)">${fmtS(totalAvail)} available</span></div>
+      <div style="background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:16px;">
+        ${cardRows}
+        <div style="height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-top:4px;">
+          <div style="height:100%;width:${totalPct}%;background:${totalColor};border-radius:99px;transition:width .6s;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:5px;font-size:.67rem;color:var(--text3);">
+          <span>Overall utilization: <strong style="color:${totalColor}">${Math.round(totalPct)}%</strong></span>
+          <span style="color:var(--text3);">${totalPct<30?'🟢 Healthy':totalPct<70?'🟡 Moderate':'🔴 High'}</span>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  dash.innerHTML=`<div style="height:8px;"></div>
+  ${hlHtml}
+  ${creditHtml}
+  ${sbsHtml}
+  ${ringHtml}
+  ${goalsHtml}
+  ${donutHtml}
+  ${trendHtml}
+  <div style="height:20px;"></div>`;
+}
+
+function setMetric(m){ dashMetric=m; renderDash(); }
+
+// ════════════════════════════════════════════════════════════
+//  SETTINGS RENDER
+// ════════════════════════════════════════════════════════════
+function renderSettings(){
+  renderSettingsInputs();
+  renderSettingsCCList();
+  document.getElementById('cycle-limit-input').value = cycleLimit;
+  const cycleKeys=[...new Set(transactions.map(t=>getCycleKey(t.date)))];
+  const cycleCount=cycleKeys.length;
+  const recur=transactions.filter(t=>t.recurring).length;
+  const size=new Blob([JSON.stringify(transactions)]).size;
+  const limitNote = cycleCount >= cycleLimit
+    ? `<span style="color:var(--accent)">⚠️ At limit (${cycleLimit})</span>`
+    : `<span style="color:var(--text3)">${cycleCount}/${cycleLimit}</span>`;
+  document.getElementById('settings-stats').innerHTML=
+    `📊 <strong>${transactions.length}</strong> transactions<br/>
+     🔄 <strong>${recur}</strong> recurring<br/>
+     📅 <strong>${cycleCount}</strong> cycles stored ${limitNote}<br/>
+     💾 <strong>${(size/1024).toFixed(1)} KB</strong> stored in browser`;
+}
+function saveCurrency(){
+  const v=document.getElementById('currency-input').value.trim(); if(!v)return;
+  currencySymbol=v; persist(); showSettingsToast('💱 Currency updated!'); renderFeed();
+}
+function saveCycleLimit(){
+  const raw = parseInt(document.getElementById('cycle-limit-input').value);
+  const val = Math.max(3, Math.min(60, isNaN(raw)?24:raw));
+  document.getElementById('cycle-limit-input').value = val;
+  cycleLimit = val;
+  const removed = enforceCycleLimit();
+  persist();
+  activeCycleKey = currentCycleKey();
+  renderSettings(); renderFeed();
+  if(removed > 0){
+    showSettingsToast(`🗂 Limit set to ${val} cycles · ${removed} old transaction${removed!==1?'s':''} removed`);
+  } else {
+    showSettingsToast(`🗂 Cycle history limited to ${val} cycles`);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  EXPORT / IMPORT — saves EVERYTHING
+// ════════════════════════════════════════════════════════════
+function exportData(){
+  const data={
+    version:6, exportedAt:new Date().toISOString(),
+    transactions, budgets, currencySymbol, activeTheme,
+    cycleMode, cycleConfig, cycleLimit, creditCards
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const dateStr=new Date().toISOString().slice(0,10);
+  a.href=url; a.download=`ledger-backup-${dateStr}.json`; a.click();
+  URL.revokeObjectURL(url);
+  showSettingsToast('📤 Full backup exported!');
+}
+function importData(e){
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      let imported=[];
+      if(Array.isArray(data)) imported=data;
+      else if(data.transactions&&Array.isArray(data.transactions)) imported=data.transactions;
+      else throw new Error('bad');
+      // Restore all settings
+      if(data.budgets&&typeof data.budgets==='object')  budgets={...data.budgets};
+      if(data.currencySymbol) currencySymbol=data.currencySymbol;
+      if(data.activeTheme)    { activeTheme=data.activeTheme; setTheme(activeTheme); }
+      if(data.cycleMode)      cycleMode=data.cycleMode;
+      if(data.cycleConfig)    cycleConfig={...cycleConfig,...data.cycleConfig};
+      if(data.cycleLimit)     cycleLimit=Math.max(3,parseInt(data.cycleLimit)||24);
+      if(data.creditCards&&Array.isArray(data.creditCards)) creditCards=data.creditCards;
+      const existing=new Set(transactions.map(t=>t.id));
+      const newOnes=imported.filter(t=>t.id&&t.date&&t.amount&&!existing.has(t.id));
+      transactions=[...transactions,...newOnes];
+      transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+      persist(); activeCycleKey=currentCycleKey();
+      renderSettings(); renderFeed();
+      showSettingsToast(`✅ Imported ${newOnes.length} transaction${newOnes.length!==1?'s':''} + all settings!`);
+    }catch{
+      document.getElementById('settings-err').style.display='block';
+      setTimeout(()=>document.getElementById('settings-err').style.display='none',3500);
+    }
+    e.target.value='';
+  };
+  reader.readAsText(file);
+}
+function clearAllData(){
+  if(!confirm('Delete ALL data? Export a backup first!\n\nThis cannot be undone.'))return;
+  transactions=[]; budgets={}; creditCards=[];
+  persist(); activeCycleKey=currentCycleKey();
+  renderSettings(); renderFeed();
+  showSettingsToast('🗑 All data cleared.');
+}
+function showSettingsToast(msg){
+  const t=document.getElementById('settings-toast');
+  t.textContent=msg; t.style.display='flex';
+  setTimeout(()=>t.style.display='none',3000);
+}
+
+// ════════════════════════════════════════════════════════════
+//  ONBOARDING — 5 slides: Welcome · Theme · Pay Cycle · History+Goal · Done
+// ════════════════════════════════════════════════════════════
+const OB_TOTAL = 5;
+let obPage = 0;
+let gCycleMode = cycleMode;
+let gLimitVal  = cycleLimit;
+
+function obOpen(){
+  obPage = 0;
+  obRender();
+  gSyncGuideState();
+  document.getElementById('ob-overlay').classList.add('active');
+}
+function obClose(){
+  document.getElementById('ob-overlay').classList.remove('active');
+  localStorage.setItem('ledger_onboarded','1');
+}
+function obNav(dir){
+  if(dir > 0) obSaveCurrentPage(); // save before advancing
+  obPage = Math.max(0, Math.min(OB_TOTAL-1, obPage+dir));
+  obRender();
+  // scroll page back to top
+  const pages = document.getElementById('ob-pages');
+  if(pages) pages.querySelectorAll('.ob-page')[obPage]?.scrollTo(0,0);
+}
+function obRender(){
+  document.querySelectorAll('.ob-page').forEach((p,i)=>p.classList.toggle('active', i===obPage));
+  document.getElementById('ob-dots').innerHTML=[...Array(OB_TOTAL)].map((_,i)=>
+    `<div class="ob-dot ${i===obPage?'active':''}"></div>`).join('');
+  document.getElementById('ob-back').style.display = obPage>0 ? 'block':'none';
+  const nextBtn = document.getElementById('ob-next');
+  if(obPage===OB_TOTAL-1){
+    nextBtn.textContent = "Save & Finish 🎉";
+    nextBtn.onclick = ()=>{ obSaveCurrentPage(); obClose(); };
+  } else if(obPage===0){
+    nextBtn.textContent = 'Begin Setup →';
+    nextBtn.onclick = ()=>obNav(1);
+  } else {
+    nextBtn.textContent = 'Save & Next →';
+    nextBtn.onclick = ()=>obNav(1);
+  }
+  document.getElementById('ob-skip').style.display = obPage===OB_TOTAL-1 ? 'none':'block';
+}
+
+/* Save settings for the page we're leaving */
+function obSaveCurrentPage(){
+  switch(obPage){
+    case 1: // Theme — already applied live; persist
+      persist();
+      break;
+    case 2: // Pay Cycle
+      cycleMode = gCycleMode;
+      if(cycleMode==='monthly'){
+        const pd = parseInt(document.getElementById('g-pay-day')?.value)||25;
+        cycleConfig.monthly.payDay = Math.min(28,Math.max(1,pd));
+        const si=document.getElementById('pay-day'); if(si) si.value=cycleConfig.monthly.payDay;
+      } else if(cycleMode==='bimonthly'){
+        const f=k=>parseInt(document.getElementById(`g-bi-${k}`)?.value)||0;
+        cycleConfig.bimonthly={s1:f('s1')||25, e1:f('e1')||10, s2:f('s2')||11, e2:f('e2')||24};
+        ['s1','e1','s2','e2'].forEach(k=>{const e=document.getElementById(`bi-${k}`);if(e)e.value=cycleConfig.bimonthly[k];});
+      } else {
+        const st=parseInt(document.getElementById('g-cust-start')?.value)||1;
+        const ln=parseInt(document.getElementById('g-cust-len')?.value)||30;
+        cycleConfig.custom={start:Math.min(28,Math.max(1,st)),len:Math.min(90,Math.max(7,ln))};
+        const s2=document.getElementById('cust-start');if(s2)s2.value=cycleConfig.custom.start;
+        const l2=document.getElementById('cust-len');if(l2)l2.value=cycleConfig.custom.len;
+      }
+      const pdS=document.getElementById('pay-day');if(pdS)pdS.value=cycleConfig.monthly.payDay;
+      persist(); activeCycleKey=currentCycleKey(); renderFeed(); renderSettings();
+      break;
+    case 3: // History limit + Savings goal
+      cycleLimit = gLimitVal;
+      enforceCycleLimit();
+      const li=document.getElementById('cycle-limit-input');if(li)li.value=cycleLimit;
+      const raw=(document.getElementById('g-savings-goal-input')?.value||'').trim();
+      if(raw) localStorage.setItem('ledger_defaultGoal', normGoal(raw));
+      else     localStorage.setItem('ledger_defaultGoal','Emergency Fund');
+      persist(); activeCycleKey=currentCycleKey(); renderFeed(); renderSettings();
+      break;
+    case 4: // Credit Cards — already saved live when added; just persist & refresh
+      persist(); renderSettingsCCList(); renderFeed(); renderCreditSection();
+      break;
+  }
+}
+
+/* Guide helpers */
+function gSelectCycleMode(mode){
+  gCycleMode = mode;
+  ['monthly','bimonthly','custom'].forEach(m=>{
+    const el=document.getElementById(`g-cmo-${m}`);
+    if(el) el.classList.toggle('selected', m===mode);
+    const f=document.getElementById(`g-fields-${m}`);
+    if(f){ f.style.display = m===mode ? 'flex':'none'; f.style.flexDirection='column'; }
+  });
+}
+function gSetTheme(t){
+  setTheme(t); persist();
+  ['dark','pink','white'].forEach(n=>{
+    const c=document.getElementById(`g-theme-${n}`);
+    if(c) c.classList.toggle('active-g', n===t);
+  });
+}
+function gAdjLimit(delta){
+  gLimitVal = Math.min(60, Math.max(3, gLimitVal+delta));
+  gUpdateLimitDisplay();
+}
+function gSetLimit(val){
+  gLimitVal = val;
+  document.querySelectorAll('.ob-limit-presets .ob-chip').forEach(b=>{
+    const match = b.textContent.includes(val === 6 ? '6' : val === 12 ? '1 yr' : val === 24 ? '2' : '3');
+    b.classList.toggle('ob-chip-sel', b.onclick && b.onclick.toString().includes(String(val)));
+  });
+  gUpdateLimitDisplay();
+}
+function gUpdateLimitDisplay(){
+  const el=document.getElementById('g-limit-num'); if(el) el.textContent=gLimitVal;
+  const hint=document.getElementById('g-limit-hint');
+  if(!hint) return;
+  const perYear = cycleMode==='bimonthly' ? 24 : cycleMode==='monthly' ? 12
+    : Math.round(365/Math.max(7, cycleConfig.custom.len||30));
+  const years = (gLimitVal/perYear).toFixed(1);
+  hint.textContent = `≈ ${years} year${parseFloat(years)!==1?'s':''} of history — enough to spot trends and seasonal patterns.`;
+}
+function gPickGoal(name){
+  const inp=document.getElementById('g-savings-goal-input');
+  if(inp) inp.value=name;
+  document.querySelectorAll('.ob-goal-chips .ob-chip').forEach(b=>{
+    b.classList.toggle('ob-chip-sel', b.textContent.trim().replace(/^[^\w]+/,'').toLowerCase().startsWith(name.split(' ')[0].toLowerCase()));
+  });
+  gOnGoalType();
+}
+function gOnGoalType(){
+  const v=(document.getElementById('g-savings-goal-input')?.value||'').trim();
+  const preview=document.getElementById('g-goal-preview');
+  if(preview) preview.textContent = v
+    ? `🎯 "${v}" will be your first savings goal`
+    : '🛡 Defaults to "Emergency Fund" if left blank';
+}
+function gUpdateCCHint(){
+  const limit=parseFloat(document.getElementById('g-cc-limit')?.value)||0;
+  const owe=parseFloat(document.getElementById('g-cc-balance')?.value)||0;
+  const hint=document.getElementById('g-cc-form-hint');
+  if(!hint) return;
+  if(limit<=0){ hint.style.display='none'; return; }
+  const avail=limit-owe;
+  if(owe>limit){
+    hint.textContent='\u26a0\ufe0f Outstanding balance can\'t exceed the credit limit.';
+    hint.style.color='var(--red)'; hint.style.display='block'; return;
+  }
+  hint.style.color='#a855f7';
+  hint.style.display='block';
+  hint.textContent=`\u2713 Limit: ${currencySymbol}${fmt(limit,0)} \u00b7 Owe: ${currencySymbol}${fmt(owe,0)} \u00b7 Available from day one: ${currencySymbol}${fmt(avail,0)}`;
+}
+/* ── Guide: credit card step ── */
+function gAddCreditCard(){
+  const name=(document.getElementById('g-cc-name')?.value||'').trim();
+  const limit=parseFloat(document.getElementById('g-cc-limit')?.value)||0;
+  const owe=parseFloat(document.getElementById('g-cc-balance')?.value)||0;
+  const hint=document.getElementById('g-cc-form-hint');
+
+  if(!name){
+    hint.textContent='⚠️ Please enter a card name.';
+    hint.style.color='var(--red)'; hint.style.display='block'; return;
+  }
+  if(limit<=0){
+    hint.textContent='⚠️ Please enter a valid credit limit.';
+    hint.style.color='var(--red)'; hint.style.display='block'; return;
+  }
+  if(owe>limit){
+    hint.textContent=`⚠️ Outstanding balance can't exceed the credit limit (${currencySymbol}${fmt(limit,0)}).`;
+    hint.style.color='var(--red)'; hint.style.display='block'; return;
+  }
+
+  const cardId=String(Date.now());
+  creditCards.push({id:cardId, name, limit});
+
+  // If they already owe money, create an "opening balance" expense transaction
+  if(owe>0){
+    const openingTx={
+      id:Date.now()+1,
+      date:todayStr(),
+      category:'other',
+      label:`${name} — Opening Balance`,
+      icon:'💳',
+      type:'expense',
+      amount:owe,
+      note:`Opening balance on ${name} — set during setup`,
+      recurring:false,
+      savingsGoal:'',
+      creditCardId:cardId
+    };
+    transactions.push(openingTx);
+    transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  }
+
+  persist();
+
+  // Clear form
+  document.getElementById('g-cc-name').value='';
+  document.getElementById('g-cc-limit').value='';
+  document.getElementById('g-cc-balance').value='';
+  hint.style.display='none';
+
+  gRenderGuideCards();
+}
+function gRenderGuideCards(){
+  const el=document.getElementById('g-cc-list'); if(!el) return;
+  if(!creditCards.length){ el.innerHTML=''; return; }
+  el.innerHTML=creditCards.map(c=>{
+    const info=getCardInfo(c.id);
+    const pct=Math.round(info.pct);
+    const color=info.pct>=90?'var(--red)':info.pct>=70?'var(--accent)':'#a855f7';
+    const avail=info.available;
+    return `<div style="background:var(--bg1);border:1.5px solid #a855f730;border-radius:14px;padding:12px 14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:7px;">
+          <span style="font-size:1.1rem;">💳</span>
+          <div>
+            <div style="font-size:.85rem;font-weight:700;color:var(--text);">${c.name}</div>
+            <div style="font-size:.62rem;color:var(--text3);">Limit: ${currencySymbol}${fmt(c.limit,0)}</div>
+          </div>
+        </div>
+        <button style="font-size:.65rem;color:var(--red);cursor:pointer;font-weight:600;padding:4px 9px;border-radius:7px;background:var(--red-dim);border:none;" onclick="gRemoveGuideCard('${c.id}')">Remove</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
+        <div style="background:var(--bg2);border-radius:9px;padding:7px 10px;">
+          <div style="font-size:.55rem;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);font-weight:700;margin-bottom:2px;">Owe Now</div>
+          <div style="font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:${color};">${currencySymbol}${fmt(info.used,0)}</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:9px;padding:7px 10px;">
+          <div style="font-size:.55rem;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);font-weight:700;margin-bottom:2px;">Available</div>
+          <div style="font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--green);">${currencySymbol}${fmt(avail,0)}</div>
+        </div>
+      </div>
+      <div style="height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:${color};border-radius:99px;transition:width .5s;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:.62rem;color:var(--text3);">
+        <span>${pct}% used</span>
+        <span style="color:${info.used>0?color:'var(--green)'}">${info.used>0?'Has outstanding balance':'✓ Clear'}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+function gRemoveGuideCard(id){
+  // Also remove any opening balance transactions for this card
+  transactions=transactions.filter(t=>!(t.creditCardId===id && t.note && t.note.includes('Opening balance')));
+  creditCards=creditCards.filter(c=>c.id!==id);
+  persist(); gRenderGuideCards();
+}
+
+function gSyncGuideState(){
+  gCycleMode = cycleMode;
+  gLimitVal  = cycleLimit;
+  // Theme highlight
+  ['dark','pink','white'].forEach(n=>{
+    const c=document.getElementById(`g-theme-${n}`);
+    if(c) c.classList.toggle('active-g', n===activeTheme);
+  });
+  // Cycle mode + fields
+  gSelectCycleMode(cycleMode);
+  if(cycleMode==='monthly'){const e=document.getElementById('g-pay-day');if(e)e.value=cycleConfig.monthly.payDay;}
+  if(cycleMode==='bimonthly'){['s1','e1','s2','e2'].forEach(k=>{const e=document.getElementById(`g-bi-${k}`);if(e)e.value=cycleConfig.bimonthly[k];});}
+  if(cycleMode==='custom'){
+    const s=document.getElementById('g-cust-start');if(s)s.value=cycleConfig.custom.start;
+    const l=document.getElementById('g-cust-len');if(l)l.value=cycleConfig.custom.len;
+  }
+  gUpdateLimitDisplay();
+  const stored=localStorage.getItem('ledger_defaultGoal')||'';
+  const inp=document.getElementById('g-savings-goal-input');
+  if(inp) inp.value=stored;
+  gOnGoalType();
+  // Render any already-added credit cards in the guide list
+  gRenderGuideCards();
+}
+
+// ════════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded',()=>{
+  setTheme(activeTheme);
+  activeCycleKey = currentCycleKey();
+  const df=document.getElementById('f-date'); df.value=todayStr(); df.max=todayStr();
+  document.getElementById('f-amount').addEventListener('input',updateSaveBtn);
+  buildCatGrid();
+  renderFeed();
+  setupMonthSwipe();
+  // Show onboarding for first-time users
+  if(!localStorage.getItem('ledger_onboarded')){
+    setTimeout(()=>obOpen(), 400);
+  }
+  // PWA setup
+  pwaInit();
+});
+
+// ════════════════════════════════════════════════════════════
+//  PWA — manifest · service worker · install prompt
+// ════════════════════════════════════════════════════════════
+let _pwaPrompt = null;
+
+function pwaGenIcon(size=512){
+  const c=document.createElement('canvas');
+  c.width=c.height=size; const ctx=c.getContext('2d');
+  const r=size*0.18;
+  // Background rounded rect
+  ctx.beginPath();
+  ctx.moveTo(r,0); ctx.lineTo(size-r,0); ctx.quadraticCurveTo(size,0,size,r);
+  ctx.lineTo(size,size-r); ctx.quadraticCurveTo(size,size,size-r,size);
+  ctx.lineTo(r,size); ctx.quadraticCurveTo(0,size,0,size-r);
+  ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0); ctx.closePath();
+  ctx.fillStyle='#080810'; ctx.fill();
+  // Book spine
+  const sx=size*0.19, sy=size*0.18, sw=size*0.09, sh=size*0.64;
+  ctx.beginPath(); ctx.roundRect(sx,sy,sw,sh,size*0.04);
+  ctx.fillStyle='#d4a853'; ctx.fill();
+  // Book body
+  const bx=sx+sw*0.6, by=sy, bw=size*0.55, bh=sh;
+  ctx.beginPath(); ctx.roundRect(bx,by,bw,bh,size*0.04);
+  ctx.fillStyle='#1a1a28'; ctx.fill();
+  ctx.strokeStyle='#d4a853'; ctx.lineWidth=size*0.018; ctx.stroke();
+  // Lines
+  const lx=bx+bw*0.15, lw=bw*0.72;
+  [[0.26,'#d4a853',0.04],[0.40,'#8a8598',0.032],[0.52,'#8a8598',0.032],[0.64,'#8a8598',0.032],[0.76,'#8a8598',0.032]].forEach(([yp,col,lh])=>{
+    ctx.beginPath(); ctx.roundRect(lx, sy+sh*yp, lw*(yp===0.26?1:0.82), size*lh, size*0.016);
+    ctx.fillStyle=col; ctx.fill();
+  });
+  // Gold dot accent
+  ctx.beginPath(); ctx.arc(size*0.72, size*0.78, size*0.055, 0, Math.PI*2);
+  ctx.fillStyle='#d4a853'; ctx.fill();
+  return c.toDataURL('image/png');
+}
+
+function pwaInit(){
+  // Generate icon
+  const icon512 = pwaGenIcon(512);
+  const icon192 = pwaGenIcon(192);
+
+  // Apple touch icon
+  const appleLink = document.getElementById('pwa-apple-icon');
+  if(appleLink) appleLink.href = icon192;
+
+  // Render icon in banners
+  ['pwa-banner-icon','ios-sheet-icon'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){ const img=document.createElement('img'); img.src=icon192; img.style.cssText='width:100%;height:100%;border-radius:inherit;'; el.appendChild(img); }
+  });
+
+  // Build & inject manifest
+  const manifest={
+    name:'My Ledger',
+    short_name:'My Ledger',
+    description:'Personal pay-cycle money tracker — income, expenses, savings & credit cards.',
+    start_url:location.href,
+    scope:location.href,
+    display:'standalone',
+    orientation:'portrait',
+    background_color:'#080810',
+    theme_color:'#080810',
+    categories:['finance','productivity'],
+    icons:[
+      {src:icon192,sizes:'192x192',type:'image/png',purpose:'any maskable'},
+      {src:icon512,sizes:'512x512',type:'image/png',purpose:'any maskable'}
+    ]
+  };
+  const manifestLink=document.getElementById('pwa-manifest-link');
+  if(manifestLink){
+    const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+    manifestLink.href=URL.createObjectURL(blob);
+  }
+
+  // Register service worker via blob
+  if('serviceWorker' in navigator){
+    const swCode=`
+const CACHE='myledger-v1';
+const ASSETS=[${JSON.stringify(location.href)}];
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET') return;
+  e.respondWith(
+    caches.match(e.request).then(cached=>{
+      const fetchPromise=fetch(e.request).then(resp=>{
+        if(resp && resp.status===200){
+          const clone=resp.clone();
+          caches.open(CACHE).then(c=>c.put(e.request,clone));
+        }
+        return resp;
+      }).catch(()=>cached);
+      return cached || fetchPromise;
+    })
+  );
+});`;
+    const swBlob=new Blob([swCode],{type:'application/javascript'});
+    const swUrl=URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl,{scope:'./'})
+      .then(()=>console.log('[PWA] Service worker registered ✓'))
+      .catch(e=>console.warn('[PWA] SW registration failed:',e));
+  }
+
+  // Install prompt — Android Chrome
+  const dismissed = localStorage.getItem('pwa_dismissed');
+  const isInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if(isInstalled){ document.getElementById('pwa-banner').style.display='none'; return; }
+
+  window.addEventListener('beforeinstallprompt', e=>{
+    e.preventDefault();
+    _pwaPrompt = e;
+    if(!dismissed){
+      setTimeout(()=>{
+        document.getElementById('pwa-banner').style.display='flex';
+        document.getElementById('pwa-banner-sub').textContent='Tap Install — works offline, no app store needed';
+      }, 3000);
+    }
+  });
+
+  // iOS Safari — show manual instructions banner
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isSafari = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent);
+  if(isIos && isSafari && !dismissed){
+    setTimeout(()=>{
+      const banner=document.getElementById('pwa-banner');
+      banner.style.display='flex';
+      document.getElementById('pwa-banner-sub').textContent='Tap to see how to add to Home Screen';
+      document.getElementById('pwa-banner-btn').textContent='How to Install';
+    }, 3000);
+  }
+}
+
+function pwaInstall(){
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if(_pwaPrompt){
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(r=>{
+      if(r.outcome==='accepted') pwaDismiss();
+      _pwaPrompt=null;
+    });
+  } else if(isIos){
+    document.getElementById('pwa-banner').style.display='none';
+    document.getElementById('ios-install-sheet').classList.add('open');
+  }
+}
+function pwaDismiss(){
+  document.getElementById('pwa-banner').style.display='none';
+  localStorage.setItem('pwa_dismissed','1');
+}
+function closeIosSheet(e){
+  if(e && e.target!==document.getElementById('ios-install-sheet')) return;
+  document.getElementById('ios-install-sheet').classList.remove('open');
+}
+</script>
+</body>
+</html>
