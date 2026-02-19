@@ -83,11 +83,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .cycle-label{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--text);}
 .cycle-range{font-size:.62rem;color:var(--text3);font-weight:500;margin-top:2px;}
 
-/* ── PERIOD TABS ── */
-.period-tabs{display:flex;gap:6px;padding:0 20px 10px;overflow-x:auto;scrollbar-width:none;}
-.period-tabs::-webkit-scrollbar{display:none;}
-.ptab{flex-shrink:0;padding:7px 14px;border-radius:99px;font-size:.7rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--text3);white-space:nowrap;transition:all .2s;}
-.ptab.active{background:var(--accent);color:var(--bg);border-color:var(--accent);box-shadow:0 0 16px var(--accent-dim);}
+
 
 /* ── HERO ── */
 .hero-card{margin:0 20px 12px;background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:22px;padding:20px 22px 18px;position:relative;overflow:hidden;}
@@ -108,7 +104,16 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .c-inc{color:var(--green);}.c-exp{color:var(--red);}.c-sav{color:var(--accent);}
 .c-pos{color:var(--green);}.c-neg{color:var(--red);}
 
-/* ── STREAK ── */
+/* ── FEED BALANCE BAR ── */
+.feed-balance-bar{margin:0 20px 10px;background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:12px;}
+.fbb-left{flex:1;min-width:0;}
+.fbb-label{font-size:.58rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);font-weight:700;margin-bottom:2px;}
+.fbb-amount{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;letter-spacing:-.5px;line-height:1;}
+.fbb-track{height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-top:6px;}
+.fbb-fill{height:100%;border-radius:99px;transition:width .5s ease;}
+.fbb-stats{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;}
+.fbb-stat{font-size:.65rem;font-weight:700;display:flex;align-items:center;gap:4px;}
+.fbb-stat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
 .streak-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent-dim);border:1px solid var(--border2);border-radius:99px;padding:4px 10px;font-size:.67rem;font-weight:700;color:var(--accent);margin-bottom:10px;}
 
 /* ── BUDGET ── */
@@ -290,9 +295,28 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .nav-icon{font-size:1.25rem;line-height:1;}
 .nav-lbl{font-size:.57rem;font-weight:700;color:var(--text3);letter-spacing:.6px;text-transform:uppercase;}
 .nav-btn.active .nav-lbl{color:var(--text);}
-.fab-wrap{flex-shrink:0;display:flex;align-items:flex-start;}
-.fab{width:56px;height:56px;border-radius:18px;background:var(--accent);border:none;font-size:1.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px var(--accent-dim),0 8px 40px #00000050;transition:transform .15s;margin-top:-8px;color:var(--bg);font-weight:900;}
+.fab-wrap{flex-shrink:0;display:flex;align-items:flex-start;position:relative;z-index:51;}
+.fab{width:56px;height:56px;border-radius:18px;background:var(--accent);border:none;font-size:1.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px var(--accent-dim),0 8px 40px #00000050;transition:transform .2s;margin-top:-8px;color:var(--bg);font-weight:900;}
 .fab:active{transform:scale(.92);}
+/* Speed-dial — horizontal arc */
+.fab-dial{position:absolute;bottom:calc(100% + 20px);left:50%;transform:translateX(-50%);width:210px;display:flex;flex-direction:row;align-items:flex-end;justify-content:center;gap:12px;pointer-events:none;}
+.fab-dial.open{pointer-events:all;}
+/* Each button starts collapsed at center and flies to its arc position */
+.fab-dial-btn{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 4px 20px #00000060;
+  opacity:0;transform:translateY(16px) scale(.7);transition:opacity .22s,transform .22s;}
+.fab-dial.open .fab-dial-btn:nth-child(1){opacity:1;transform:translateY(10px) scale(1);transition-delay:.04s;}
+.fab-dial.open .fab-dial-btn:nth-child(2){opacity:1;transform:translateY(0px) scale(1);transition-delay:.02s;}
+.fab-dial.open .fab-dial-btn:nth-child(3){opacity:1;transform:translateY(10px) scale(1);transition-delay:.04s;}
+.fab-dial-btn:active{opacity:.85;transform:scale(.9) translateY(var(--btn-y,0px))!important;}
+.fab-dial-btn:nth-child(1){--btn-y:10px;}
+.fab-dial-btn:nth-child(3){--btn-y:10px;}
+.fab-dial-icon{font-size:1.25rem;line-height:1;}
+.fab-dial-lbl{font-size:.46rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;}
+.fab-dial-income{background:var(--green);}
+.fab-dial-expense{background:var(--red);}
+.fab-dial-savings{background:var(--accent);}
+.fab-backdrop{position:fixed;inset:0;z-index:49;display:none;}
+.fab-backdrop.open{display:block;}
 
 /* SETTINGS */
 .settings-card{background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;}
@@ -452,6 +476,14 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .cc-picker{width:100%;background:var(--bg2);border:1.5px solid var(--border2);border-radius:13px;padding:12px 15px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;outline:none;}
 .cc-picker:focus{border-color:#a855f7;}
 .cc-hint{margin-top:6px;font-size:.7rem;color:#a855f7;font-weight:600;display:flex;align-items:center;gap:5px;}
+/* Payment Method selector */
+.pay-method-row{display:flex;gap:8px;margin-bottom:2px;}
+.pay-method-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:13px 10px;border-radius:14px;border:1.5px solid var(--border2);background:var(--bg2);cursor:pointer;transition:all .18s;font-family:'Plus Jakarta Sans',sans-serif;}
+.pay-method-btn.active{border-color:var(--red);background:var(--red-dim);box-shadow:0 0 14px var(--red-dim);}
+.pay-method-icon{font-size:1.3rem;line-height:1;}
+.pay-method-label{font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.3px;}
+.pay-method-btn.active .pay-method-label{color:var(--red);}
+.pay-method-btn:active{transform:scale(.96);}
 /* credit tag on transaction cards */
 .cc-tag{display:inline-flex;align-items:center;gap:4px;background:#a855f718;border:1px solid #a855f730;border-radius:6px;padding:2px 7px;font-size:.58rem;font-weight:700;color:#a855f7;margin-left:4px;}
 /* pay modal */
@@ -589,7 +621,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <div class="topbar">
     <div class="top-row">
       <div>
-        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v1.2</span></div>
+        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v1.3</span></div>
         <div class="top-sub" id="cycle-mode-label">Pay-cycle tracker</div>
       </div>
       <div style="display:flex;align-items:center;gap:7px;">
@@ -606,7 +638,20 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       </div>
       <button class="mnav-btn" id="mnav-next" onclick="shiftCycle(1)">›</button>
     </div>
-    <div class="period-tabs" id="period-tabs"></div>
+
+  </div>
+
+  <div class="feed-balance-bar" id="feed-balance-bar">
+    <div class="fbb-left">
+      <div class="fbb-label">Balance Remaining</div>
+      <div class="fbb-amount" id="fbb-amount">—</div>
+      <div class="fbb-track"><div class="fbb-fill" id="fbb-fill" style="width:0%;"></div></div>
+    </div>
+    <div class="fbb-stats">
+      <div class="fbb-stat"><div class="fbb-stat-dot" style="background:var(--green);"></div><span id="fbb-income" style="color:var(--text2);">—</span></div>
+      <div class="fbb-stat"><div class="fbb-stat-dot" style="background:var(--red);"></div><span id="fbb-expense" style="color:var(--text2);">—</span></div>
+      <div class="fbb-stat"><div class="fbb-stat-dot" style="background:var(--accent);"></div><span id="fbb-savings" style="color:var(--text2);">—</span></div>
+    </div>
   </div>
 
   <div id="budget-area"></div>
@@ -796,6 +841,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         <div class="settings-title">Export All Data</div>
         <div class="settings-desc">Exports <strong>everything</strong>: all transactions, budgets, currency, theme, and cycle settings — as a single <code>.json</code> backup file.<br/><br/>Your data auto-saves in the browser after every change. Use Export when switching devices or clearing your browser.</div>
         <button class="settings-btn btn-accent" onclick="exportData()">📤 Download Full Backup (.json)</button>
+        <button class="settings-btn" style="background:var(--green-dim);color:var(--green);border:1.5px solid var(--green);margin-top:7px;" onclick="exportCSV()">📊 Export Transactions (.csv)</button>
       </div>
     </div>
 
@@ -866,7 +912,15 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <button class="nav-btn active" id="nav-feed" onclick="nav('feed')">
     <span class="nav-icon">🏠</span><span class="nav-lbl">Feed</span>
   </button>
-  <div class="fab-wrap"><button class="fab" onclick="openSheet()">＋</button></div>
+  <div class="fab-wrap">
+    <div class="fab-dial" id="fab-dial">
+      <button class="fab-dial-btn fab-dial-income" onclick="openSheetType('income')"><span class="fab-dial-icon">💼</span><span class="fab-dial-lbl" style="color:var(--bg)">Income</span></button>
+      <button class="fab-dial-btn fab-dial-expense" onclick="openSheetType('expense')"><span class="fab-dial-icon">🛒</span><span class="fab-dial-lbl" style="color:#fff">Expense</span></button>
+      <button class="fab-dial-btn fab-dial-savings" onclick="openSheetType('savings')"><span class="fab-dial-icon">🏦</span><span class="fab-dial-lbl" style="color:var(--bg)">Savings</span></button>
+    </div>
+    <button class="fab" id="fab-main" onclick="toggleFabDial()">＋</button>
+  </div>
+  <div class="fab-backdrop" id="fab-backdrop" onclick="closeFabDial()"></div>
   <button class="nav-btn" id="nav-dashboard" onclick="nav('dashboard')">
     <span class="nav-icon">📊</span><span class="nav-lbl">Dashboard</span>
   </button>
@@ -1351,44 +1405,65 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     </div>
     <div class="wn-body">
       <div class="wn-item">
+        <div class="wn-icon" style="background:var(--accent-dim)">➕</div>
+        <div class="wn-info">
+          <div class="wn-name">Redesigned FAB Speed-Dial <span class="wn-new-pill">v1.3</span></div>
+          <div class="wn-desc">The three quick-add buttons (Income, Expense, Savings) are now circular and float higher above the nav bar for a cleaner, more modern look.</div>
+        </div>
+      </div>
+      <div class="wn-item">
+        <div class="wn-icon" style="background:var(--red-dim)">💳</div>
+        <div class="wn-info">
+          <div class="wn-name">Payment Method Selector <span class="wn-new-pill">v1.3</span></div>
+          <div class="wn-desc">When logging an expense, choose between Cash or Credit Card using a visual pill selector — clearer and faster than the old toggle.</div>
+        </div>
+      </div>
+      <div class="wn-item">
+        <div class="wn-icon" style="background:var(--green-dim)">💼</div>
+        <div class="wn-info">
+          <div class="wn-name">Smarter Sheet Defaults <span class="wn-new-pill">v1.3</span></div>
+          <div class="wn-desc">Opening Income now pre-selects Salary. Opening Savings skips the category picker entirely — it's cleaner and less clutter.</div>
+        </div>
+      </div>
+      <div class="wn-item">
         <div class="wn-icon" style="background:var(--red-dim)">👆</div>
         <div class="wn-info">
-          <div class="wn-name">Swipe to Delete <span class="wn-new-pill">New</span></div>
+          <div class="wn-name">Swipe to Delete</div>
           <div class="wn-desc">On the feed, swipe any transaction left to reveal the delete button. Quick and easy without opening the card.</div>
         </div>
       </div>
       <div class="wn-item">
         <div class="wn-icon" style="background:var(--accent-dim)">⚡</div>
         <div class="wn-info">
-          <div class="wn-name">Quick Add Templates <span class="wn-new-pill">New</span></div>
+          <div class="wn-name">Quick Add Templates </div>
           <div class="wn-desc">Your recurring transactions now appear as one-tap quick-add buttons at the top of the add sheet — no need to fill in the form every time.</div>
         </div>
       </div>
       <div class="wn-item">
         <div class="wn-icon" style="background:var(--blue-dim)">🔁</div>
         <div class="wn-info">
-          <div class="wn-name">Smarter Recurring Transactions <span class="wn-new-pill">New</span></div>
+          <div class="wn-name">Smarter Recurring Transactions </div>
           <div class="wn-desc">Set recurring transactions as weekly or monthly. Monthly ones auto-generate into each new cycle so you never forget to log them.</div>
         </div>
       </div>
       <div class="wn-item">
         <div class="wn-icon" style="background:var(--green-dim)">📈</div>
         <div class="wn-info">
-          <div class="wn-name">Cash Flow Projection <span class="wn-new-pill">New</span></div>
+          <div class="wn-name">Cash Flow Projection </div>
           <div class="wn-desc">See a forecast of your cash flow for the rest of the cycle based on your recurring income and expenses.</div>
         </div>
       </div>
       <div class="wn-item">
         <div class="wn-icon" style="background:#a855f718">🎯</div>
         <div class="wn-info">
-          <div class="wn-name">Savings Goal Targets <span class="wn-new-pill">New</span></div>
+          <div class="wn-name">Savings Goal Targets </div>
           <div class="wn-desc">You can now set a target amount for each savings goal and track your progress with a visual ring indicator.</div>
         </div>
       </div>
       <div class="wn-item">
         <div class="wn-icon" style="background:var(--red-dim)">🔐</div>
         <div class="wn-info">
-          <div class="wn-name">PIN Lock <span class="wn-new-pill">New</span></div>
+          <div class="wn-name">PIN Lock </div>
           <div class="wn-desc">Protect your financial data with a 4-digit PIN. Set it up in Settings anytime. Uses SHA-256 hashing to keep it secure.</div>
         </div>
       </div>
@@ -1459,9 +1534,16 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       </div>
     </div>
     <div class="form-section" id="credit-toggle-section" style="display:none;">
-      <div class="toggle-row">
-        <div><div class="toggle-label">💳 Pay with Credit Card</div><div class="toggle-sub">Charges to card, not your balance</div></div>
-        <div class="toggle" id="credit-toggle" onclick="toggleCredit()"></div>
+      <div class="form-lbl">Payment Method</div>
+      <div class="pay-method-row">
+        <button class="pay-method-btn active" id="pay-method-cash" onclick="setPayMethod('cash')">
+          <span class="pay-method-icon">💵</span>
+          <span class="pay-method-label">Cash</span>
+        </button>
+        <button class="pay-method-btn" id="pay-method-credit" onclick="setPayMethod('credit')">
+          <span class="pay-method-icon">💳</span>
+          <span class="pay-method-label">Credit Card</span>
+        </button>
       </div>
       <div class="cc-picker-wrap" id="cc-picker-wrap">
         <select class="cc-picker" id="f-credit-card"></select>
@@ -2168,8 +2250,37 @@ function nav(v){
 // ════════════════════════════════════════════════════════════
 //  BOTTOM SHEET
 // ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+//  SPEED-DIAL FAB
+// ════════════════════════════════════════════════════════════
+function toggleFabDial(){
+  const dial=document.getElementById('fab-dial');
+  const backdrop=document.getElementById('fab-backdrop');
+  const fab=document.getElementById('fab-main');
+  const isOpen=dial.classList.contains('open');
+  if(isOpen){ closeFabDial(); }
+  else { dial.classList.add('open'); backdrop.classList.add('open'); fab.style.transform='rotate(45deg) scale(.92)'; fab.style.boxShadow='0 4px 24px var(--accent-dim)'; }
+}
+function closeFabDial(){
+  const dial=document.getElementById('fab-dial');
+  const backdrop=document.getElementById('fab-backdrop');
+  const fab=document.getElementById('fab-main');
+  dial.classList.remove('open'); backdrop.classList.remove('open'); fab.style.transform=''; fab.style.boxShadow='';
+}
+let sheetTypeFilter = null; // set when opening from FAB dial — null = show all
+function openSheetType(type){
+  closeFabDial();
+  sheetTypeFilter = type;
+  const cat = CATS.find(c=>c.t===type);
+  if(cat){ selectedCat = cat.k; }
+  openSheet();
+}
+
 function openSheet(tx=null){
   editingId=null; isRecurring=false; isCreditPay=false; recurFreq='weekly';
+  // Clear type filter unless we just set it via openSheetType
+  if(!tx) { /* keep sheetTypeFilter if set by openSheetType */ }
+  if(tx) sheetTypeFilter=null; // editing: always show all categories
   const df=document.getElementById('f-date');
 
   // Set date bounds based on which cycle we're adding to
@@ -2196,10 +2307,15 @@ function openSheet(tx=null){
   if(document.getElementById('f-goal-target')) document.getElementById('f-goal-target').value='';
   if(document.getElementById('goal-target-sym')) document.getElementById('goal-target-sym').textContent=currencySymbol;
   if(document.getElementById('goal-progress-hint')) document.getElementById('goal-progress-hint').style.display='none';
-  document.getElementById('savings-goal-section').style.display='none';
+  document.getElementById('savings-goal-section').style.display = (sheetTypeFilter==='savings') ? 'block' : 'none';
   document.getElementById('add-toast').style.display='none';
   document.getElementById('date-err').style.display='none';
-  selectedCat='transport';
+  if(sheetTypeFilter){
+    const defaultCat=CATS.find(c=>c.t===sheetTypeFilter);
+    selectedCat=defaultCat?defaultCat.k:'transport';
+  } else {
+    selectedCat='transport';
+  }
   if(tx){
     editingId=tx.id; df.value=tx.date;
     document.getElementById('f-amount').value=tx.amount;
@@ -2222,8 +2338,13 @@ function openSheet(tx=null){
   document.getElementById('recur-freq-wrap').style.display=isRecurring?'flex':'none';
   updateRecurFreqUI();
   // Credit toggle
-  document.getElementById('credit-toggle').className='toggle';
+  document.getElementById('credit-toggle')&&(document.getElementById('credit-toggle').className='toggle');
   document.getElementById('cc-picker-wrap').classList.remove('open');
+  // Reset payment method buttons
+  const cashBtn=document.getElementById('pay-method-cash');
+  const creditBtn=document.getElementById('pay-method-credit');
+  if(cashBtn) cashBtn.classList.add('active');
+  if(creditBtn) creditBtn.classList.remove('active');
   // Show credit toggle section only for expenses and if cards exist
   const hasCCs = creditCards.length > 0;
   // Compute available balance for the cycle
@@ -2238,7 +2359,7 @@ function openSheet(tx=null){
 function closeSheet(){
   document.getElementById('sheet-overlay').classList.remove('active');
   document.getElementById('add-sheet').classList.remove('open');
-  sheetOpen=false; expandedTx=null;
+  sheetOpen=false; expandedTx=null; sheetTypeFilter=null;
 }
 function toggleRecur(){
   isRecurring=!isRecurring;
@@ -2261,7 +2382,19 @@ function updateRecurFreqUI(){
 }
 function toggleCredit(){
   isCreditPay=!isCreditPay;
-  document.getElementById('credit-toggle').className='toggle'+(isCreditPay?' on':'');
+  document.getElementById('credit-toggle')&&(document.getElementById('credit-toggle').className='toggle'+(isCreditPay?' on':''));
+  const wrap=document.getElementById('cc-picker-wrap');
+  if(isCreditPay){ wrap.classList.add('open'); populateCardPicker(); }
+  else { wrap.classList.remove('open'); }
+  updateRemainingHint(); updateSaveBtn();
+}
+function setPayMethod(method){
+  isCreditPay = (method==='credit');
+  // Update button styles
+  const cashBtn=document.getElementById('pay-method-cash');
+  const creditBtn=document.getElementById('pay-method-credit');
+  if(cashBtn) cashBtn.classList.toggle('active', !isCreditPay);
+  if(creditBtn) creditBtn.classList.toggle('active', isCreditPay);
   const wrap=document.getElementById('cc-picker-wrap');
   if(isCreditPay){ wrap.classList.add('open'); populateCardPicker(); }
   else { wrap.classList.remove('open'); }
@@ -2271,8 +2404,21 @@ function updateCreditToggleVisibility(){
   const cat=CATS.find(c=>c.k===selectedCat);
   const isExp = cat && cat.t==='expense';
   const sec=document.getElementById('credit-toggle-section');
-  if(isExp && creditCards.length>0){ sec.style.display='block'; }
-  else { sec.style.display='none'; isCreditPay=false; document.getElementById('credit-toggle').className='toggle'; document.getElementById('cc-picker-wrap').classList.remove('open'); }
+  if(isExp && creditCards.length>0){
+    sec.style.display='block';
+    // Reset to cash method when showing
+    if(!isCreditPay){
+      const cashBtn=document.getElementById('pay-method-cash');
+      const creditBtn=document.getElementById('pay-method-credit');
+      if(cashBtn) cashBtn.classList.add('active');
+      if(creditBtn) creditBtn.classList.remove('active');
+    }
+  }
+  else {
+    sec.style.display='none'; isCreditPay=false;
+    document.getElementById('credit-toggle')&&(document.getElementById('credit-toggle').className='toggle');
+    document.getElementById('cc-picker-wrap').classList.remove('open');
+  }
 }
 function populateCardPicker(){
   const sel=document.getElementById('f-credit-card');
@@ -2303,7 +2449,14 @@ function updateCCHint(){
 //  CATEGORIES
 // ════════════════════════════════════════════════════════════
 function buildCatGrid(){
-  document.getElementById('cat-grid').innerHTML=CATS.map(c=>`
+  const catSection = document.getElementById('cat-grid')?.closest('.form-section');
+  if(sheetTypeFilter==='savings'){
+    if(catSection) catSection.style.display='none';
+    return;
+  }
+  if(catSection) catSection.style.display='';
+  const cats = sheetTypeFilter ? CATS.filter(c=>c.t===sheetTypeFilter) : CATS;
+  document.getElementById('cat-grid').innerHTML=cats.map(c=>`
     <div class="cat-tile ${selectedCat===c.k?`sel-${c.t}`:''}\" onclick=\"selectCat('${c.k}')">
       <span class="cat-icon">${c.i}</span><span class="cat-name">${c.l}</span>
     </div>`).join('');
@@ -2420,13 +2573,13 @@ function saveTransaction(){
   expandedTx=null; deleteConfirm=null;
   if(navigator.vibrate) navigator.vibrate(30);
   document.getElementById('add-toast').style.display='flex';
-  setTimeout(()=>{closeSheet();renderFeed();},900);
+  setTimeout(()=>{closeSheet();renderFeed();renderDash();},900);
 }
 function deleteTx(id){
   transactions=transactions.filter(t=>t.id!==id);
   persist(); deleteConfirm=null; expandedTx=null;
   if(navigator.vibrate) navigator.vibrate([20,10,20]);
-  renderFeed();
+  renderFeed(); renderDash();
 }
 
 // ════════════════════════════════════════════════════════════
@@ -2775,16 +2928,24 @@ function renderFeed(){
   document.getElementById('cycle-label').textContent=cycleLabel(activeCycleKey);
   document.getElementById('cycle-range').textContent=cycleRangeStr(activeCycleKey);
 
-  // Period tabs — 3 most recent cycles, oldest LEFT → newest RIGHT
-  const tabKeys=allKeys.slice(0,3).reverse();
-  document.getElementById('period-tabs').innerHTML=tabKeys.map(ck=>`
-    <button class="ptab ${activeCycleKey===ck?'active':''}\" onclick=\"setCycle('${ck}')">${cycleLabel(ck,true)}</button>`).join('');
-  // Auto-scroll tabs to keep active tab visible (latest on right)
-  requestAnimationFrame(()=>{
-    const tabs=document.getElementById('period-tabs');
-    const active=tabs.querySelector('.ptab.active');
-    if(active) active.scrollIntoView({inline:'nearest',block:'nearest'});
-  });
+  // ── Balance bar ──
+  const bs = cycleStats(activeCycleKey);
+  const balAvail = getCycleAvailable(activeCycleKey);
+  const balPct = bs.income > 0 ? Math.min(100, Math.max(0, (balAvail / bs.income) * 100)) : 0;
+  const balColor = balPct > 40 ? 'var(--green)' : balPct > 15 ? 'var(--accent)' : 'var(--red)';
+  const amtEl = document.getElementById('fbb-amount');
+  const fillEl = document.getElementById('fbb-fill');
+  if(amtEl){
+    amtEl.textContent = c$(Math.max(0, balAvail));
+    amtEl.style.color = balColor;
+  }
+  if(fillEl){ fillEl.style.width = balPct+'%'; fillEl.style.background = balColor; }
+  const incEl=document.getElementById('fbb-income');
+  const expEl=document.getElementById('fbb-expense');
+  const savEl=document.getElementById('fbb-savings');
+  if(incEl) incEl.textContent = c$(bs.income);
+  if(expEl) expEl.textContent = c$(bs.expense);
+  if(savEl) savEl.textContent = c$(bs.savings);
 
   renderBudgets(); renderFilterChips();
 
@@ -2876,9 +3037,32 @@ function renderTxCard(tx){
 }
 
 function getTx(id){ return transactions.find(t=>t.id===id); }
-function toggleTx(id){ if(deleteConfirm)return; expandedTx=expandedTx===id?null:id; renderFeed(); }
-function setDel(id){ deleteConfirm=id; renderFeed(); }
-function setCycle(ck){ activeCycleKey=ck; expandedTx=null; deleteConfirm=null; renderFeed(); }
+function toggleTx(id){
+  if(deleteConfirm) return;
+  expandedTx = expandedTx===id ? null : id;
+  // Update only the affected card for performance
+  const wrap=document.querySelector(`.tx-wrap[data-id="${id}"]`);
+  if(wrap){ const tx=getTx(id); if(tx){ wrap.outerHTML=renderTxCard(tx); return; } }
+  renderFeed();
+}
+function setDel(id){
+  deleteConfirm=id;
+  // Update only the affected card for performance
+  if(id){
+    const wrap=document.querySelector(`.tx-wrap[data-id="${id}"]`);
+    if(wrap){ const tx=getTx(id); if(tx){ wrap.outerHTML=renderTxCard(tx); return; } }
+  } else {
+    // Cancel — find any card in delete state and re-render it
+    const prev=document.querySelector('.tx-wrap .act-confirm');
+    if(prev){ const wrap=prev.closest('.tx-wrap'); if(wrap){ const tx=getTx(parseInt(wrap.dataset.id)); if(tx){ wrap.outerHTML=renderTxCard(tx); return; } } }
+  }
+  renderFeed();
+}
+function setCycle(ck){ 
+  activeCycleKey=ck; expandedTx=null; deleteConfirm=null; 
+  if(ck===currentCycleKey()) autoGenerateRecurring();
+  renderFeed(); 
+}
 
 function shiftCycle(dir){
   const all=allCycleKeys(), idx=all.indexOf(activeCycleKey);
@@ -3239,6 +3423,32 @@ function exportData(){
   a.href=url; a.download=`spendoodle-backup-${dateStr}.json`; a.click();
   URL.revokeObjectURL(url);
   showSettingsToast('📤 Full backup exported!');
+}
+function exportCSV(){
+  const headers=['Date','Label','Type','Category','Amount','Currency','Note','Recurring','Savings Goal','Cycle'];
+  const rows=transactions.map(t=>{
+    const ck=getCycleKey(t.date);
+    return [
+      t.date,
+      `"${(t.label||'').replace(/"/g,'""')}"`,
+      t.type,
+      t.category||'',
+      t.amount,
+      currencySymbol,
+      `"${(t.note||'').replace(/"/g,'""')}"`,
+      t.recurring?'yes':'no',
+      `"${(t.savingsGoal||'').replace(/"/g,'""')}"`,
+      cycleLabel(ck,true)
+    ].join(',');
+  });
+  const csv=[headers.join(','),...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const dateStr=new Date().toISOString().slice(0,10);
+  a.href=url; a.download=`spendoodle-transactions-${dateStr}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  showSettingsToast('📊 CSV exported!');
 }
 function importData(e){
   const file=e.target.files[0]; if(!file)return;
@@ -3629,8 +3839,10 @@ window.addEventListener('DOMContentLoaded',()=>{
   const df=document.getElementById('f-date'); df.value=todayStr(); df.max=todayStr();
   document.getElementById('f-amount').addEventListener('input',updateSaveBtn);
   buildCatGrid();
+  autoGenerateRecurring(); // populate recurring txs into current cycle on load
   renderFeed();
   setupSwipeToDelete();
+  setupCycleSwipe();
   checkPinOnLoad();
   // Hide what's new badge if already seen
   if(localStorage.getItem('ledger_wn_seen')){
@@ -4090,6 +4302,31 @@ function setupSwipeToDelete(){
     }
     activeWrap=null; swipeDist=0;
   },{passive:true});
+}
+
+// ════════════════════════════════════════════════════════════
+//  CYCLE SWIPE GESTURE
+// ════════════════════════════════════════════════════════════
+function setupCycleSwipe(){
+  ['view-feed','view-dashboard'].forEach(viewId=>{
+    const view=document.getElementById(viewId);
+    if(!view) return;
+    let sx=0, sy=0, tracking=false;
+    view.addEventListener('touchstart',e=>{
+      // Don't intercept touches on transaction cards (handled by swipe-to-delete)
+      if(e.target.closest('.tx-wrap')||e.target.closest('.add-sheet')||e.target.closest('.sheet-overlay')) return;
+      sx=e.touches[0].clientX; sy=e.touches[0].clientY; tracking=true;
+    },{passive:true});
+    view.addEventListener('touchend',e=>{
+      if(!tracking) return; tracking=false;
+      const dx=e.changedTouches[0].clientX-sx;
+      const dy=e.changedTouches[0].clientY-sy;
+      if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5) return;
+      const isDash=viewId==='view-dashboard';
+      if(dx<0){ shiftCycle(-1); if(isDash) renderDash(); }
+      else     { shiftCycle(1);  if(isDash) renderDash(); }
+    },{passive:true});
+  });
 }
 </script>
 </body>
