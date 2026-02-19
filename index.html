@@ -141,8 +141,47 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .fc-savings{border-color:var(--accent)!important;color:var(--accent)!important;background:var(--accent-dim)!important;}
 .fc-recurring{border-color:var(--blue)!important;color:var(--blue)!important;background:var(--blue-dim)!important;}
 
-/* ── FEED CARDS ── */
-.feed-body{padding:0 20px 24px;}
+/* ── SWIPE TO DELETE ── */
+.tx-wrap{position:relative;margin-bottom:8px;overflow:hidden;}
+.tx-swipe-bg{position:absolute;right:0;top:0;bottom:0;width:80px;background:var(--red-dim);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;z-index:0;opacity:0;transition:opacity .15s;}
+.tx-wrap.swiping .tx-swipe-bg{opacity:1;}
+/* ── QUICK ADD TEMPLATES ── */
+.quick-add-row{display:flex;gap:7px;overflow-x:auto;padding:0 20px 10px;scrollbar-width:none;}
+.quick-add-row::-webkit-scrollbar{display:none;}
+.qa-chip{flex-shrink:0;background:var(--bg1);border:1.5px solid var(--blue);border-radius:12px;padding:7px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:2px;transition:all .18s;min-width:100px;}
+.qa-chip:active{background:var(--blue-dim);}
+.qa-chip-label{font-size:.68rem;font-weight:700;color:var(--text2);white-space:nowrap;}
+.qa-chip-amt{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:700;color:var(--blue);}
+.qa-chip-freq{font-size:.58rem;color:var(--text3);font-weight:600;}
+/* ── PROJECTION INLINE ── */
+.projection-inline{font-size:.67rem;font-weight:600;padding:4px 2px;display:flex;align-items:center;gap:5px;margin-top:4px;}
+/* ── PIN MODAL ── */
+.pin-overlay{position:fixed;inset:0;z-index:9000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;}
+.pin-overlay.hidden{display:none;}
+.pin-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;margin-bottom:6px;text-align:center;}
+.pin-sub{font-size:.78rem;color:var(--text3);text-align:center;margin-bottom:28px;}
+.pin-dots{display:flex;gap:12px;margin-bottom:28px;}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:all .15s;}
+.pin-dot.filled{background:var(--accent);border-color:var(--accent);}
+.pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:280px;}
+.pin-key{height:64px;border-radius:16px;border:1.5px solid var(--border2);background:var(--bg1);font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;}
+.pin-key:active{background:var(--bg2);border-color:var(--accent);transform:scale(.94);}
+.pin-key.del{font-size:1rem;color:var(--text3);}
+.pin-key.empty{border:none;background:transparent;pointer-events:none;}
+.pin-error{color:var(--red);font-size:.78rem;font-weight:700;margin-top:-16px;margin-bottom:8px;height:20px;}
+/* ── CUSTOM CONFIRM MODAL ── */
+.confirm-overlay{position:fixed;inset:0;z-index:500;background:#00000085;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.confirm-overlay.open{opacity:1;pointer-events:all;}
+.confirm-inner{width:100%;max-width:430px;background:var(--bg1);border-radius:22px 22px 0 0;padding:22px 22px calc(env(safe-area-inset-bottom,20px)+20px);transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);}
+.confirm-overlay.open .confirm-inner{transform:translateY(0);}
+.confirm-icon{font-size:2rem;text-align:center;margin-bottom:8px;}
+.confirm-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;text-align:center;margin-bottom:6px;}
+.confirm-msg{font-size:.78rem;color:var(--text3);text-align:center;line-height:1.7;margin-bottom:20px;}
+.confirm-btns{display:flex;gap:10px;}
+.confirm-btn{flex:1;padding:14px;border:none;border-radius:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.confirm-btn:active{transform:scale(.97);}
+.confirm-cancel{background:var(--bg2);color:var(--text2);}
+.confirm-ok{background:var(--red);color:#fff;}
 .date-group{margin-bottom:4px;}
 .date-hdr{display:flex;align-items:center;gap:10px;padding:12px 0 7px;}
 .date-hdr-label{font-size:.67rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);flex-shrink:0;}
@@ -164,6 +203,10 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .tx-amt{font-family:'Playfair Display',serif;font-size:.98rem;font-weight:700;}
 .recur-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;}
 .tx-recur-tag{font-size:.58rem;color:var(--blue);font-weight:700;}
+/* ── RECUR FREQUENCY ── */
+.recur-freq-wrap{display:flex;gap:7px;margin-top:10px;}
+.recur-freq-btn{flex:1;padding:9px 6px;border-radius:11px;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text3);font-family:'Plus Jakarta Sans',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;text-align:center;transition:all .18s;}
+.recur-freq-btn.active{border-color:var(--blue);background:var(--blue-dim);color:var(--blue);}
 .tx-actions{display:flex;gap:8px;padding:2px 0 10px;}
 .act{flex:1;padding:10px;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;border:1.5px solid;transition:all .15s;}
 .act-edit{color:var(--accent);border-color:var(--accent-dim);background:var(--accent-dim);}
@@ -218,7 +261,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .bar-col-val{font-size:.52rem;font-weight:700;margin-bottom:3px;white-space:nowrap;text-align:center;}
 .bar-col-track{flex:1;width:100%;display:flex;align-items:flex-end;}
 .bar-rect{width:100%;border-radius:5px 5px 2px 2px;min-height:4px;transition:height .5s cubic-bezier(.34,1.56,.64,1);}
-.bar-col-name{font-size:.52rem;color:var(--text3);font-weight:700;margin-top:5px;text-align:center;}
+.bar-col-name{font-size:.52rem;font-weight:700;margin-top:5px;text-align:center;}
 .bar-col.is-cur .bar-col-name{color:var(--accent);}
 
 /* DONUT */
@@ -542,22 +585,6 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     <div class="period-tabs" id="period-tabs"></div>
   </div>
 
-  <div style="padding:0 20px 10px;">
-    <div id="streak-area"></div>
-    <div class="hero-card">
-      <div class="hero-label" id="hero-label">Remaining this cycle</div>
-      <div class="hero-amount" id="hero-net">
-        <span class="sign" id="hero-sign"></span><span id="hero-net-val">0</span>
-      </div>
-      <div class="hero-grid">
-        <div class="hero-stat"><div class="hs-label">Income</div><div class="hs-val c-inc" id="hero-income">0</div></div>
-        <div class="hero-stat"><div class="hs-label">Spent</div><div class="hs-val c-exp" id="hero-expense">0</div></div>
-        <div class="hero-stat"><div class="hs-label">Saved</div><div class="hs-val c-sav" id="hero-savings">0</div></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="credit-area"></div>
   <div id="budget-area"></div>
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
@@ -573,6 +600,32 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <div class="topbar">
     <div class="top-row">
       <div><div class="top-title">Dash<span>board</span></div><div class="top-sub">Trends & insights</div></div>
+      <div style="display:flex;align-items:center;gap:7px;">
+        <div class="top-date" id="dash-date-label"></div>
+      </div>
+    </div>
+    <div class="cycle-nav">
+      <button class="mnav-btn" id="dash-mnav-prev" onclick="shiftCycle(-1);renderDash()">‹</button>
+      <div class="cycle-center">
+        <div class="cycle-label" id="dash-cycle-label"></div>
+        <div class="cycle-range" id="dash-cycle-range"></div>
+      </div>
+      <button class="mnav-btn" id="dash-mnav-next" onclick="shiftCycle(1);renderDash()">›</button>
+    </div>
+  </div>
+  <div style="padding:0 20px 10px;">
+    <div id="dash-streak-area"></div>
+    <div class="hero-card">
+      <div class="hero-label" id="hero-label">Remaining this cycle</div>
+      <div class="hero-amount" id="hero-net">
+        <span class="sign" id="hero-sign"></span><span id="hero-net-val">0</span>
+      </div>
+      <div class="hero-grid">
+        <div class="hero-stat"><div class="hs-label">Income</div><div class="hs-val c-inc" id="hero-income">0</div></div>
+        <div class="hero-stat"><div class="hs-label">Spent</div><div class="hs-val c-exp" id="hero-expense">0</div></div>
+        <div class="hero-stat"><div class="hs-label">Saved</div><div class="hs-val c-sav" id="hero-savings">0</div></div>
+      </div>
+      <div id="projection-inline" style="display:none;" class="projection-inline"></div>
     </div>
   </div>
   <div class="dash-body" id="dash-content"></div>
@@ -732,6 +785,16 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
           Choose ledger-data.json
           <input type="file" accept=".json" style="display:none;" onchange="importData(event)"/>
         </label>
+      </div>
+    </div>
+
+    <!-- PIN LOCK -->
+    <div class="settings-card">
+      <div class="settings-icon" style="background:var(--blue-dim)">🔐</div>
+      <div class="settings-body">
+        <div class="settings-title">PIN Lock</div>
+        <div class="settings-desc" id="pin-settings-desc">Protect your data with a 4-digit PIN. Required every time you open the app.</div>
+        <div id="pin-settings-btns"></div>
       </div>
     </div>
 
@@ -1125,7 +1188,47 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   </div>
 </div>
 
-<!-- ══ BOTTOM SHEET ══ -->
+<!-- ══ PIN LOCK OVERLAY ══ -->
+<div class="pin-overlay hidden" id="pin-overlay">
+  <div style="font-size:3rem;margin-bottom:16px;">🔐</div>
+  <div class="pin-title">My <span style="color:var(--accent)">Ledger</span></div>
+  <div class="pin-sub" id="pin-sub">Enter your PIN to unlock</div>
+  <div class="pin-dots" id="pin-dots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+  <div class="pin-keypad">
+    <button class="pin-key" onclick="pinKey('1')">1</button>
+    <button class="pin-key" onclick="pinKey('2')">2</button>
+    <button class="pin-key" onclick="pinKey('3')">3</button>
+    <button class="pin-key" onclick="pinKey('4')">4</button>
+    <button class="pin-key" onclick="pinKey('5')">5</button>
+    <button class="pin-key" onclick="pinKey('6')">6</button>
+    <button class="pin-key" onclick="pinKey('7')">7</button>
+    <button class="pin-key" onclick="pinKey('8')">8</button>
+    <button class="pin-key" onclick="pinKey('9')">9</button>
+    <button class="pin-key empty"></button>
+    <button class="pin-key" onclick="pinKey('0')">0</button>
+    <button class="pin-key del" onclick="pinDel()">⌫</button>
+  </div>
+  <button id="pin-skip-btn" style="margin-top:24px;background:transparent;border:none;font-size:.78rem;color:var(--text3);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;" onclick="pinSkip()">Forgot PIN? Reset App</button>
+</div>
+
+<!-- ══ CUSTOM CONFIRM MODAL ══ -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-inner">
+    <div class="confirm-icon" id="confirm-icon">🗑</div>
+    <div class="confirm-title" id="confirm-title">Are you sure?</div>
+    <div class="confirm-msg" id="confirm-msg">This action cannot be undone.</div>
+    <div class="confirm-btns">
+      <button class="confirm-btn confirm-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-btn confirm-ok" id="confirm-ok-btn" onclick="confirmOk()">Delete</button>
+    </div>
+  </div>
+</div>
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
 <div class="sheet" id="add-sheet">
   <div class="sheet-handle"></div>
@@ -1160,11 +1263,26 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <div id="goal-first-hint" style="display:none;margin-top:6px;font-size:.72rem;color:var(--accent);font-weight:600;">
         🎯 First savings entry! Give it a goal name or leave blank for "Emergency Fund".
       </div>
+      <!-- Target amount -->
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+        <div style="flex:1;background:var(--bg2);border:1.5px solid var(--border2);border-radius:11px;padding:8px 12px;display:flex;align-items:center;gap:6px;transition:border-color .2s;" id="goal-target-wrap">
+          <span style="font-size:.72rem;color:var(--text3);white-space:nowrap;">🎯 Target:</span>
+          <span style="font-size:.85rem;color:var(--text3);" id="goal-target-sym"></span>
+          <input type="number" id="f-goal-target" placeholder="optional"
+            style="flex:1;background:transparent;border:none;outline:none;font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--text);width:100%;"
+            oninput="onGoalTargetInput()" min="0"/>
+        </div>
+      </div>
+      <div id="goal-progress-hint" style="display:none;margin-top:5px;font-size:.7rem;color:var(--text3);line-height:1.5;"></div>
     </div>
     <div class="form-section">
       <div class="toggle-row">
-        <div><div class="toggle-label">🔄 Recurring</div><div class="toggle-sub">Monthly recurring transaction</div></div>
+        <div><div class="toggle-label">🔄 Recurring</div><div class="toggle-sub" id="recur-sub">Repeats every cycle</div></div>
         <div class="toggle" id="recur-toggle" onclick="toggleRecur()"></div>
+      </div>
+      <div class="recur-freq-wrap" id="recur-freq-wrap" style="display:none;">
+        <button class="recur-freq-btn active" id="recur-freq-weekly" onclick="setRecurFreq('weekly')">📅 Weekly</button>
+        <button class="recur-freq-btn" id="recur-freq-monthly" onclick="setRecurFreq('monthly')">🗓 Monthly</button>
       </div>
     </div>
     <div class="form-section" id="credit-toggle-section" style="display:none;">
@@ -1252,6 +1370,8 @@ let budgets        = JSON.parse(localStorage.getItem('ledger_budgets')  || '{}')
 let currencySymbol = localStorage.getItem('ledger_currency')            || '₱';
 let activeTheme    = localStorage.getItem('ledger_theme')               || 'dark';
 let creditCards    = JSON.parse(localStorage.getItem('ledger_cc')       || '[]');
+let goalTargets    = JSON.parse(localStorage.getItem('ledger_goalTargets') || '{}'); // {goalName: amount}
+let pinHash        = localStorage.getItem('ledger_pin')                 || '';  // SHA-256 hex of PIN
 
 // Cycle config
 let cycleMode      = localStorage.getItem('ledger_cycleMode')           || 'monthly';
@@ -1276,6 +1396,7 @@ let dashMetric   = 'income';
 let searchQuery  = '';
 let activeFilter = 'all';
 let isRecurring  = false;
+let recurFreq    = 'weekly'; // 'weekly' | 'monthly'
 let isCreditPay  = false;
 let sheetOpen    = false;
 
@@ -1291,6 +1412,7 @@ function persist(){
   localStorage.setItem('ledger_cycleConfig', JSON.stringify(cycleConfig));
   localStorage.setItem('ledger_cycleLimit',  String(cycleLimit));
   localStorage.setItem('ledger_cc',          JSON.stringify(creditCards));
+  localStorage.setItem('ledger_goalTargets', JSON.stringify(goalTargets));
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1583,16 +1705,95 @@ function goalsData(){
   return [...map.values()].sort((a,b)=>b.total-a.total);
 }
 
-let _goalBlurTimer=null;
+/** Generate missed recurring transactions for the current cycle */
+function autoGenerateRecurring(){
+  const curKey=currentCycleKey();
+  const {start:cStart, end:cEnd}=cycleRange(curKey);
+  const today=todayStr();
+  // Get all unique recurring templates (use the latest version of each unique label+category)
+  const templates=new Map();
+  [...transactions].sort((a,b)=>a.date.localeCompare(b.date)).filter(t=>t.recurring).forEach(t=>{
+    const key=`${t.category}::${t.label}::${t.recurFreq||'monthly'}`;
+    templates.set(key,t);
+  });
+  let added=0;
+  templates.forEach(tmpl=>{
+    // Only auto-generate monthly recurring into this cycle if none exists yet
+    if((tmpl.recurFreq||'monthly')!=='monthly') return; // only monthly auto-generate (weekly is too frequent)
+    const alreadyExists=cycleTxs(curKey).some(t=>
+      t.category===tmpl.category && t.label===tmpl.label && t.recurring && t.id!==tmpl.id
+    );
+    if(!alreadyExists){
+      const newTx={
+        ...tmpl,
+        id:Date.now()+Math.random(),
+        date: cStart<=today ? (cStart>today?cStart:today) : cStart,
+        autoGenerated:true
+      };
+      // Don't auto-generate into future
+      if(newTx.date<=today){
+        transactions.push(newTx);
+        added++;
+      }
+    }
+  });
+  if(added>0){
+    transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+    persist();
+  }
+  return added;
+}
+
+/** Get recurring transaction templates for quick-add */
+function getRecurringTemplates(){
+  const seen=new Map();
+  [...transactions].filter(t=>t.recurring).forEach(t=>{
+    const key=`${t.category}::${t.amount}::${t.recurFreq||'monthly'}`;
+    if(!seen.has(key)) seen.set(key,{...t});
+  });
+  return [...seen.values()].sort((a,b)=>b.amount-a.amount).slice(0,6);
+}
 function onGoalInput(){
   const q=document.getElementById('f-savings-goal').value.toLowerCase();
   const all=getSavingsGoals();
   const filtered=q ? all.filter(g=>g.toLowerCase().includes(q)) : all;
   renderGoalSuggestions(filtered);
+  // Update target field with stored target for this goal
+  setTimeout(refreshGoalTarget, 50);
+}
+function refreshGoalTarget(){
+  const goalName=normGoal(document.getElementById('f-savings-goal').value||'Emergency Fund');
+  const sym=document.getElementById('goal-target-sym');
+  if(sym) sym.textContent=currencySymbol;
+  const inp=document.getElementById('f-goal-target');
+  if(!inp) return;
+  const stored=goalTargets[goalName.toLowerCase()];
+  if(stored && !inp.value) inp.value=stored;
+  onGoalTargetInput();
+}
+function onGoalTargetInput(){
+  const goalName=normGoal(document.getElementById('f-savings-goal').value||'Emergency Fund');
+  const target=parseFloat(document.getElementById('f-goal-target').value)||0;
+  const wrap=document.getElementById('goal-target-wrap');
+  const hint=document.getElementById('goal-progress-hint');
+  if(wrap) wrap.style.borderColor=target>0?'var(--accent)':'var(--border2)';
+  if(!hint) return;
+  if(target>0){
+    const gd=goalsData();
+    const gEntry=gd.find(g=>g.name.toLowerCase()===goalName.toLowerCase());
+    const saved=gEntry?gEntry.total:0;
+    const pct=Math.min(Math.round((saved/target)*100),100);
+    const left=Math.max(target-saved,0);
+    hint.style.display='block';
+    hint.innerHTML=`<span style="color:var(--accent);font-weight:700;">${pct}% reached</span> · ${c$(saved)} of ${c$(target)} · <span style="color:var(--green);">${c$(left)} to go</span>`;
+  } else {
+    hint.style.display='none';
+  }
 }
 function onGoalFocus(){
   const all=getSavingsGoals();
   renderGoalSuggestions(all);
+  refreshGoalTarget();
 }
 function onGoalBlur(){
   // delay so click on suggestion registers first
@@ -1611,6 +1812,7 @@ function pickGoal(g){
   clearTimeout(_goalBlurTimer);
   document.getElementById('f-savings-goal').value=g;
   closeGoalSuggestions();
+  refreshGoalTarget();
 }
 function closeGoalSuggestions(){
   document.getElementById('goal-suggestions')?.classList.remove('open');
@@ -1633,7 +1835,7 @@ function calcStreak(){
 // ════════════════════════════════════════════════════════════
 function setTheme(t){
   activeTheme=t;
-  document.body.className='theme-'+t;
+  document.body.className=[...document.body.classList].filter(c=>!c.startsWith('theme-')).concat('theme-'+t).join(' ');
   ['dark','pink','white'].forEach(x=>{
     document.getElementById('theme-'+x)?.classList.toggle('active-theme',x===t);
   });
@@ -1753,7 +1955,7 @@ function nav(v){
 //  BOTTOM SHEET
 // ════════════════════════════════════════════════════════════
 function openSheet(tx=null){
-  editingId=null; isRecurring=false; isCreditPay=false;
+  editingId=null; isRecurring=false; isCreditPay=false; recurFreq='weekly';
   const df=document.getElementById('f-date');
 
   // Set date bounds based on which cycle we're adding to
@@ -1777,6 +1979,9 @@ function openSheet(tx=null){
   document.getElementById('f-amount').value='';
   document.getElementById('f-note').value='';
   document.getElementById('f-savings-goal').value='';
+  if(document.getElementById('f-goal-target')) document.getElementById('f-goal-target').value='';
+  if(document.getElementById('goal-target-sym')) document.getElementById('goal-target-sym').textContent=currencySymbol;
+  if(document.getElementById('goal-progress-hint')) document.getElementById('goal-progress-hint').style.display='none';
   document.getElementById('savings-goal-section').style.display='none';
   document.getElementById('add-toast').style.display='none';
   document.getElementById('date-err').style.display='none';
@@ -1786,14 +1991,22 @@ function openSheet(tx=null){
     document.getElementById('f-amount').value=tx.amount;
     document.getElementById('f-note').value=tx.note||'';
     document.getElementById('f-savings-goal').value=tx.savingsGoal||'';
-    selectedCat=tx.category; isRecurring=!!tx.recurring;
-    if(tx.category==='savings') document.getElementById('savings-goal-section').style.display='block';
+    selectedCat=tx.category; isRecurring=!!tx.recurring; recurFreq=tx.recurFreq||'weekly';
+    if(tx.category==='savings'){
+      document.getElementById('savings-goal-section').style.display='block';
+      const goalKey=(tx.savingsGoal||'Emergency Fund').toLowerCase();
+      const storedTarget=goalTargets[goalKey]||'';
+      if(document.getElementById('f-goal-target')) document.getElementById('f-goal-target').value=storedTarget||'';
+      setTimeout(onGoalTargetInput,50);
+    }
     document.getElementById('sheet-title').innerHTML='Edit <em>Transaction</em>';
   } else { document.getElementById('sheet-title').innerHTML='Log a <em>Transaction</em>'; }
   document.getElementById('amt-remaining').style.display='none';
   document.getElementById('amt-err').style.display='none';
   document.getElementById('amt-sym').textContent=currencySymbol;
   document.getElementById('recur-toggle').className='toggle'+(isRecurring?' on':'');
+  document.getElementById('recur-freq-wrap').style.display=isRecurring?'flex':'none';
+  updateRecurFreqUI();
   // Credit toggle
   document.getElementById('credit-toggle').className='toggle';
   document.getElementById('cc-picker-wrap').classList.remove('open');
@@ -1813,7 +2026,25 @@ function closeSheet(){
   document.getElementById('add-sheet').classList.remove('open');
   sheetOpen=false; expandedTx=null;
 }
-function toggleRecur(){ isRecurring=!isRecurring; document.getElementById('recur-toggle').className='toggle'+(isRecurring?' on':''); }
+function toggleRecur(){
+  isRecurring=!isRecurring;
+  document.getElementById('recur-toggle').className='toggle'+(isRecurring?' on':'');
+  const wrap=document.getElementById('recur-freq-wrap');
+  wrap.style.display=isRecurring?'flex':'none';
+  if(isRecurring) updateRecurFreqUI();
+}
+function setRecurFreq(freq){
+  recurFreq=freq;
+  updateRecurFreqUI();
+}
+function updateRecurFreqUI(){
+  ['weekly','monthly'].forEach(f=>{
+    const btn=document.getElementById('recur-freq-'+f);
+    if(btn) btn.classList.toggle('active', f===recurFreq);
+  });
+  const sub=document.getElementById('recur-sub');
+  if(sub) sub.textContent=recurFreq==='weekly'?'Repeats every week':'Repeats every month';
+}
 function toggleCredit(){
   isCreditPay=!isCreditPay;
   document.getElementById('credit-toggle').className='toggle'+(isCreditPay?' on':'');
@@ -1956,13 +2187,16 @@ function saveTransaction(){
       const existingGoals=getSavingsGoals();
       savingsGoal=existingGoals.length>0?'Emergency Fund':'Emergency Fund';
     }
+    // Save target if provided
+    const targetAmt=parseFloat(document.getElementById('f-goal-target')?.value)||0;
+    if(targetAmt>0) goalTargets[savingsGoal.toLowerCase()]=targetAmt;
   }
   // Credit card
   let creditCardId=null;
   if(isCreditPay && cat.t==='expense'){
     creditCardId=document.getElementById('f-credit-card')?.value||null;
   }
-  const tx={id,date:chosenDate,category:selectedCat,label:cat.l,icon:cat.i,type:cat.t,amount,note:document.getElementById('f-note').value.trim(),recurring:isRecurring,savingsGoal,creditCardId};
+  const tx={id,date:chosenDate,category:selectedCat,label:cat.l,icon:cat.i,type:cat.t,amount,note:document.getElementById('f-note').value.trim(),recurring:isRecurring,recurFreq:isRecurring?recurFreq:null,savingsGoal,creditCardId};
   if(editingId) transactions=transactions.filter(t=>t.id!==editingId);
   transactions.push(tx);
   transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
@@ -2106,8 +2340,8 @@ function setPayQuick(mode){
   const curKey=currentCycleKey();
   const cashAvail=Math.max(0, getCycleAvailable(curKey));
   let val;
-  if(mode==='full') val=Math.min(info.used, cashAvail);  // pay the full bill, capped by cash
-  else              val=Math.min(info.used, cashAvail);  // max = same logic
+  if(mode==='full') val=info.used;  // pay the full bill regardless of cash (may warn)
+  else              val=Math.min(info.used, cashAvail);  // max I can pay = capped by cash
   document.getElementById('pay-amount').value=val>0?fmt(val,0).replace(/,/g,''):'';
   updatePayHint();
 }
@@ -2226,24 +2460,13 @@ function renderFeed(){
     if(active) active.scrollIntoView({inline:'nearest',block:'nearest'});
   });
 
-  // Streak
-  const streak=calcStreak();
-  document.getElementById('streak-area').innerHTML=streak>=2?`<div class="streak-badge">🔥 ${streak}-day streak</div>`:'';
-
-  // Hero
-  const s=cycleStats(activeCycleKey);
-  const isCur=activeCycleKey===curKey;
-  document.getElementById('hero-label').textContent=isCur?'Remaining this cycle':`Total for ${cycleLabel(activeCycleKey,true)}`;
-  document.getElementById('hero-sign').textContent=currencySymbol;
-  document.getElementById('hero-net-val').textContent=fmt(s.net,0);
-  document.getElementById('hero-net').style.color=s.net>=0?'var(--green)':'var(--red)';
-  document.getElementById('hero-income').textContent=c$(s.income);
-  document.getElementById('hero-expense').textContent=c$(s.expense);
-  document.getElementById('hero-savings').textContent=c$(s.savings);
-
-  renderBudgets(); renderFilterChips(); renderCreditSection();
+  renderBudgets(); renderFilterChips();
 
   let txs=[...cycleTxs(activeCycleKey)];
+  // When searching, expand to ALL transactions across all stored cycles
+  if(searchQuery){
+    txs=[...transactions];
+  }
   if(searchQuery) txs=txs.filter(t=>(t.label+' '+(t.note||'')+' '+(t.savingsGoal||'')).toLowerCase().includes(searchQuery));
   if(activeFilter==='income')    txs=txs.filter(t=>t.type==='income');
   else if(activeFilter==='expense')  txs=txs.filter(t=>t.type==='expense');
@@ -2253,11 +2476,25 @@ function renderFeed(){
   const grouped={};
   txs.forEach(t=>{(grouped[t.date]||(grouped[t.date]=[])).push(t);});
   const dates=Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
-  const list=document.getElementById('feed-list');
+  // Show "Searching all cycles" badge when global search active
+  const feedList=document.getElementById('feed-list');
+  const searchBanner=document.getElementById('search-all-banner');
+  if(searchQuery){
+    if(!searchBanner){
+      const b=document.createElement('div');
+      b.id='search-all-banner';
+      b.style.cssText='margin:0 20px 8px;padding:7px 12px;background:var(--blue-dim);border:1px solid var(--blue);border-radius:10px;font-size:.72rem;color:var(--blue);font-weight:700;display:flex;align-items:center;gap:6px;';
+      b.innerHTML=`🌐 <span id="search-all-count"></span>`;
+      feedList.parentElement.insertBefore(b, feedList);
+    }
+    document.getElementById('search-all-count').textContent=`Searching all cycles · ${txs.length} result${txs.length!==1?'s':''}`;
+  } else if(searchBanner){ searchBanner.remove(); }
+
+  const list=feedList;
 
   if(!dates.length){
     list.innerHTML=`<div class="empty"><div class="empty-icon">${searchQuery?'🔍':'📭'}</div>
-      <div class="empty-txt">${searchQuery?`No results for "<strong>${searchQuery}</strong>"`:`Nothing logged yet for<br/><strong>${cycleLabel(activeCycleKey)}</strong>.<br/>Tap + to add your first entry!`}</div></div>`;
+      <div class="empty-txt">${searchQuery?`No results for "<strong>${searchQuery}</strong>"<br/><span style="font-size:.72rem;color:var(--text3);">Searched all cycles</span>`:`Nothing logged yet for<br/><strong>${cycleLabel(activeCycleKey)}</strong>.<br/>Tap + to add your first entry!`}</div></div>`;
     return;
   }
 
@@ -2304,7 +2541,7 @@ function renderTxCard(tx){
       </div>
       <div class="tx-right">
         <div class="tx-amt" style="color:${amtC}">${sign}${currencySymbol}${fmt(tx.amount)}</div>
-        ${tx.recurring?'<div class="tx-recur-tag">🔄 recurring</div>':''}
+        ${tx.recurring?`<div class="tx-recur-tag">🔄 ${tx.recurFreq==='monthly'?'monthly':'weekly'}</div>`:''}
       </div>
     </div>
     ${actions}
@@ -2341,12 +2578,35 @@ function setupMonthSwipe(){
 // ════════════════════════════════════════════════════════════
 function renderDash(){
   const dash=document.getElementById('dash-content');
+  const curKey=currentCycleKey();
+  const now=new Date();
+
+  // ── Update hero (now lives on dashboard) ──
+  const s=cycleStats(activeCycleKey);
+  const isCur=activeCycleKey===curKey;
+  document.getElementById('dash-date-label').textContent=`${SHORT_M[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  document.getElementById('dash-cycle-label').textContent=cycleLabel(activeCycleKey);
+  document.getElementById('dash-cycle-range').textContent=cycleRangeStr(activeCycleKey);
+  const allKeys=allCycleKeys(), idx=allKeys.indexOf(activeCycleKey);
+  const dashPrev=document.getElementById('dash-mnav-prev'), dashNext=document.getElementById('dash-mnav-next');
+  if(dashPrev) dashPrev.disabled=idx>=allKeys.length-1;
+  if(dashNext) dashNext.disabled=idx<=0||cycleRange(allKeys[idx-1]).start>cycleRange(curKey).start;
+  document.getElementById('hero-label').textContent=isCur?'Remaining this cycle':`Total for ${cycleLabel(activeCycleKey,true)}`;
+  document.getElementById('hero-sign').textContent=currencySymbol;
+  document.getElementById('hero-net-val').textContent=fmt(s.net,0);
+  document.getElementById('hero-net').style.color=s.net>=0?'var(--green)':'var(--red)';
+  document.getElementById('hero-income').textContent=c$(s.income);
+  document.getElementById('hero-expense').textContent=c$(s.expense);
+  document.getElementById('hero-savings').textContent=c$(s.savings);
+  const streak=calcStreak();
+  document.getElementById('dash-streak-area').innerHTML=streak>=2?`<div class="streak-badge">🔥 ${streak}-day streak</div>`:'';
+  renderProjection();
+
   if(!transactions.length){
     dash.innerHTML=`<div class="empty" style="padding-top:80px;"><div class="empty-icon">📊</div><div class="empty-txt">No data yet.<br/>Add transactions first!</div></div>`;
     return;
   }
 
-  const curKey=currentCycleKey();
   const prevKey=shiftKey(curKey,-1);
   const curS=cycleStats(curKey), prevS=cycleStats(prevKey);
 
@@ -2359,7 +2619,7 @@ function renderDash(){
   const trendKeys=dataKeys.slice().sort((a,b)=>cycleRange(a).start.localeCompare(cycleRange(b).start)).slice(-12);
   const trendData=trendKeys.map(ck=>({ck,...cycleStats(ck)}));
 
-  // ── HIGHLIGHTS (only from cycles with data) ──
+  // ── HIGHLIGHTS row (horizontal scroll cards) ──
   const nonEmpty=trendData.filter(d=>d.income>0||d.expense>0||d.savings>0);
   let hlHtml='';
   if(nonEmpty.length>=1){
@@ -2367,15 +2627,18 @@ function renderDash(){
     const lowest  =[...nonEmpty].filter(d=>d.expense>0).sort((a,b)=>a.expense-b.expense)[0]||nonEmpty[0];
     const topInc  =[...nonEmpty].sort((a,b)=>b.income-a.income)[0];
     const bestRate=[...nonEmpty].filter(d=>d.income>0).sort((a,b)=>b.rate-a.rate)[0]||nonEmpty[0];
+    const avgIncome =nonEmpty.reduce((s,d)=>s+d.income,0)/nonEmpty.length;
+    const avgExpense=nonEmpty.reduce((s,d)=>s+d.expense,0)/nonEmpty.length;
+    const avgSavings=nonEmpty.reduce((s,d)=>s+d.savings,0)/nonEmpty.length;
     hlHtml=`<div class="section">
       <div class="section-title">🏆 Highlights</div>
-      <div class="section-sub">Your personal bests across all cycles</div>
+      <div class="section-sub">Personal bests · ${nonEmpty.length} cycle${nonEmpty.length!==1?'s':''} with data</div>
       <div class="hl-row">
         ${[
-          {icon:'🏆',label:'Most Saved',   val:cycleLabel(best.ck,true),    sub:fmtS(best.savings)+' saved',       c:'var(--accent)'},
-          {icon:'🎯',label:'Low Spending',  val:cycleLabel(lowest.ck,true),  sub:'Only '+fmtS(lowest.expense),      c:'var(--green)'},
-          {icon:'📈',label:'Best Income',   val:cycleLabel(topInc.ck,true),  sub:fmtS(topInc.income)+' earned',     c:'var(--blue)'},
-          {icon:'💡',label:'Best Rate',     val:cycleLabel(bestRate.ck,true),sub:bestRate.rate.toFixed(0)+'% saved',c:'var(--accent)'},
+          {icon:'🏆',label:'Best Savings',val:fmtS(best.savings),          sub:cycleLabel(best.ck,true),       c:'var(--accent)'},
+          {icon:'📈',label:'Best Income', val:fmtS(topInc.income),          sub:cycleLabel(topInc.ck,true),     c:'var(--green)'},
+          {icon:'🎯',label:'Low Spend',   val:fmtS(lowest.expense),         sub:cycleLabel(lowest.ck,true),     c:'var(--blue)'},
+          {icon:'💡',label:'Best Rate',   val:bestRate.rate.toFixed(0)+'%', sub:cycleLabel(bestRate.ck,true),   c:'var(--accent)'},
         ].map(h=>`<div class="hl-mini">
           <div class="hl-mini-icon">${h.icon}</div>
           <div class="hl-mini-label">${h.label}</div>
@@ -2383,68 +2646,101 @@ function renderDash(){
           <div class="hl-mini-sub">${h.sub}</div>
         </div>`).join('')}
       </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;">
+        ${[
+          {l:'Avg Income',v:avgIncome, c:'var(--green)'},
+          {l:'Avg Spent', v:avgExpense,c:'var(--red)'},
+          {l:'Avg Saved', v:avgSavings,c:'var(--accent)'},
+        ].map(a=>`<div style="background:var(--bg2);border-radius:10px;padding:8px 6px;text-align:center;">
+          <div style="font-size:.54rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);font-weight:700;margin-bottom:3px;">${a.l}</div>
+          <div style="font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:${a.c};">${fmtS(a.v)}</div>
+        </div>`).join('')}
+      </div>
     </div>`;
   }
 
-  // ── LAST vs THIS (side-by-side) ──
-  function sbsDelta(cur,prev,lowerBetter=false){
-    const diff=cur-prev;
-    if(diff===0) return `<span class="sbs-delta d-neu">same</span>`;
-    const good=lowerBetter?diff<0:diff>0;
-    const cls=good?'d-up':'d-dn', arr=diff>0?'▲':'▼';
-    const pctStr=prev!==0?` ${(Math.abs(diff/prev)*100).toFixed(0)}%`:'';
-    return `<span class="sbs-delta ${cls}">${arr}${fmtS(Math.abs(diff))}${pctStr}</span>`;
-  }
-  const sbsRows=[
-    {label:'💼 Income', cur:curS.income,  prev:prevS.income,  col:'var(--green)',  low:false},
-    {label:'💸 Spent',  cur:curS.expense, prev:prevS.expense, col:'var(--red)',    low:true},
-    {label:'🏦 Saved',  cur:curS.savings, prev:prevS.savings, col:'var(--accent)', low:false},
-    {label:'📈 Rate',   cur:curS.rate,    prev:prevS.rate,    col:'var(--blue)',   low:false, isPct:true},
-    {label:'✅ Left',   cur:curS.net,     prev:prevS.net,     col:curS.net>=0?'var(--green)':'var(--red)', low:false, isNet:true},
-  ];
-  const fmtV=(v,r)=>r.isPct?v.toFixed(0)+'%':r.isNet?(v<0?'-':'')+fmtS(Math.abs(v)):fmtS(v);
-  const sbsHtml=`<div class="section">
-    <div class="section-title">Last vs This Cycle</div>
-    <div class="section-sub">${cycleLabel(prevKey,true)} → ${cycleLabel(curKey,true)} ★</div>
-    <div class="sbs-card">
-      <div class="sbs-header">
-        <div class="sbs-th">Metric</div>
-        <div class="sbs-th right">${cycleLabel(prevKey,true)}</div>
-        <div class="sbs-th right cur">${cycleLabel(curKey,true)} ★</div>
-        <div class="sbs-th right">Change</div>
+  // ── CREDIT CARDS — horizontal pill scroll (same style as feed) ──
+  let creditHtml='';
+  if(creditCards.length){
+    const totalUsed =creditCards.reduce((s,c)=>s+getCardInfo(c.id).used,0);
+    const totalLimit=creditCards.reduce((s,c)=>s+c.limit,0);
+    const totalPct  =totalLimit>0?Math.min((totalUsed/totalLimit)*100,100):0;
+    const totalColor=totalPct>=90?'var(--red)':totalPct>=70?'var(--accent)':'var(--green)';
+    const pills=creditCards.map(c=>{
+      const info=getCardInfo(c.id);
+      const col=info.pct>=90?'var(--red)':info.pct>=70?'var(--accent)':'var(--blue)';
+      const hasDebt=info.used>0;
+      return `<div onclick="openPayModal('${c.id}')" style="flex-shrink:0;min-width:140px;background:var(--bg2);border:1.5px solid ${hasDebt?col:'var(--border)'};border-radius:14px;padding:10px 12px;cursor:pointer;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:.72rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85px;">💳 ${c.name}</span>
+          <span style="font-size:.58rem;font-weight:700;padding:2px 6px;border-radius:5px;background:${hasDebt?col+'20':'var(--green-dim)'};color:${hasDebt?col:'var(--green)'};">${hasDebt?'Pay':'✓ Clear'}</span>
+        </div>
+        <div style="height:3px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:5px;">
+          <div style="height:100%;width:${info.pct}%;background:${col};border-radius:99px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.62rem;">
+          <span style="color:${col};font-weight:700;">${fmtS(info.used)} used</span>
+          <span style="color:var(--text3);">${fmtS(info.available)} left</span>
+        </div>
+      </div>`;
+    }).join('');
+    creditHtml=`<div class="section">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px;">
+        <div class="section-title" style="margin-bottom:0;">💳 Credit Cards</div>
+        <div style="font-size:.65rem;color:${totalColor};font-weight:700;">${Math.round(totalPct)}% used · ${totalPct<30?'Healthy':totalPct<70?'Moderate':'High'}</div>
       </div>
-      ${sbsRows.map(r=>`
-      <div class="sbs-row">
-        <div class="sbs-label">${r.label}</div>
-        <div class="sbs-val" style="color:var(--text3)">${fmtV(r.prev,r)}</div>
-        <div class="sbs-val" style="color:${r.col}">${fmtV(r.cur,r)}</div>
-        ${sbsDelta(r.cur,r.prev,r.low)}
+      <div class="section-sub" style="margin-bottom:8px;">${fmtS(totalUsed)} of ${fmtS(totalLimit)} limit</div>
+      <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;-webkit-overflow-scrolling:touch;">${pills}</div>
+    </div>`;
+  }
+
+  // ── LAST vs THIS — compact pill comparison ──
+  const sbsRows2=[
+    {label:'Income', cur:curS.income,  prev:prevS.income,  col:'var(--green)',  low:false},
+    {label:'Spent',  cur:curS.expense, prev:prevS.expense, col:'var(--red)',    low:true},
+    {label:'Saved',  cur:curS.savings, prev:prevS.savings, col:'var(--accent)', low:false},
+    {label:'Rate',   cur:curS.rate,    prev:prevS.rate,    col:'var(--blue)',   low:false, isPct:true},
+    {label:'Left',   cur:curS.net,     prev:prevS.net,     col:curS.net>=0?'var(--green)':'var(--red)', isNet:true},
+  ];
+  const fmtV2=(v,r)=>r.isPct?v.toFixed(0)+'%':r.isNet?(v<0?'–':'')+fmtS(Math.abs(v)):fmtS(v);
+  const arrow=(cur,prev,low=false)=>{ const d=cur-prev; if(!d) return ''; const good=low?d<0:d>0; return `<span style="color:${good?'var(--green)':'var(--red)'};">${d>0?'↑':'↓'}</span>`; };
+  const sbsHtml=`<div class="section">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px;">
+      <div class="section-title" style="margin-bottom:0;">Last vs This</div>
+      <div style="font-size:.65rem;color:var(--text3);">${cycleLabel(prevKey,true)} → <span style="color:var(--accent);">${cycleLabel(curKey,true)}</span></div>
+    </div>
+    <div class="section-sub" style="margin-bottom:8px;">How this cycle compares</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;">
+      ${sbsRows2.map(r=>`<div style="background:var(--bg2);border-radius:10px;padding:8px 5px;text-align:center;">
+        <div style="font-size:.54rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);font-weight:700;margin-bottom:3px;">${r.label}</div>
+        <div style="font-family:'Playfair Display',serif;font-size:.75rem;font-weight:700;color:${r.col};line-height:1.2;">${fmtV2(r.cur,r)} ${arrow(r.cur,r.prev,r.low)}</div>
+        <div style="font-size:.58rem;color:var(--text3);margin-top:2px;">${fmtV2(r.prev,r)}</div>
       </div>`).join('')}
     </div>
   </div>`;
 
-  // ── SAVINGS RING ──
-  const rate=Math.min(curS.rate,100), r2=38, circ2=2*Math.PI*r2;
+  // ── SAVINGS RING (compact) ──
+  const rate=Math.min(curS.rate,100), r2=34, circ2=2*Math.PI*r2;
   const ringHtml=`<div class="section">
     <div class="section-title">Savings Rate</div>
-    <div class="section-sub">${cycleLabel(curKey)} · ${cycleRangeStr(curKey)}</div>
+    <div class="section-sub">${cycleLabel(curKey,true)} · ${c$(curS.savings)} of ${c$(curS.income)}</div>
     <div class="ring-card">
-      <svg width="96" height="96" viewBox="0 0 100 100" style="flex-shrink:0;">
-        <circle cx="50" cy="50" r="${r2}" fill="none" stroke="var(--bg3)" stroke-width="8"/>
-        <circle cx="50" cy="50" r="${r2}" fill="none" stroke="var(--accent)" stroke-width="8"
+      <svg width="84" height="84" viewBox="0 0 100 100" style="flex-shrink:0;">
+        <circle cx="50" cy="50" r="${r2}" fill="none" stroke="var(--bg3)" stroke-width="10"/>
+        <circle cx="50" cy="50" r="${r2}" fill="none" stroke="var(--accent)" stroke-width="10"
           stroke-dasharray="${circ2*(rate/100)} ${circ2}" stroke-dashoffset="${circ2/4}" stroke-linecap="round"/>
         <text x="50" y="50" text-anchor="middle" dominant-baseline="central"
-          style="font-family:'Playfair Display',serif;font-size:14px;font-weight:900;fill:var(--accent)">${Math.round(rate)}%</text>
+          style="font-family:'Playfair Display',serif;font-size:15px;font-weight:900;fill:var(--accent)">${Math.round(rate)}%</text>
       </svg>
       <div>
-        <div class="ring-label">This Cycle</div>
-        <div class="ring-pct" style="color:var(--accent)">${curS.rate.toFixed(1)}%</div>
-        <div class="ring-sub">of ${c$(curS.income)} earned<br/>saved ${c$(curS.savings)}</div>
+        <div class="ring-label">Saved this cycle</div>
+        <div class="ring-pct" style="color:var(--accent);font-size:1.3rem;">${curS.rate.toFixed(1)}%</div>
+        <div class="ring-sub">${c$(curS.savings)} saved<br/>${c$(curS.income)} earned</div>
       </div>
     </div>
   </div>`;
 
-  // ── SAVINGS GOALS breakdown ──
+  // ── SAVINGS GOALS ──
   const gData=goalsData();
   let goalsHtml='';
   if(gData.length){
@@ -2453,12 +2749,24 @@ function renderDash(){
       const barPct=Math.round((g.total/topTotal)*100);
       const medals=['🥇','🥈','🥉'];
       const rank=i<3?medals[i]:`${i+1}`;
+      const target=goalTargets[g.name.toLowerCase()]||0;
+      const targetPct=target>0?Math.min(Math.round((g.total/target)*100),100):0;
+      const targetBar=target>0?`<div style="margin-top:5px;">
+        <div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--text3);margin-bottom:2px;">
+          <span>Target: ${c$(target)}</span><span style="color:${targetPct>=100?'var(--green)':'var(--accent)'};">${targetPct}%</span>
+        </div>
+        <div style="height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;">
+          <div style="height:100%;width:${targetPct}%;background:${targetPct>=100?'var(--green)':'var(--accent)'};border-radius:99px;transition:width .6s;"></div>
+        </div>
+        ${targetPct>=100?'<div style="font-size:.6rem;color:var(--green);font-weight:700;margin-top:2px;">🎉 Goal reached!</div>':''}
+      </div>`:'';
       return `<div class="goal-card">
         <div class="goal-card-rank">${rank}</div>
         <div class="goal-card-body">
           <div class="goal-card-name">🎯 ${g.name}</div>
           <div class="goal-card-meta">${g.count} deposit${g.count!==1?'s':''} · last ${formatDate(g.last)}</div>
           <div class="goal-bar-track"><div class="goal-bar-fill" style="width:${barPct}%"></div></div>
+          ${targetBar}
         </div>
         <div class="goal-card-amt">${c$(g.total)}</div>
       </div>`;
@@ -2490,10 +2798,10 @@ function renderDash(){
       </div>`).join('');
     donutHtml=`<div class="section">
       <div class="section-title">Spending Breakdown</div>
-      <div class="section-sub">${cycleLabel(curKey)} · Where the money went</div>
+      <div class="section-sub">${cycleLabel(curKey,true)} · Where the money went</div>
       <div class="donut-card">
         <div class="donut-row">
-          <svg width="96" height="96" viewBox="0 0 100 100" style="flex-shrink:0;">
+          <svg width="88" height="88" viewBox="0 0 100 100" style="flex-shrink:0;">
             <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg3)" stroke-width="18"/>
             ${paths}
             <text x="50" y="50" text-anchor="middle" dominant-baseline="central" style="font-family:'Playfair Display',serif;font-size:10px;font-weight:900;fill:var(--red)">${fmtS(totalSpend)}</text>
@@ -2504,7 +2812,7 @@ function renderDash(){
     </div>`;
   }
 
-  // ── TREND — only cycles with data ──
+  // ── TREND ──
   const metricColor={income:'var(--green)',expense:'var(--red)',savings:'var(--accent)',net:'var(--blue)'};
   const metricClass={income:'mt-inc',expense:'mt-exp',savings:'mt-sav',net:'mt-net'};
   const maxVal=Math.max(...trendData.map(d=>Math.abs(d[dashMetric])),1);
@@ -2514,62 +2822,18 @@ function renderDash(){
     return `<div class="bar-col ${isCur?'is-cur':''}">
       <div class="bar-col-val" style="color:${isCur?'var(--accent)':col}">${fmtS(val)}</div>
       <div class="bar-col-track"><div class="bar-rect" style="height:${pct}%;background:${isCur?'var(--accent)':col};opacity:${isCur?1:.7};${isCur?'box-shadow:0 0 8px var(--accent-dim)':''}"></div></div>
-      <div class="bar-col-name">${cycleLabel(d.ck,true).split(' ')[0]}</div>
+      <div class="bar-col-name" style="color:${isCur?'var(--accent)':col};opacity:${isCur?1:.65};">${cycleLabel(d.ck,true).split(' ')[0]}</div>
     </div>`;
   }).join(''):'<div style="color:var(--text3);font-size:.8rem;padding:20px;text-align:center;">Log more cycles to see the trend</div>';
-
   const trendHtml=`<div class="section">
     <div class="section-title">${trendData.length}-Cycle Trend</div>
     <div class="section-sub">Only cycles with data · <span style="color:var(--accent)">★ current</span></div>
     <div class="metric-tabs">
       ${[{k:'income',l:'💼 Income'},{k:'expense',l:'💸 Spent'},{k:'savings',l:'🏦 Saved'},{k:'net',l:'📊 Net'}]
-        .map(m=>`<button class="metric-tab ${dashMetric===m.k?metricClass[m.k]:''}\" onclick=\"setMetric('${m.k}')">${m.l}</button>`).join('')}
+        .map(m=>`<button class="metric-tab ${dashMetric===m.k?metricClass[m.k]:''}" onclick="setMetric('${m.k}')">${m.l}</button>`).join('')}
     </div>
     <div class="chart-card"><div class="bars">${barsHtml}</div></div>
   </div>`;
-
-  // ── CREDIT CARDS SECTION ──
-  let creditHtml='';
-  if(creditCards.length){
-    const totalLimit=creditCards.reduce((s,c)=>s+c.limit,0);
-    const totalUsed=creditCards.reduce((s,c)=>s+getCardInfo(c.id).used,0);
-    const totalAvail=totalLimit-totalUsed;
-    const totalPct=totalLimit>0?Math.min((totalUsed/totalLimit)*100,100):0;
-    const totalColor=totalPct>=90?'var(--red)':totalPct>=70?'var(--accent)':'var(--green)';
-    const cardRows=creditCards.map(c=>{
-      const info=getCardInfo(c.id);
-      const col=info.pct>=90?'var(--red)':info.pct>=70?'var(--accent)':'var(--green)';
-      return `<div style="background:var(--bg2);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-size:.85rem;font-weight:700;color:var(--text);">💳 ${c.name}</span>
-          <button class="cc-pay-btn" onclick="openPayModal('${c.id}')">Pay Bill</button>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
-          <div style="text-align:center;"><div style="font-size:.6rem;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:2px;">Limit</div><div style="font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:var(--text2)">${fmtS(info.limit)}</div></div>
-          <div style="text-align:center;"><div style="font-size:.6rem;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:2px;">Used</div><div style="font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:${col}">${fmtS(info.used)}</div></div>
-          <div style="text-align:center;"><div style="font-size:.6rem;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:2px;">Available</div><div style="font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:var(--green)">${fmtS(info.available)}</div></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="flex:1;height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;"><div style="height:100%;width:${info.pct}%;background:${col};border-radius:99px;"></div></div>
-          <span style="font-size:.62rem;font-weight:700;color:${col};min-width:28px;text-align:right;">${Math.round(info.pct)}%</span>
-        </div>
-      </div>`;
-    }).join('');
-    creditHtml=`<div class="section">
-      <div class="section-title">💳 Credit Cards</div>
-      <div class="section-sub">Total: ${fmtS(totalUsed)} used of ${fmtS(totalLimit)} limit · <span style="color:var(--green)">${fmtS(totalAvail)} available</span></div>
-      <div style="background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:16px;">
-        ${cardRows}
-        <div style="height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-top:4px;">
-          <div style="height:100%;width:${totalPct}%;background:${totalColor};border-radius:99px;transition:width .6s;"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:5px;font-size:.67rem;color:var(--text3);">
-          <span>Overall utilization: <strong style="color:${totalColor}">${Math.round(totalPct)}%</strong></span>
-          <span style="color:var(--text3);">${totalPct<30?'🟢 Healthy':totalPct<70?'🟡 Moderate':'🔴 High'}</span>
-        </div>
-      </div>
-    </div>`;
-  }
 
   dash.innerHTML=`<div style="height:8px;"></div>
   ${hlHtml}
@@ -2582,11 +2846,10 @@ function renderDash(){
   <div style="height:20px;"></div>`;
 }
 
-function setMetric(m){ dashMetric=m; renderDash(); }
-
 // ════════════════════════════════════════════════════════════
 //  SETTINGS RENDER
 // ════════════════════════════════════════════════════════════
+function setMetric(m){ dashMetric=m; renderDash(); }
 function renderSettings(){
   renderSettingsInputs();
   renderSettingsCCList();
@@ -2603,6 +2866,20 @@ function renderSettings(){
      🔄 <strong>${recur}</strong> recurring<br/>
      📅 <strong>${cycleCount}</strong> cycles stored ${limitNote}<br/>
      💾 <strong>${(size/1024).toFixed(1)} KB</strong> stored in browser`;
+  // PIN card
+  const pinBtns=document.getElementById('pin-settings-btns');
+  if(pinBtns){
+    if(pinHash){
+      pinBtns.innerHTML=`<div style="display:flex;gap:8px;">
+        <button class="settings-btn btn-blue" style="flex:1;margin:0;" onclick="openPinSetup(()=>renderSettings())">🔄 Change PIN</button>
+        <button class="settings-btn btn-red" style="flex:1;margin:0;" onclick="removePin()">🔓 Remove PIN</button>
+      </div>`;
+      document.getElementById('pin-settings-desc').textContent='PIN is active. Your data is protected on app open.';
+    } else {
+      pinBtns.innerHTML=`<button class="settings-btn btn-blue" onclick="openPinSetup(()=>renderSettings())">🔐 Set PIN Lock</button>`;
+      document.getElementById('pin-settings-desc').textContent='No PIN set. Add a 4-digit PIN to protect your data.';
+    }
+  }
 }
 function saveCurrency(){
   const v=document.getElementById('currency-input').value.trim(); if(!v)return;
@@ -2629,9 +2906,9 @@ function saveCycleLimit(){
 // ════════════════════════════════════════════════════════════
 function exportData(){
   const data={
-    version:6, exportedAt:new Date().toISOString(),
+    version:7, exportedAt:new Date().toISOString(),
     transactions, budgets, currencySymbol, activeTheme,
-    cycleMode, cycleConfig, cycleLimit, creditCards
+    cycleMode, cycleConfig, cycleLimit, creditCards, goalTargets
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
@@ -2659,6 +2936,7 @@ function importData(e){
       if(data.cycleConfig)    cycleConfig={...cycleConfig,...data.cycleConfig};
       if(data.cycleLimit)     cycleLimit=Math.max(3,parseInt(data.cycleLimit)||24);
       if(data.creditCards&&Array.isArray(data.creditCards)) creditCards=data.creditCards;
+      if(data.goalTargets&&typeof data.goalTargets==='object') goalTargets={...data.goalTargets};
       const existing=new Set(transactions.map(t=>t.id));
       const newOnes=imported.filter(t=>t.id&&t.date&&t.amount&&!existing.has(t.id));
       transactions=[...transactions,...newOnes];
@@ -2675,11 +2953,18 @@ function importData(e){
   reader.readAsText(file);
 }
 function clearAllData(){
-  if(!confirm('Delete ALL data? Export a backup first!\n\nThis cannot be undone.'))return;
-  transactions=[]; budgets={}; creditCards=[];
-  persist(); activeCycleKey=currentCycleKey();
-  renderSettings(); renderFeed();
-  showSettingsToast('🗑 All data cleared.');
+  showConfirm({
+    icon:'🗑',
+    title:'Delete Everything?',
+    msg:'All transactions, budgets, credit cards and settings will be permanently deleted. Export a backup first!',
+    okLabel:'Delete Everything',
+    onOk:()=>{
+      transactions=[]; budgets={}; creditCards=[]; goalTargets={};
+      persist(); activeCycleKey=currentCycleKey();
+      renderSettings(); renderFeed();
+      showSettingsToast('🗑 All data cleared.');
+    }
+  });
 }
 function showSettingsToast(msg){
   const t=document.getElementById('settings-toast');
@@ -2981,6 +3266,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   buildCatGrid();
   renderFeed();
   setupMonthSwipe();
+  setupSwipeToDelete();
+  checkPinOnLoad();
   // Show onboarding for first-time users
   if(!localStorage.getItem('ledger_onboarded')){
     setTimeout(()=>obOpen(), 400);
@@ -3146,6 +3433,212 @@ function pwaDismiss(){
 function closeIosSheet(e){
   if(e && e.target!==document.getElementById('ios-install-sheet')) return;
   document.getElementById('ios-install-sheet').classList.remove('open');
+}
+
+// ════════════════════════════════════════════════════════════
+let _pinBuffer='';
+let _pinMode='unlock'; // 'unlock' | 'set' | 'confirm'
+let _pinFirst='';
+let _pinCallback=null;
+
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function pinKey(d){
+  if(_pinBuffer.length>=4) return;
+  _pinBuffer+=d;
+  updatePinDots();
+  if(_pinBuffer.length===4) setTimeout(pinSubmit,120);
+}
+function pinDel(){ if(_pinBuffer.length) { _pinBuffer=_pinBuffer.slice(0,-1); updatePinDots(); } }
+function updatePinDots(){
+  for(let i=0;i<4;i++){
+    document.getElementById('pd'+i)?.classList.toggle('filled',i<_pinBuffer.length);
+  }
+}
+async function pinSubmit(){
+  const hash=await sha256(_pinBuffer);
+  if(_pinMode==='unlock'){
+    if(hash===pinHash){ pinUnlock(); }
+    else { document.getElementById('pin-error').textContent='Wrong PIN. Try again.'; _pinBuffer=''; updatePinDots(); setTimeout(()=>{ const e=document.getElementById('pin-error');if(e)e.textContent=''; },1500); }
+  } else if(_pinMode==='set'){
+    _pinFirst=_pinBuffer; _pinBuffer='';
+    _pinMode='confirm';
+    document.getElementById('pin-sub').textContent='Confirm your PIN';
+    updatePinDots();
+  } else if(_pinMode==='confirm'){
+    if(_pinBuffer===_pinFirst){
+      pinHash=hash;
+      localStorage.setItem('ledger_pin',hash);
+      _pinBuffer=''; _pinFirst=''; _pinMode='unlock';
+      document.getElementById('pin-overlay').classList.add('hidden');
+      showSettingsToast('🔐 PIN set successfully!');
+      if(_pinCallback){ _pinCallback(); _pinCallback=null; }
+    } else {
+      document.getElementById('pin-error').textContent='PINs don\'t match. Start again.';
+      _pinBuffer=''; _pinFirst=''; _pinMode='set';
+      document.getElementById('pin-sub').textContent='Choose a 4-digit PIN';
+      updatePinDots();
+      setTimeout(()=>{ const e=document.getElementById('pin-error');if(e)e.textContent=''; },1800);
+    }
+  }
+}
+function pinUnlock(){
+  _pinBuffer=''; updatePinDots();
+  document.getElementById('pin-overlay').classList.add('hidden');
+  document.getElementById('pin-error').textContent='';
+}
+function pinSkip(){
+  if(confirm('This will clear ALL app data to reset the PIN. Continue?')){
+    pinHash=''; localStorage.removeItem('ledger_pin');
+    transactions=[]; budgets={}; creditCards=[]; goalTargets=[];
+    persist(); activeCycleKey=currentCycleKey();
+    document.getElementById('pin-overlay').classList.add('hidden');
+    renderFeed();
+  }
+}
+function openPinSetup(cb){
+  _pinBuffer=''; _pinFirst=''; _pinMode='set'; _pinCallback=cb||null;
+  updatePinDots();
+  document.getElementById('pin-sub').textContent='Choose a 4-digit PIN';
+  document.getElementById('pin-error').textContent='';
+  document.getElementById('pin-skip-btn').style.display='none';
+  document.getElementById('pin-overlay').classList.remove('hidden');
+}
+function removePin(){
+  pinHash=''; localStorage.removeItem('ledger_pin');
+  showSettingsToast('🔓 PIN removed.');
+  renderSettings();
+}
+function checkPinOnLoad(){
+  if(pinHash){
+    _pinMode='unlock'; _pinBuffer=''; updatePinDots();
+    document.getElementById('pin-sub').textContent='Enter your PIN to unlock';
+    document.getElementById('pin-skip-btn').style.display='block';
+    document.getElementById('pin-overlay').classList.remove('hidden');
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  CUSTOM CONFIRM MODAL
+// ════════════════════════════════════════════════════════════
+let _confirmCallback=null;
+function showConfirm({icon='⚠️',title='Are you sure?',msg='This cannot be undone.',okLabel='Confirm',onOk}){
+  document.getElementById('confirm-icon').textContent=icon;
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-msg').textContent=msg;
+  document.getElementById('confirm-ok-btn').textContent=okLabel;
+  _confirmCallback=onOk||null;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+function closeConfirm(){ document.getElementById('confirm-overlay').classList.remove('open'); _confirmCallback=null; }
+function confirmOk(){ closeConfirm(); if(_confirmCallback) _confirmCallback(); }
+
+// ════════════════════════════════════════════════════════════
+//  QUICK-ADD RECURRING TEMPLATES
+// ════════════════════════════════════════════════════════════
+function renderQuickAddRow(){
+  const templates=getRecurringTemplates();
+  const area=document.getElementById('quick-add-area');
+  if(!area) return;
+  if(!templates.length){ area.innerHTML=''; return; }
+  area.innerHTML=`<div style="padding:0 20px 4px;font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-weight:700;">⚡ Quick Add Recurring</div>
+  <div class="quick-add-row">${templates.map(t=>`
+    <div class="qa-chip" onclick="quickAdd(${t.id})">
+      <span style="font-size:1rem;">${t.icon}</span>
+      <span class="qa-chip-label">${t.label}</span>
+      <span class="qa-chip-amt">${currencySymbol}${fmt(t.amount,0)}</span>
+      <span class="qa-chip-freq">${t.recurFreq==='weekly'?'weekly':'monthly'}</span>
+    </div>`).join('')}
+  </div>`;
+}
+function quickAdd(templateId){
+  const tmpl=transactions.find(t=>t.id===templateId); if(!tmpl) return;
+  const newTx={...tmpl,id:Date.now(),date:todayStr(),autoGenerated:false};
+  transactions.push(newTx);
+  transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  enforceCycleLimit(); persist();
+  if(navigator.vibrate) navigator.vibrate(30);
+  // Show brief toast
+  const list=document.getElementById('feed-list');
+  const toast=document.createElement('div');
+  toast.className='toast'; toast.textContent=`✓ ${tmpl.label} added!`;
+  toast.style.cssText='margin:0 20px 10px;animation:fadeUp .3s ease;';
+  list.parentElement.insertBefore(toast, list);
+  setTimeout(()=>{ toast.remove(); renderFeed(); },1200);
+}
+
+// ════════════════════════════════════════════════════════════
+//  CASH FLOW PROJECTION
+// ════════════════════════════════════════════════════════════
+function renderProjection(){
+  const el=document.getElementById('projection-inline');
+  if(!el) return;
+  const curKey=currentCycleKey();
+  if(activeCycleKey!==curKey){ el.style.display='none'; return; }
+  const {start,end}=cycleRange(curKey);
+  const today=todayStr();
+  const s=cycleStats(curKey);
+  const startD=new Date(start+'T00:00:00'), endD=new Date(end+'T00:00:00'), todayD=new Date(today+'T00:00:00');
+  const totalDays=Math.round((endD-startD)/86400000)+1;
+  const elapsedDays=Math.min(Math.round((todayD-startD)/86400000)+1, totalDays);
+  const remainingDays=totalDays-elapsedDays;
+  if(elapsedDays<2||s.income===0){ el.style.display='none'; return; }
+  const dailySpend=s.expense/elapsedDays;
+  const projectedSpend=dailySpend*totalDays;
+  const projectedLeft=s.income - projectedSpend - s.savings;
+  let icon, color, msg;
+  if(projectedLeft<0){ icon='⚠️'; color='var(--red)'; msg=`On track to overspend by ${c$(Math.abs(projectedLeft))}`; }
+  else if(projectedLeft<s.income*0.1){ icon='😬'; color='var(--accent)'; msg=`Tight — ${c$(projectedLeft)} projected left`; }
+  else { icon='📈'; color='var(--green)'; msg=`${c$(projectedLeft)} projected remaining`; }
+  el.style.display='flex';
+  el.style.color=color;
+  el.innerHTML=`<span>${icon}</span><span>${msg} · ${remainingDays}d left</span>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  SWIPE TO DELETE
+// ════════════════════════════════════════════════════════════
+function setupSwipeToDelete(){
+  const list=document.getElementById('feed-list');
+  let startX=0, startY=0, activeWrap=null, swipeDist=0;
+  list.addEventListener('touchstart',e=>{
+    const wrap=e.target.closest('.tx-wrap');
+    if(!wrap) return;
+    startX=e.touches[0].clientX; startY=e.touches[0].clientY;
+    activeWrap=wrap; swipeDist=0;
+  },{passive:true});
+  list.addEventListener('touchmove',e=>{
+    if(!activeWrap) return;
+    const dx=e.touches[0].clientX-startX;
+    const dy=e.touches[0].clientY-startY;
+    if(Math.abs(dy)>Math.abs(dx)) { activeWrap=null; return; }
+    swipeDist=dx;
+    if(dx<-20){
+      activeWrap.classList.add('swiping');
+      const txEl=activeWrap.querySelector('.tx');
+      if(txEl) txEl.style.transform=`translateX(${Math.max(dx,-80)}px)`;
+      e.preventDefault();
+    }
+  },{passive:false});
+  list.addEventListener('touchend',e=>{
+    if(!activeWrap) return;
+    const txEl=activeWrap.querySelector('.tx');
+    if(swipeDist<-65){
+      // Trigger delete confirm
+      const id=parseInt(txEl?.dataset.id);
+      if(id){
+        if(txEl) txEl.style.transform='';
+        activeWrap.classList.remove('swiping');
+        showConfirm({icon:'🗑',title:'Delete Transaction',msg:'This will permanently remove this entry.',okLabel:'Delete',onOk:()=>deleteTx(id)});
+      }
+    } else {
+      if(txEl) txEl.style.transform='';
+      activeWrap.classList.remove('swiping');
+    }
+    activeWrap=null; swipeDist=0;
+  },{passive:true});
 }
 </script>
 </body>
