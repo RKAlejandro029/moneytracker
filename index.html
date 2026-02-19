@@ -3071,9 +3071,11 @@ function saveCycleLimit(){
 // ════════════════════════════════════════════════════════════
 function exportData(){
   const data={
-    version:7, exportedAt:new Date().toISOString(),
+    version:8, exportedAt:new Date().toISOString(),
     transactions, budgets, currencySymbol, activeTheme,
-    cycleMode, cycleConfig, cycleLimit, creditCards, goalTargets
+    cycleMode, cycleConfig, cycleLimit, creditCards, goalTargets,
+    pinHash: pinHash || '',
+    defaultGoal: localStorage.getItem('ledger_defaultGoal') || ''
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
@@ -3102,6 +3104,8 @@ function importData(e){
       if(data.cycleLimit)     cycleLimit=Math.max(3,parseInt(data.cycleLimit)||24);
       if(data.creditCards&&Array.isArray(data.creditCards)) creditCards=data.creditCards;
       if(data.goalTargets&&typeof data.goalTargets==='object') goalTargets={...data.goalTargets};
+      if(data.pinHash!==undefined){ pinHash=data.pinHash; if(pinHash) localStorage.setItem('ledger_pin',pinHash); else localStorage.removeItem('ledger_pin'); }
+      if(data.defaultGoal) localStorage.setItem('ledger_defaultGoal', data.defaultGoal);
       const existing=new Set(transactions.map(t=>t.id));
       const newOnes=imported.filter(t=>t.id&&t.date&&t.amount&&!existing.has(t.id));
       transactions=[...transactions,...newOnes];
