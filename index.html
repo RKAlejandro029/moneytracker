@@ -1545,8 +1545,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 
 <!-- ══ WHAT'S NEW SHEET ══ -->
 <div class="wn-overlay" id="wn-overlay" onclick="closeWhatsNew()">
-  <div class="wn-sheet" onclick="event.stopPropagation()">
-    <div class="wn-handle"></div>
+  <div class="wn-sheet" id="wn-sheet" onclick="event.stopPropagation()">
+    <div class="wn-handle" id="wn-handle" style="cursor:grab;touch-action:none;"></div>
     <div class="wn-header">
       <div class="wn-title">What's New ✨</div>
       <div class="wn-sub">Latest features added to Spendoodle</div>
@@ -4399,14 +4399,55 @@ function checkPinOnLoad(){
 // ════════════════════════════════════════════════════════════
 function openWhatsNew(){
   document.getElementById('wn-overlay').classList.add('active');
-  // Hide the badge dot once seen
   const badge=document.getElementById('new-badge');
   if(badge) badge.style.display='none';
   localStorage.setItem('ledger_wn_seen','1');
 }
 function closeWhatsNew(){
+  const sheet=document.getElementById('wn-sheet');
+  if(sheet){ sheet.style.transition='transform .3s cubic-bezier(.32,0,.67,0)'; sheet.style.transform=''; }
   document.getElementById('wn-overlay').classList.remove('active');
 }
+
+// ── Drag-to-dismiss for What's New ──
+(function(){
+  let startY=0, currentY=0, dragging=false;
+  function onStart(e){
+    dragging=true;
+    startY=e.touches?e.touches[0].clientY:e.clientY;
+    const sheet=document.getElementById('wn-sheet');
+    if(sheet) sheet.style.transition='none';
+  }
+  function onMove(e){
+    if(!dragging) return;
+    currentY=e.touches?e.touches[0].clientY:e.clientY;
+    const dy=Math.max(0, currentY-startY);
+    const sheet=document.getElementById('wn-sheet');
+    if(sheet) sheet.style.transform=`translateY(${dy}px)`;
+    if(e.cancelable) e.preventDefault();
+  }
+  function onEnd(){
+    if(!dragging) return;
+    dragging=false;
+    const dy=Math.max(0, currentY-startY);
+    const sheet=document.getElementById('wn-sheet');
+    if(dy>80){
+      closeWhatsNew();
+    } else {
+      if(sheet){ sheet.style.transition='transform .3s cubic-bezier(.34,1.56,.64,1)'; sheet.style.transform='translateY(0)'; }
+    }
+  }
+  window.addEventListener('DOMContentLoaded',()=>{
+    const handle=document.getElementById('wn-handle');
+    if(!handle) return;
+    handle.addEventListener('touchstart', onStart, {passive:true});
+    handle.addEventListener('touchmove', onMove, {passive:false});
+    handle.addEventListener('touchend', onEnd, {passive:true});
+    handle.addEventListener('mousedown', onStart);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onEnd);
+  });
+})();
 
 let _confirmCallback=null, _confirmCancelCallback=null, _confirmSecondaryCallback=null;
 function showConfirm({icon='⚠️',title='Are you sure?',msg='This cannot be undone.',okLabel='Confirm',cancelLabel='Cancel',secondaryLabel=null,onOk,onCancel,onSecondary}={}){
