@@ -3932,37 +3932,22 @@ function pwaInit(){
     manifestLink.href=URL.createObjectURL(blob);
   }
 
-  // Register service worker via blob
+  // Register real service worker (sw.js must be at root)
   if('serviceWorker' in navigator){
-    const swCode=`
-const CACHE='spendoodle-v1';
-const ASSETS=[${JSON.stringify(location.href)}];
-self.addEventListener('install',e=>{
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));
-});
-self.addEventListener('activate',e=>{
-  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
-});
-self.addEventListener('fetch',e=>{
-  if(e.request.method!=='GET') return;
-  e.respondWith(
-    caches.match(e.request).then(cached=>{
-      const fetchPromise=fetch(e.request).then(resp=>{
-        if(resp && resp.status===200){
-          const clone=resp.clone();
-          caches.open(CACHE).then(c=>c.put(e.request,clone));
-        }
-        return resp;
-      }).catch(()=>cached);
-      return cached || fetchPromise;
-    })
-  );
-});`;
-    const swBlob=new Blob([swCode],{type:'application/javascript'});
-    const swUrl=URL.createObjectURL(swBlob);
-    navigator.serviceWorker.register(swUrl,{scope:'./'})
-      .then(()=>console.log('[PWA] Service worker registered ✓'))
-      .catch(e=>console.warn('[PWA] SW registration failed:',e));
+    navigator.serviceWorker.register('/sw.js', {scope: '/'})
+      .then(reg => {
+        console.log('[PWA] Service worker registered ✓', reg.scope);
+        // Tell SW to update if a new version is available
+        reg.addEventListener('updatefound', () => {
+          const newSW = reg.installing;
+          newSW.addEventListener('statechange', () => {
+            if(newSW.state === 'installed' && navigator.serviceWorker.controller){
+              console.log('[PWA] New version cached — reload to update');
+            }
+          });
+        });
+      })
+      .catch(e => console.warn('[PWA] SW registration failed:', e));
   }
 
   // Install prompt — Android Chrome
