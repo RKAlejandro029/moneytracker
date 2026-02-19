@@ -4098,7 +4098,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   autoGenerateRecurring(); // populate recurring txs into current cycle on load
   renderFeed();
   setupSwipeToDelete();
-  setupCycleSwipe();
   checkPinOnLoad();
   // Hide what's new badge if already seen
   if(localStorage.getItem('ledger_wn_seen')){
@@ -4550,26 +4549,41 @@ function renderProjection(){
 // ════════════════════════════════════════════════════════════
 function setupSwipeToDelete(){
   const list=document.getElementById('feed-list');
-  let startX=0, startY=0, activeWrap=null, swipeDist=0;
+  let startX=0, startY=0, activeWrap=null, swipeDist=0, dirLocked=false;
+
   list.addEventListener('touchstart',e=>{
     const wrap=e.target.closest('.tx-wrap');
     if(!wrap) return;
-    startX=e.touches[0].clientX; startY=e.touches[0].clientY;
-    activeWrap=wrap; swipeDist=0;
+    startX=e.touches[0].clientX;
+    startY=e.touches[0].clientY;
+    activeWrap=wrap; swipeDist=0; dirLocked=false;
   },{passive:true});
+
   list.addEventListener('touchmove',e=>{
     if(!activeWrap) return;
     const dx=e.touches[0].clientX-startX;
     const dy=e.touches[0].clientY-startY;
-    if(Math.abs(dy)>Math.abs(dx)){ activeWrap=null; return; }
+
+    // Lock direction on first significant move
+    if(!dirLocked){
+      if(Math.abs(dx)<4&&Math.abs(dy)<4) return; // too small, wait
+      if(Math.abs(dy)>Math.abs(dx)){
+        // Vertical — cancel swipe tracking, let scroll happen
+        activeWrap=null; return;
+      }
+      dirLocked=true; // horizontal locked
+    }
+
     swipeDist=dx;
-    if(dx<-20){
+    if(dx<0){
+      const clamped=Math.max(dx,-82);
       activeWrap.classList.add('swiping');
       const txEl=activeWrap.querySelector('.tx');
-      if(txEl) txEl.style.transform=`translateX(${Math.max(dx,-80)}px)`;
-      e.preventDefault();
+      if(txEl) txEl.style.transform=`translateX(${clamped}px)`;
+      e.preventDefault(); // block scroll only once direction confirmed horizontal
     }
   },{passive:false});
+
   list.addEventListener('touchend',()=>{
     if(!activeWrap) return;
     const txEl=activeWrap.querySelector('.tx');
@@ -4577,41 +4591,16 @@ function setupSwipeToDelete(){
       const id=parseInt(activeWrap.dataset.id);
       if(txEl) txEl.style.transform='';
       activeWrap.classList.remove('swiping');
-      if(id){
-        deleteTx(id);
-      }
+      if(id) deleteTx(id);
     } else {
-      if(txEl) txEl.style.transform='';
+      if(txEl){ txEl.style.transition='transform .2s ease'; txEl.style.transform=''; setTimeout(()=>{ if(txEl) txEl.style.transition=''; },200); }
       activeWrap.classList.remove('swiping');
     }
-    activeWrap=null; swipeDist=0;
+    activeWrap=null; swipeDist=0; dirLocked=false;
   },{passive:true});
 }
 
-// ════════════════════════════════════════════════════════════
-//  CYCLE SWIPE GESTURE
-// ════════════════════════════════════════════════════════════
-function setupCycleSwipe(){
-  ['view-feed','view-dashboard'].forEach(viewId=>{
-    const view=document.getElementById(viewId);
-    if(!view) return;
-    let sx=0, sy=0, tracking=false;
-    view.addEventListener('touchstart',e=>{
-      // Don't intercept touches on transaction cards (handled by swipe-to-delete)
-      if(e.target.closest('.tx-wrap')||e.target.closest('.add-sheet')||e.target.closest('.sheet-overlay')) return;
-      sx=e.touches[0].clientX; sy=e.touches[0].clientY; tracking=true;
-    },{passive:true});
-    view.addEventListener('touchend',e=>{
-      if(!tracking) return; tracking=false;
-      const dx=e.changedTouches[0].clientX-sx;
-      const dy=e.changedTouches[0].clientY-sy;
-      if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5) return;
-      const isDash=viewId==='view-dashboard';
-      if(dx<0){ shiftCycle(-1); if(isDash) renderDash(); }
-      else     { shiftCycle(1);  if(isDash) renderDash(); }
-    },{passive:true});
-  });
-}
+
 </script>
 </body>
 </html>
