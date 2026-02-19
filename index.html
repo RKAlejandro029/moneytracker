@@ -49,6 +49,61 @@ body.theme-white{
   --blue:#2563eb;--blue-dim:#2563eb15;
   --grain:0.1;
 }
+/* Dark Blue — deep navy with electric blue accent */
+body.theme-navy{
+  --bg:#04080f;--bg1:#080f1c;--bg2:#0d1626;--bg3:#111d30;
+  --border:#162040;--border2:#1d2d55;
+  --text:#dce8ff;--text2:#7090c0;--text3:#334466;
+  --accent:#3b82f6;--accent2:#60a5fa;--accent-dim:#3b82f622;
+  --green:#22d3a5;--green-dim:#22d3a518;
+  --red:#f87171;--red-dim:#f8717118;
+  --blue:#818cf8;--blue-dim:#818cf818;
+  --grain:0.3;
+}
+/* Cold Blue — icy steel with cyan accent */
+body.theme-ice{
+  --bg:#06111a;--bg1:#0b1d28;--bg2:#102535;--bg3:#152e40;
+  --border:#1a3548;--border2:#234560;
+  --text:#c8eaf8;--text2:#6090a8;--text3:#2d5068;
+  --accent:#06b6d4;--accent2:#22d3ee;--accent-dim:#06b6d422;
+  --green:#34d399;--green-dim:#34d39918;
+  --red:#fb7185;--red-dim:#fb718518;
+  --blue:#38bdf8;--blue-dim:#38bdf818;
+  --grain:0.28;
+}
+/* Forest — deep emerald with mint accent */
+body.theme-forest{
+  --bg:#030f08;--bg1:#071510;--bg2:#0b1c15;--bg3:#10231a;
+  --border:#152c1e;--border2:#1c3a28;
+  --text:#d4f0de;--text2:#5a9070;--text3:#2a5038;
+  --accent:#10b981;--accent2:#34d399;--accent-dim:#10b98122;
+  --green:#4ade80;--green-dim:#4ade8018;
+  --red:#f87171;--red-dim:#f8717118;
+  --blue:#60a5fa;--blue-dim:#60a5fa18;
+  --grain:0.32;
+}
+/* Sunset — warm amber with orange glow */
+body.theme-sunset{
+  --bg:#0f0800;--bg1:#1a0f00;--bg2:#221500;--bg3:#2a1c00;
+  --border:#3d2800;--border2:#503400;
+  --text:#ffe8c8;--text2:#c08040;--text3:#7a4e18;
+  --accent:#f97316;--accent2:#fb923c;--accent-dim:#f9731622;
+  --green:#4ade80;--green-dim:#4ade8018;
+  --red:#f87171;--red-dim:#f8717118;
+  --blue:#818cf8;--blue-dim:#818cf818;
+  --grain:0.33;
+}
+/* Midnight — deep purple with violet accent */
+body.theme-midnight{
+  --bg:#060410;--bg1:#0d0820;--bg2:#120c2c;--bg3:#181238;
+  --border:#221a48;--border2:#2e2460;
+  --text:#e8d8ff;--text2:#8870b8;--text3:#453568;
+  --accent:#a855f7;--accent2:#c084fc;--accent-dim:#a855f722;
+  --green:#34d399;--green-dim:#34d39918;
+  --red:#f87171;--red-dim:#f8717118;
+  --blue:#818cf8;--blue-dim:#818cf818;
+  --grain:0.3;
+}
 
 /* ══════════════════════════════════════════
    RESET & BASE
@@ -332,11 +387,16 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .btn-blue{background:var(--blue-dim);color:var(--blue);border:1.5px solid var(--border2);}
 
 /* THEME PICKER */
-.theme-row{display:flex;gap:10px;margin-top:4px;}
-.theme-btn{flex:1;padding:10px 6px;border-radius:12px;font-size:.75rem;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all .2s;text-align:center;}
+.theme-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px;}
+.theme-btn{padding:10px 4px;border-radius:12px;font-size:.7rem;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all .2s;text-align:center;line-height:1.3;}
 .theme-btn.dark{background:#141420;color:#ede8e0;border-color:#252538;}
 .theme-btn.pink{background:#2e1426;color:#f472b6;border-color:#5c2846;}
 .theme-btn.white{background:#f0ede8;color:#1a1814;border-color:#ccc8c0;}
+.theme-btn.navy{background:#0d1626;color:#60a5fa;border-color:#1d2d55;}
+.theme-btn.ice{background:#102535;color:#06b6d4;border-color:#234560;}
+.theme-btn.forest{background:#0b1c15;color:#10b981;border-color:#1c3a28;}
+.theme-btn.sunset{background:#221500;color:#f97316;border-color:#503400;}
+.theme-btn.midnight{background:#120c2c;color:#a855f7;border-color:#2e2460;}
 .theme-btn.active-theme{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent-dim);}
 
 /* CYCLE MODE SELECTOR */
@@ -408,6 +468,14 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .btn-expense{background:var(--red);color:#fff;}
 .btn-savings{background:var(--accent);color:var(--bg);}
 .toast{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--green-dim);color:var(--green);border:1px solid var(--border2);border-radius:11px;padding:9px 16px;font-size:.8rem;font-weight:700;margin-bottom:12px;animation:fadeUp .3s ease;}
+/* Undo delete toast */
+.undo-toast{position:fixed;bottom:calc(var(--nav-h) + 14px);left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:398px;z-index:400;background:var(--bg1);border:1.5px solid var(--border2);border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px #00000070;animation:slideUp .3s cubic-bezier(.34,1.56,.64,1);}
+.undo-toast-text{flex:1;font-size:.83rem;font-weight:600;color:var(--text);}
+.undo-toast-sub{font-size:.68rem;color:var(--text3);margin-top:1px;}
+.undo-progress{position:absolute;bottom:0;left:0;height:3px;background:var(--red);border-radius:0 0 16px 16px;transition:width linear;}
+.undo-btn{flex-shrink:0;padding:8px 16px;border-radius:10px;border:none;background:var(--accent);color:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;font-size:.78rem;font-weight:800;cursor:pointer;transition:all .15s;}
+.undo-btn:active{transform:scale(.95);}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .date-err{background:var(--red-dim);color:var(--red);border:1px solid var(--border2);border-radius:11px;padding:9px 15px;font-size:.8rem;font-weight:600;margin-bottom:12px;display:none;}
@@ -611,6 +679,26 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .ios-step-num{width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--bg);font-size:.72rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
 .ios-step-text{font-size:.83rem;color:var(--text2);line-height:1.55;}
 .ios-step-text strong{color:var(--text);}
+
+/* ── BACKUP REMINDER MODAL ── */
+.backup-overlay{position:fixed;inset:0;z-index:600;background:#00000088;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.backup-overlay.open{opacity:1;pointer-events:all;}
+.backup-sheet{width:100%;max-width:430px;background:var(--bg1);border-radius:24px 24px 0 0;padding:22px 22px calc(env(safe-area-inset-bottom,20px)+22px);transform:translateY(100%);transition:transform .32s cubic-bezier(.32,0,.67,0);}
+.backup-overlay.open .backup-sheet{transform:translateY(0);}
+.backup-icon{font-size:2.4rem;text-align:center;margin-bottom:8px;}
+.backup-title{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;text-align:center;margin-bottom:6px;}
+.backup-msg{font-size:.8rem;color:var(--text3);text-align:center;line-height:1.7;margin-bottom:20px;}
+.backup-btn-row{display:flex;gap:8px;}
+.backup-btn{flex:1;padding:14px;border:none;border-radius:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.backup-btn:active{transform:scale(.97);}
+.backup-btn-skip{background:var(--bg2);color:var(--text3);}
+.backup-btn-now{background:var(--accent);color:var(--bg);}
+/* Backup interval row in settings */
+.backup-interval-row{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:11px;padding:10px 13px;margin-top:8px;}
+.bir-label{flex:1;font-size:.82rem;font-weight:600;color:var(--text2);}
+.bir-input{width:54px;background:var(--bg1);border:1.5px solid var(--border2);border-radius:8px;padding:5px 8px;color:var(--text);font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;text-align:center;outline:none;}
+.bir-input:focus{border-color:var(--accent);}
+.bir-unit{font-size:.75rem;color:var(--text3);font-weight:600;}
 </style>
 </head>
 <body>
@@ -727,9 +815,14 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         <div class="settings-title">Theme</div>
         <div class="settings-desc">Choose your app look.</div>
         <div class="theme-row">
-          <button class="theme-btn dark" onclick="setTheme('dark')" id="theme-dark">🌙 Dark</button>
-          <button class="theme-btn pink" onclick="setTheme('pink')" id="theme-pink">🌸 Pink</button>
-          <button class="theme-btn white" onclick="setTheme('white')" id="theme-white">☀️ Light</button>
+          <button class="theme-btn dark" onclick="setTheme('dark')" id="theme-dark">🌑 Noir</button>
+          <button class="theme-btn pink" onclick="setTheme('pink')" id="theme-pink">🌸 Rose</button>
+          <button class="theme-btn white" onclick="setTheme('white')" id="theme-white">🤍 Pearl</button>
+          <button class="theme-btn navy" onclick="setTheme('navy')" id="theme-navy">🌊 Navy</button>
+          <button class="theme-btn ice" onclick="setTheme('ice')" id="theme-ice">🧊 Ice</button>
+          <button class="theme-btn forest" onclick="setTheme('forest')" id="theme-forest">🌿 Forest</button>
+          <button class="theme-btn sunset" onclick="setTheme('sunset')" id="theme-sunset">🌅 Sunset</button>
+          <button class="theme-btn midnight" onclick="setTheme('midnight')" id="theme-midnight">🔮 Midnight</button>
         </div>
       </div>
     </div>
@@ -838,10 +931,16 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     <div class="settings-card">
       <div class="settings-icon" style="background:var(--accent-dim)">📤</div>
       <div class="settings-body">
-        <div class="settings-title">Export All Data</div>
+        <div class="settings-title">Export &amp; Backup</div>
         <div class="settings-desc">Exports <strong>everything</strong>: all transactions, budgets, currency, theme, and cycle settings — as a single <code>.json</code> backup file.<br/><br/>Your data auto-saves in the browser after every change. Use Export when switching devices or clearing your browser.</div>
         <button class="settings-btn btn-accent" onclick="exportData()">📤 Download Full Backup (.json)</button>
         <button class="settings-btn" style="background:var(--green-dim);color:var(--green);border:1.5px solid var(--green);margin-top:7px;" onclick="exportCSV()">📊 Export Transactions (.csv)</button>
+        <div class="backup-interval-row">
+          <span class="bir-label">🔔 Remind me to back up every</span>
+          <input class="bir-input" type="number" id="backup-interval-input" min="1" max="365" value="30" onchange="saveBackupInterval(this.value)"/>
+          <span class="bir-unit">days</span>
+        </div>
+        <div style="font-size:.68rem;color:var(--text3);margin-top:6px;" id="last-backup-label"></div>
       </div>
     </div>
 
@@ -967,7 +1066,18 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 </div>
 </div>
 
-<!-- ══ ONBOARDING ══ -->
+<!-- ══ BACKUP REMINDER ══ -->
+<div class="backup-overlay" id="backup-overlay" onclick="dismissBackupReminder(event)">
+  <div class="backup-sheet" onclick="event.stopPropagation()">
+    <div class="backup-icon">💾</div>
+    <div class="backup-title">Time to Back Up</div>
+    <div class="backup-msg" id="backup-msg">It's been a while since your last backup. Download a copy to keep your data safe in case you clear your browser or switch devices.</div>
+    <div class="backup-btn-row">
+      <button class="backup-btn backup-btn-skip" onclick="snoozeBackup()">Remind me later</button>
+      <button class="backup-btn backup-btn-now" onclick="backupNow()">📤 Back Up Now</button>
+    </div>
+  </div>
+</div>
 <div class="ob-overlay" id="ob-overlay">
   <div class="ob-sheet">
     <div class="ob-handle"></div>
@@ -976,41 +1086,35 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <!-- ── SLIDE 1: Welcome / What the app does ── -->
       <div class="ob-page">
         <div style="height:4px;"></div>
-        <div class="ob-emoji" style="font-size:3rem;">📒</div>
-        <div class="ob-title">Meet <em>Spendoodle</em></div>
-        <div class="ob-sub">Your personal pay-cycle money tracker — built to fit <strong style="color:var(--accent)">how you actually get paid</strong>, not the calendar.</div>
-        <div class="ob-steps" style="gap:9px;">
-          <div class="ob-step">
-            <div class="ob-step-icon c-acc">💼</div>
-            <div class="ob-step-body">
-              <div class="ob-step-title">Track income, expenses &amp; savings</div>
-              <div class="ob-step-desc">Log any transaction in seconds. Pick a category, enter an amount, add a note — that's it. Everything auto-saves.</div>
-            </div>
+        <div class="ob-emoji" style="font-size:3rem;">🤑</div>
+        <div class="ob-title">Oh hey, <em>broke bestie.</em></div>
+        <div class="ob-sub" style="margin-bottom:14px;">Spendoodle is a <strong style="color:var(--accent)">pay-cycle money tracker</strong> that actually makes sense — because it works around <em style="color:var(--accent)">your</em> payday, not some random calendar month.</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:16px;padding:13px 12px;">
+            <div style="font-size:1.4rem;margin-bottom:5px;">💸</div>
+            <div style="font-size:.78rem;font-weight:800;color:var(--text);margin-bottom:3px;">Log it fast</div>
+            <div style="font-size:.68rem;color:var(--text3);line-height:1.55;">Tap +, pick a category, type the amount. Done in 5 seconds. Yes, really.</div>
           </div>
-          <div class="ob-step">
-            <div class="ob-step-icon c-grn">📅</div>
-            <div class="ob-step-body">
-              <div class="ob-step-title">Organised by your pay cycle</div>
-              <div class="ob-step-desc">Money is grouped by <strong>pay period</strong> — monthly, twice-monthly, or any custom interval — so your balance always makes sense.</div>
-            </div>
+          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:16px;padding:13px 12px;">
+            <div style="font-size:1.4rem;margin-bottom:5px;">📅</div>
+            <div style="font-size:.78rem;font-weight:800;color:var(--text);margin-bottom:3px;">Your payday, your rules</div>
+            <div style="font-size:.68rem;color:var(--text3);line-height:1.55;">Set when you get paid and everything resets automatically. No more mental math.</div>
           </div>
-          <div class="ob-step">
-            <div class="ob-step-icon c-blu">📊</div>
-            <div class="ob-step-body">
-              <div class="ob-step-title">Trends &amp; insights on the Dashboard</div>
-              <div class="ob-step-desc">Cycle comparisons, spending breakdown, savings rate, and goal progress — all in one view.</div>
-            </div>
+          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:16px;padding:13px 12px;">
+            <div style="font-size:1.4rem;margin-bottom:5px;">📊</div>
+            <div style="font-size:.78rem;font-weight:800;color:var(--text);margin-bottom:3px;">See where it went</div>
+            <div style="font-size:.68rem;color:var(--text3);line-height:1.55;">Charts, trends, and a forecast that tells you if you're about to go broke.</div>
           </div>
-          <div class="ob-step">
-            <div class="ob-step-icon c-red">📤</div>
-            <div class="ob-step-body">
-              <div class="ob-step-title">Your data, your control</div>
-              <div class="ob-step-desc">No account needed. Data lives in your browser. Export a full JSON backup anytime to keep it safe.</div>
-            </div>
+          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:16px;padding:13px 12px;">
+            <div style="font-size:1.4rem;margin-bottom:5px;">🔒</div>
+            <div style="font-size:.78rem;font-weight:800;color:var(--text);margin-bottom:3px;">100% offline & private</div>
+            <div style="font-size:.68rem;color:var(--text3);line-height:1.55;">No account. No cloud. No one snooping. Your data lives on your phone, period.</div>
           </div>
         </div>
-        <div class="ob-tip" style="margin-top:10px;margin-bottom:0;">
-          <strong>4 quick steps ahead:</strong> choose a theme · set your pay cycle · pick a savings goal · set up credit cards — then you're ready to track. 🚀
+
+        <div class="ob-tip" style="margin-top:0;margin-bottom:0;">
+          ⚡ <strong>4 quick steps and you're set:</strong> pick a vibe · set payday · name a savings goal · add a card (optional) — then go touch some grass 🌿
         </div>
       </div>
 
@@ -1021,42 +1125,86 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         <div class="ob-emoji">🎨</div>
         <div class="ob-title">Choose Your <em>Look</em></div>
         <div class="ob-sub">Tap any card below — the <strong style="color:var(--accent)">whole app changes instantly</strong>. Try them all before you decide.</div>
-        <div class="ob-theme-cards" style="gap:10px;">
-          <div class="ob-theme-card" id="g-theme-dark" onclick="gSetTheme('dark')" style="flex:1;">
+        <div class="ob-theme-cards" style="gap:8px;display:grid;grid-template-columns:repeat(4,1fr);">
+          <div class="ob-theme-card" id="g-theme-dark" onclick="gSetTheme('dark')">
             <div class="ob-theme-preview" style="background:#141420;border-color:#252538;padding:11px 10px 9px;">
               <div class="ob-theme-prev-bar" style="background:#d4a853;margin-bottom:7px;"></div>
               <div style="display:flex;gap:5px;">
                 <div class="ob-theme-prev-dot" style="background:#4fd87c;"></div>
                 <div class="ob-theme-prev-dot" style="background:#f06464;"></div>
-                <div class="ob-theme-prev-dot" style="background:#7b8fff;"></div>
               </div>
             </div>
-            <div class="ob-theme-name">🌙 Dark</div>
-            <div class="ob-theme-sub">Easy on the eyes at night</div>
+            <div class="ob-theme-name" style="font-size:.72rem;">🌑 Noir</div>
           </div>
-          <div class="ob-theme-card" id="g-theme-pink" onclick="gSetTheme('pink')" style="flex:1;">
+          <div class="ob-theme-card" id="g-theme-pink" onclick="gSetTheme('pink')">
             <div class="ob-theme-preview" style="background:#2e1426;border-color:#5c2846;padding:11px 10px 9px;">
               <div class="ob-theme-prev-bar" style="background:#f472b6;margin-bottom:7px;"></div>
               <div style="display:flex;gap:5px;">
                 <div class="ob-theme-prev-dot" style="background:#34d399;"></div>
                 <div class="ob-theme-prev-dot" style="background:#f87171;"></div>
-                <div class="ob-theme-prev-dot" style="background:#a78bfa;"></div>
               </div>
             </div>
-            <div class="ob-theme-name">🌸 Pink</div>
-            <div class="ob-theme-sub">Warm tones, vibrant accents</div>
+            <div class="ob-theme-name" style="font-size:.72rem;">🌸 Rose</div>
           </div>
-          <div class="ob-theme-card" id="g-theme-white" onclick="gSetTheme('white')" style="flex:1;">
+          <div class="ob-theme-card" id="g-theme-white" onclick="gSetTheme('white')">
             <div class="ob-theme-preview" style="background:#f0ede8;border-color:#ccc8c0;padding:11px 10px 9px;">
               <div class="ob-theme-prev-bar" style="background:#b8860b;margin-bottom:7px;"></div>
               <div style="display:flex;gap:5px;">
                 <div class="ob-theme-prev-dot" style="background:#16a34a;"></div>
                 <div class="ob-theme-prev-dot" style="background:#dc2626;"></div>
-                <div class="ob-theme-prev-dot" style="background:#2563eb;"></div>
               </div>
             </div>
-            <div class="ob-theme-name">☀️ Light</div>
-            <div class="ob-theme-sub">Clean, bright, minimal</div>
+            <div class="ob-theme-name" style="font-size:.72rem;">🤍 Pearl</div>
+          </div>
+          <div class="ob-theme-card" id="g-theme-navy" onclick="gSetTheme('navy')">
+            <div class="ob-theme-preview" style="background:#0d1626;border-color:#1d2d55;padding:11px 10px 9px;">
+              <div class="ob-theme-prev-bar" style="background:#3b82f6;margin-bottom:7px;"></div>
+              <div style="display:flex;gap:5px;">
+                <div class="ob-theme-prev-dot" style="background:#22d3a5;"></div>
+                <div class="ob-theme-prev-dot" style="background:#f87171;"></div>
+              </div>
+            </div>
+            <div class="ob-theme-name" style="font-size:.72rem;">🌊 Navy</div>
+          </div>
+          <div class="ob-theme-card" id="g-theme-ice" onclick="gSetTheme('ice')">
+            <div class="ob-theme-preview" style="background:#102535;border-color:#234560;padding:11px 10px 9px;">
+              <div class="ob-theme-prev-bar" style="background:#06b6d4;margin-bottom:7px;"></div>
+              <div style="display:flex;gap:5px;">
+                <div class="ob-theme-prev-dot" style="background:#34d399;"></div>
+                <div class="ob-theme-prev-dot" style="background:#fb7185;"></div>
+              </div>
+            </div>
+            <div class="ob-theme-name" style="font-size:.72rem;">🧊 Ice</div>
+          </div>
+          <div class="ob-theme-card" id="g-theme-forest" onclick="gSetTheme('forest')">
+            <div class="ob-theme-preview" style="background:#0b1c15;border-color:#1c3a28;padding:11px 10px 9px;">
+              <div class="ob-theme-prev-bar" style="background:#10b981;margin-bottom:7px;"></div>
+              <div style="display:flex;gap:5px;">
+                <div class="ob-theme-prev-dot" style="background:#4ade80;"></div>
+                <div class="ob-theme-prev-dot" style="background:#f87171;"></div>
+              </div>
+            </div>
+            <div class="ob-theme-name" style="font-size:.72rem;">🌿 Forest</div>
+          </div>
+          <div class="ob-theme-card" id="g-theme-sunset" onclick="gSetTheme('sunset')">
+            <div class="ob-theme-preview" style="background:#221500;border-color:#503400;padding:11px 10px 9px;">
+              <div class="ob-theme-prev-bar" style="background:#f97316;margin-bottom:7px;"></div>
+              <div style="display:flex;gap:5px;">
+                <div class="ob-theme-prev-dot" style="background:#4ade80;"></div>
+                <div class="ob-theme-prev-dot" style="background:#f87171;"></div>
+              </div>
+            </div>
+            <div class="ob-theme-name" style="font-size:.72rem;">🌅 Sunset</div>
+          </div>
+          <div class="ob-theme-card" id="g-theme-midnight" onclick="gSetTheme('midnight')">
+            <div class="ob-theme-preview" style="background:#120c2c;border-color:#2e2460;padding:11px 10px 9px;">
+              <div class="ob-theme-prev-bar" style="background:#a855f7;margin-bottom:7px;"></div>
+              <div style="display:flex;gap:5px;">
+                <div class="ob-theme-prev-dot" style="background:#34d399;"></div>
+                <div class="ob-theme-prev-dot" style="background:#f87171;"></div>
+              </div>
+            </div>
+            <div class="ob-theme-name" style="font-size:.72rem;">🔮 Midnight</div>
           </div>
         </div>
         <div class="ob-tip" style="margin-top:14px;">💡 <strong>Tip:</strong> You can change your theme anytime in <strong>⚙️ Settings</strong>.</div>
@@ -1407,71 +1555,35 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <div class="wn-item">
         <div class="wn-icon" style="background:var(--accent-dim)">➕</div>
         <div class="wn-info">
-          <div class="wn-name">Redesigned FAB Speed-Dial <span class="wn-new-pill">v1.3</span></div>
-          <div class="wn-desc">The three quick-add buttons (Income, Expense, Savings) are now circular and float higher above the nav bar for a cleaner, more modern look.</div>
+          <div class="wn-name">Circular FAB Speed-Dial <span class="wn-new-pill">v1.3</span></div>
+          <div class="wn-desc">Income, Expense, Savings buttons are now circular and float higher above the nav bar.</div>
         </div>
       </div>
       <div class="wn-item">
         <div class="wn-icon" style="background:var(--red-dim)">💳</div>
         <div class="wn-info">
           <div class="wn-name">Payment Method Selector <span class="wn-new-pill">v1.3</span></div>
-          <div class="wn-desc">When logging an expense, choose between Cash or Credit Card using a visual pill selector — clearer and faster than the old toggle.</div>
+          <div class="wn-desc">Cash or Credit Card pill selector when logging expenses — replaces the old toggle.</div>
         </div>
       </div>
       <div class="wn-item">
-        <div class="wn-icon" style="background:var(--green-dim)">💼</div>
+        <div class="wn-icon" style="background:var(--green-dim)">🎯</div>
         <div class="wn-info">
-          <div class="wn-name">Smarter Sheet Defaults <span class="wn-new-pill">v1.3</span></div>
-          <div class="wn-desc">Opening Income now pre-selects Salary. Opening Savings skips the category picker entirely — it's cleaner and less clutter.</div>
+          <div class="wn-name">Smarter Defaults & 8 Themes <span class="wn-new-pill">v1.3</span></div>
+          <div class="wn-desc">Income opens with Salary pre-selected. Savings skips the category picker. Plus 5 new themes: Navy, Ice, Forest, Sunset, Midnight.</div>
         </div>
       </div>
-      <div class="wn-item">
-        <div class="wn-icon" style="background:var(--red-dim)">👆</div>
-        <div class="wn-info">
-          <div class="wn-name">Swipe to Delete</div>
-          <div class="wn-desc">On the feed, swipe any transaction left to reveal the delete button. Quick and easy without opening the card.</div>
-        </div>
-      </div>
-      <div class="wn-item">
-        <div class="wn-icon" style="background:var(--accent-dim)">⚡</div>
-        <div class="wn-info">
-          <div class="wn-name">Quick Add Templates </div>
-          <div class="wn-desc">Your recurring transactions now appear as one-tap quick-add buttons at the top of the add sheet — no need to fill in the form every time.</div>
-        </div>
-      </div>
-      <div class="wn-item">
-        <div class="wn-icon" style="background:var(--blue-dim)">🔁</div>
-        <div class="wn-info">
-          <div class="wn-name">Smarter Recurring Transactions </div>
-          <div class="wn-desc">Set recurring transactions as weekly or monthly. Monthly ones auto-generate into each new cycle so you never forget to log them.</div>
-        </div>
-      </div>
-      <div class="wn-item">
-        <div class="wn-icon" style="background:var(--green-dim)">📈</div>
-        <div class="wn-info">
-          <div class="wn-name">Cash Flow Projection </div>
-          <div class="wn-desc">See a forecast of your cash flow for the rest of the cycle based on your recurring income and expenses.</div>
-        </div>
-      </div>
-      <div class="wn-item">
-        <div class="wn-icon" style="background:#a855f718">🎯</div>
-        <div class="wn-info">
-          <div class="wn-name">Savings Goal Targets </div>
-          <div class="wn-desc">You can now set a target amount for each savings goal and track your progress with a visual ring indicator.</div>
-        </div>
-      </div>
-      <div class="wn-item">
-        <div class="wn-icon" style="background:var(--red-dim)">🔐</div>
-        <div class="wn-info">
-          <div class="wn-name">PIN Lock </div>
-          <div class="wn-desc">Protect your financial data with a 4-digit PIN. Set it up in Settings anytime. Uses SHA-256 hashing to keep it secure.</div>
-        </div>
-      </div>
-      <div class="wn-item">
-        <div class="wn-icon" style="background:var(--bg2)">💬</div>
-        <div class="wn-info">
-          <div class="wn-name">Custom Confirm Dialogs</div>
-          <div class="wn-desc">Delete confirmations now use a sleek in-app modal instead of the browser's default popup — consistent with the app's design.</div>
+      <div style="padding:10px 0 6px;font-size:.58rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);font-weight:700;">Earlier</div>
+      <div class="wn-item" style="padding:10px 0;">
+        <div class="wn-info" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">👆</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">Swipe to Delete</div><div style="font-size:.68rem;color:var(--text3);">Swipe left on any transaction.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">⚡</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">Quick Add</div><div style="font-size:.68rem;color:var(--text3);">One-tap recurring templates.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">🔁</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">Recurring</div><div style="font-size:.68rem;color:var(--text3);">Weekly or monthly, auto-logged.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">📈</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">Cash Flow Forecast</div><div style="font-size:.68rem;color:var(--text3);">Projected balance by end of cycle.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">🎯</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">Savings Goals</div><div style="font-size:.68rem;color:var(--text3);">Set targets, track progress.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">🔐</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">PIN Lock</div><div style="font-size:.68rem;color:var(--text3);">SHA-256 secured, set in Settings.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">💾</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">Backup Reminder</div><div style="font-size:.68rem;color:var(--text3);">Prompts you every 30 days.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">💬</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">Undo Delete</div><div style="font-size:.68rem;color:var(--text3);">5-second undo toast on delete.</div></div></div>
         </div>
       </div>
     </div>
@@ -2132,10 +2244,15 @@ function calcStreak(){
 function setTheme(t){
   activeTheme=t;
   document.body.className=[...document.body.classList].filter(c=>!c.startsWith('theme-')).concat('theme-'+t).join(' ');
-  ['dark','pink','white'].forEach(x=>{
+  const allThemes=['dark','pink','white','navy','ice','forest','sunset','midnight'];
+  allThemes.forEach(x=>{
     document.getElementById('theme-'+x)?.classList.toggle('active-theme',x===t);
   });
-  const tc={'dark':'#080810','pink':'#1a0a14','white':'#f5f4f0'};
+  const tc={
+    'dark':'#080810','pink':'#1a0a14','white':'#f5f4f0',
+    'navy':'#04080f','ice':'#06111a','forest':'#030f08',
+    'sunset':'#0f0800','midnight':'#060410'
+  };
   document.getElementById('theme-color-meta').content=tc[t]||'#080810';
   persist();
 }
@@ -2575,11 +2692,75 @@ function saveTransaction(){
   document.getElementById('add-toast').style.display='flex';
   setTimeout(()=>{closeSheet();renderFeed();renderDash();},900);
 }
+let _undoTimer = null;
+let _undoTx = null;
+
 function deleteTx(id){
-  transactions=transactions.filter(t=>t.id!==id);
+  const tx = transactions.find(t => t.id === id);
+  if(!tx) return;
+
+  // Remove from array immediately
+  transactions = transactions.filter(t => t.id !== id);
   persist(); deleteConfirm=null; expandedTx=null;
   if(navigator.vibrate) navigator.vibrate([20,10,20]);
   renderFeed(); renderDash();
+
+  // Clear any existing undo toast
+  if(_undoTimer){ clearTimeout(_undoTimer); _undoTimer=null; }
+  const existing = document.getElementById('undo-toast');
+  if(existing) existing.remove();
+
+  // Store for undo
+  _undoTx = tx;
+
+  // Build toast
+  const toast = document.createElement('div');
+  toast.id = 'undo-toast';
+  toast.className = 'undo-toast';
+  toast.innerHTML = `
+    <div style="font-size:1.3rem;">${tx.icon}</div>
+    <div class="undo-toast-text">
+      <div>${tx.label} deleted</div>
+      <div class="undo-toast-sub">${tx.type.charAt(0).toUpperCase()+tx.type.slice(1)} · ${currencySymbol}${fmt(tx.amount,2)}</div>
+    </div>
+    <button class="undo-btn" onclick="undoDelete()">Undo</button>
+    <div class="undo-progress" id="undo-progress" style="width:100%;"></div>
+  `;
+  document.getElementById('app').appendChild(toast);
+
+  // Animate progress bar shrinking over 5s
+  const bar = document.getElementById('undo-progress');
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      if(bar){ bar.style.transitionDuration='5000ms'; bar.style.width='0%'; }
+    });
+  });
+
+  // Auto-dismiss after 5s
+  _undoTimer = setTimeout(()=>{ dismissUndoToast(); }, 5000);
+}
+
+function undoDelete(){
+  if(!_undoTx) return;
+  clearTimeout(_undoTimer); _undoTimer=null;
+  transactions.push(_undoTx);
+  transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  _undoTx=null;
+  persist();
+  if(navigator.vibrate) navigator.vibrate(30);
+  dismissUndoToast();
+  renderFeed(); renderDash();
+}
+
+function dismissUndoToast(){
+  const toast=document.getElementById('undo-toast');
+  if(toast){
+    toast.style.transition='opacity .25s, transform .25s';
+    toast.style.opacity='0';
+    toast.style.transform='translateX(-50%) translateY(16px)';
+    setTimeout(()=>toast.remove(), 260);
+  }
+  _undoTx=null;
 }
 
 // ════════════════════════════════════════════════════════════
@@ -3016,8 +3197,7 @@ function renderTxCard(tx){
     ccTag=`<span class="cc-tag">💳 ${card?card.name:'Card'} Payment</span>`;
   }
   let actions='';
-  if(isOpen&&!isDel) actions=`<div class="tx-actions"><button class="act act-edit" onclick="openSheet(getTx(${tx.id}))">✏️ Edit</button><button class="act act-del" onclick="setDel(${tx.id})">🗑 Delete</button></div>`;
-  if(isDel) actions=`<div class="tx-actions"><button class="act act-cancel" onclick="setDel(null)">Cancel</button><button class="act act-confirm" onclick="deleteTx(${tx.id})">Confirm Delete</button></div>`;
+  if(isOpen) actions=`<div class="tx-actions"><button class="act act-edit" onclick="openSheet(getTx(${tx.id}))">✏️ Edit</button><button class="act act-del" onclick="deleteTx(${tx.id})">🗑 Delete</button></div>`;
   return `<div class="tx-wrap" data-id="${tx.id}">
     <div class="tx-swipe-bg">🗑</div>
     <div class="tx ${isOpen?'open':''}" data-id="${tx.id}" onclick="toggleTx(${tx.id})">
@@ -3358,6 +3538,10 @@ function renderSettings(){
   renderSettingsInputs();
   renderSettingsCCList();
   document.getElementById('cycle-limit-input').value = cycleLimit;
+  // Backup interval
+  const bii=document.getElementById('backup-interval-input');
+  if(bii) bii.value=getBackupInterval();
+  updateLastBackupLabel();
   const cycleKeys=[...new Set(transactions.map(t=>getCycleKey(t.date)))];
   const cycleCount=cycleKeys.length;
   const recur=transactions.filter(t=>t.recurring).length;
@@ -3422,6 +3606,9 @@ function exportData(){
   const dateStr=new Date().toISOString().slice(0,10);
   a.href=url; a.download=`spendoodle-backup-${dateStr}.json`; a.click();
   URL.revokeObjectURL(url);
+  // Stamp last backup time
+  localStorage.setItem('ledger_lastBackup', Date.now().toString());
+  updateLastBackupLabel();
   showSettingsToast('📤 Full backup exported!');
 }
 function exportCSV(){
@@ -3460,24 +3647,34 @@ function importData(e){
       if(Array.isArray(data)) imported=data;
       else if(data.transactions&&Array.isArray(data.transactions)) imported=data.transactions;
       else throw new Error('bad');
-      // Restore all settings
-      if(data.budgets&&typeof data.budgets==='object')  budgets={...data.budgets};
+      // ── Merge settings (don't overwrite if local has value) ──
+      if(data.budgets&&typeof data.budgets==='object')
+        budgets={...data.budgets,...budgets}; // local takes priority on overlap
       if(data.currencySymbol) currencySymbol=data.currencySymbol;
       if(data.activeTheme)    { activeTheme=data.activeTheme; setTheme(activeTheme); }
       if(data.cycleMode)      cycleMode=data.cycleMode;
       if(data.cycleConfig)    cycleConfig={...cycleConfig,...data.cycleConfig};
       if(data.cycleLimit)     cycleLimit=Math.max(3,parseInt(data.cycleLimit)||24);
-      if(data.creditCards&&Array.isArray(data.creditCards)) creditCards=data.creditCards;
-      if(data.goalTargets&&typeof data.goalTargets==='object') goalTargets={...data.goalTargets};
-      if(data.pinHash!==undefined){ pinHash=data.pinHash; if(pinHash) localStorage.setItem('ledger_pin',pinHash); else localStorage.removeItem('ledger_pin'); }
-      if(data.defaultGoal) localStorage.setItem('ledger_defaultGoal', data.defaultGoal);
+      // Merge credit cards by ID — don't duplicate
+      if(data.creditCards&&Array.isArray(data.creditCards)){
+        const existingCCIds=new Set(creditCards.map(c=>c.id));
+        const newCCs=data.creditCards.filter(c=>c.id&&!existingCCIds.has(c.id));
+        creditCards=[...creditCards,...newCCs];
+      }
+      // Merge goal targets — local takes priority on overlap
+      if(data.goalTargets&&typeof data.goalTargets==='object')
+        goalTargets={...data.goalTargets,...goalTargets};
+      if(data.pinHash!==undefined&&!pinHash){ pinHash=data.pinHash; if(pinHash) localStorage.setItem('ledger_pin',pinHash); }
+      if(data.defaultGoal&&!localStorage.getItem('ledger_defaultGoal'))
+        localStorage.setItem('ledger_defaultGoal', data.defaultGoal);
+      // ── Merge transactions by ID — no duplicates ──
       const existing=new Set(transactions.map(t=>t.id));
       const newOnes=imported.filter(t=>t.id&&t.date&&t.amount&&!existing.has(t.id));
       transactions=[...transactions,...newOnes];
       transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
       persist(); activeCycleKey=currentCycleKey();
-      renderSettings(); renderFeed();
-      showSettingsToast(`✅ Imported ${newOnes.length} transaction${newOnes.length!==1?'s':''} + all settings!`);
+      renderSettings(); renderFeed(); renderDash();
+      showSettingsToast(`✅ Merged ${newOnes.length} new transaction${newOnes.length!==1?'s':''}!`);
     }catch{
       document.getElementById('settings-err').style.display='block';
       setTimeout(()=>document.getElementById('settings-err').style.display='none',3500);
@@ -3485,6 +3682,65 @@ function importData(e){
     e.target.value='';
   };
   reader.readAsText(file);
+}
+
+// ════════════════════════════════════════════════════════════
+//  BACKUP REMINDER
+// ════════════════════════════════════════════════════════════
+function getBackupInterval(){
+  return Math.max(1, parseInt(localStorage.getItem('ledger_backupInterval')||'30'));
+}
+function saveBackupInterval(val){
+  const days=Math.max(1,Math.min(365,parseInt(val)||30));
+  localStorage.setItem('ledger_backupInterval', days.toString());
+  const inp=document.getElementById('backup-interval-input');
+  if(inp) inp.value=days;
+  showSettingsToast(`🔔 Backup reminder set to every ${days} days`);
+}
+function updateLastBackupLabel(){
+  const el=document.getElementById('last-backup-label');
+  if(!el) return;
+  const last=localStorage.getItem('ledger_lastBackup');
+  if(!last){ el.textContent='⚠️ No backup recorded yet'; return; }
+  const days=Math.floor((Date.now()-parseInt(last))/(86400000));
+  el.textContent = days===0 ? '✅ Last backup: today' : `📅 Last backup: ${days} day${days!==1?'s':''} ago`;
+}
+function checkBackupReminder(){
+  // Don't nag on first use (no transactions yet)
+  if(!transactions.length) return;
+  const interval=getBackupInterval();
+  const last=parseInt(localStorage.getItem('ledger_lastBackup')||'0');
+  const snoozed=parseInt(localStorage.getItem('ledger_backupSnoozed')||'0');
+  const now=Date.now();
+  // Check snooze (1 day)
+  if(snoozed && now - snoozed < 86400000) return;
+  const daysSince=last ? Math.floor((now-last)/86400000) : Infinity;
+  if(daysSince >= interval){
+    // Delay slightly so app renders first
+    setTimeout(()=>openBackupReminder(daysSince), 1500);
+  }
+}
+function openBackupReminder(days){
+  const msg=document.getElementById('backup-msg');
+  if(msg){
+    if(days===Infinity)
+      msg.textContent="You haven't backed up yet! Download a copy to keep your data safe in case you clear your browser or switch devices.";
+    else
+      msg.textContent=`It's been ${days} day${days!==1?'s':''} since your last backup. Download a copy to keep your data safe.`;
+  }
+  document.getElementById('backup-overlay').classList.add('open');
+}
+function dismissBackupReminder(e){
+  if(e&&e.target!==document.getElementById('backup-overlay')) return;
+  document.getElementById('backup-overlay').classList.remove('open');
+}
+function snoozeBackup(){
+  localStorage.setItem('ledger_backupSnoozed', Date.now().toString());
+  document.getElementById('backup-overlay').classList.remove('open');
+}
+function backupNow(){
+  document.getElementById('backup-overlay').classList.remove('open');
+  exportData();
 }
 function clearAllData(){
   showConfirm({
@@ -3627,7 +3883,7 @@ function gSelectCycleMode(mode){
 }
 function gSetTheme(t){
   setTheme(t); persist();
-  ['dark','pink','white'].forEach(n=>{
+  ['dark','pink','white','navy','ice','forest','sunset','midnight'].forEach(n=>{
     const c=document.getElementById(`g-theme-${n}`);
     if(c) c.classList.toggle('active-g', n===t);
   });
@@ -3802,7 +4058,7 @@ function gSyncGuideState(){
   gCycleMode = cycleMode;
   gLimitVal  = cycleLimit;
   // Theme highlight
-  ['dark','pink','white'].forEach(n=>{
+  ['dark','pink','white','navy','ice','forest','sunset','midnight'].forEach(n=>{
     const c=document.getElementById(`g-theme-${n}`);
     if(c) c.classList.toggle('active-g', n===activeTheme);
   });
@@ -3855,6 +4111,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
   // PWA setup
   pwaInit();
+  // Backup reminder check
+  checkBackupReminder();
 });
 
 // ════════════════════════════════════════════════════════════
@@ -4279,7 +4537,7 @@ function setupSwipeToDelete(){
       if(txEl) txEl.style.transform='';
       activeWrap.classList.remove('swiping');
       if(id){
-        showConfirm({icon:'🗑',title:'Delete Transaction',msg:'This will permanently remove this entry.',okLabel:'Delete',onOk:()=>deleteTx(id)});
+        deleteTx(id);
       }
     } else {
       if(txEl) txEl.style.transform='';
