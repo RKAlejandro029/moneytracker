@@ -6,13 +6,13 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="My Ledger"/>
-<meta name="application-name" content="My Ledger"/>
-<meta name="description" content="Personal pay-cycle money tracker — income, expenses, savings & credit cards."/>
+<meta name="apple-mobile-web-app-title" content="Spendoodle"/>
+<meta name="application-name" content="Spendoodle"/>
+<meta name="description" content="Spendoodle — personal pay-cycle money tracker — income, expenses, savings & credit cards."/>
 <meta name="theme-color" id="theme-color-meta" content="#080810"/>
 <link rel="manifest" id="pwa-manifest-link"/>
 <link rel="apple-touch-icon" id="pwa-apple-icon"/>
-<title>My Ledger</title>
+<title>Spendoodle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
@@ -461,6 +461,24 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .pay-balance-lbl{font-size:.72rem;color:var(--text3);}
 .pay-balance-val{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#a855f7;}
 .pay-save{width:100%;padding:14px;border:none;border-radius:13px;background:#a855f7;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;margin-top:4px;}
+/* ══ WHAT'S NEW MODAL ══ */
+.wn-overlay{position:fixed;inset:0;z-index:800;background:#00000090;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.wn-overlay.active{opacity:1;pointer-events:all;}
+.wn-sheet{width:100%;max-width:430px;background:var(--bg1);border-radius:24px 24px 0 0;padding:0 0 env(safe-area-inset-bottom,28px);max-height:82vh;overflow:hidden;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,0,.67,0);}
+.wn-overlay.active .wn-sheet{transform:translateY(0);}
+.wn-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:14px auto 10px;flex-shrink:0;}
+.wn-header{padding:4px 20px 14px;flex-shrink:0;}
+.wn-title{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;margin-bottom:3px;}
+.wn-sub{font-size:.73rem;color:var(--text3);}
+.wn-body{overflow-y:auto;padding:0 20px 20px;flex:1;scrollbar-width:none;}
+.wn-body::-webkit-scrollbar{display:none;}
+.wn-item{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);}
+.wn-item:last-child{border-bottom:none;}
+.wn-icon{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;}
+.wn-info{flex:1;min-width:0;}
+.wn-name{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:3px;}
+.wn-desc{font-size:.75rem;color:var(--text3);line-height:1.6;}
+.wn-new-pill{display:inline-block;font-size:.55rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;background:var(--accent);color:var(--bg);border-radius:99px;padding:2px 7px;margin-left:6px;vertical-align:middle;}
 /* ══ ONBOARDING ══ */
 .ob-overlay{position:fixed;inset:0;z-index:900;background:#00000090;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
 .ob-overlay.active{opacity:1;pointer-events:all;}
@@ -499,6 +517,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .ob-btn-primary{background:var(--accent);color:var(--bg);}
 .ob-btn-secondary{background:var(--bg2);color:var(--text2);border:1.5px solid var(--border2);}
 .ob-btn-ghost{background:transparent;color:var(--text3);font-size:.75rem;text-align:center;padding:6px;}
+.ob-pin-key{padding:12px 8px;border-radius:12px;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.ob-pin-key:active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
 
 /* ── GUIDE: page tag ── */
 .ob-page-tag{font-size:.65rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent);font-weight:700;text-align:center;margin-bottom:8px;}
@@ -566,11 +586,12 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <div class="topbar">
     <div class="top-row">
       <div>
-        <div class="top-title">My <span>Ledger</span></div>
+        <div class="top-title">Spend<span>oodle</span></div>
         <div class="top-sub" id="cycle-mode-label">Pay-cycle tracker</div>
       </div>
       <div style="display:flex;align-items:center;gap:7px;">
         <div class="top-date" id="top-date-label"></div>
+        <button class="icon-btn" id="whats-new-btn" onclick="openWhatsNew()" title="What's New" style="position:relative;">✨<span id="new-badge" style="position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:var(--accent);border-radius:50%;border:1.5px solid var(--bg);display:block;"></span></button>
         <button class="icon-btn" onclick="nav('settings')">⚙️</button>
       </div>
     </div>
@@ -646,7 +667,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <div class="settings-icon" style="background:var(--accent-dim)">📖</div>
       <div class="settings-body">
         <div class="settings-title">User Guide</div>
-        <div class="settings-desc">New to My Ledger? Revisit the setup guide anytime to learn how everything works and how to customise it for your situation.</div>
+        <div class="settings-desc">New to Spendoodle? Revisit the setup guide anytime to learn how everything works and how to customise it for your situation.</div>
         <button class="settings-btn btn-accent" onclick="obOpen();nav('feed')">📖 Open Guide</button>
       </div>
     </div>
@@ -848,7 +869,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 <div class="pwa-banner" id="pwa-banner" style="display:none;">
   <div class="pwa-banner-icon" id="pwa-banner-icon"></div>
   <div class="pwa-banner-text">
-    <div class="pwa-banner-title">Install My Ledger</div>
+    <div class="pwa-banner-title">Install Spendoodle</div>
     <div class="pwa-banner-sub" id="pwa-banner-sub">Add to home screen for the best experience</div>
   </div>
   <button class="pwa-banner-install" id="pwa-banner-btn" onclick="pwaInstall()">Install</button>
@@ -861,7 +882,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
       <div id="ios-sheet-icon" style="width:52px;height:52px;border-radius:13px;flex-shrink:0;"></div>
       <div>
-        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;">Install My Ledger</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;">Install Spendoodle</div>
         <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Add to your Home Screen</div>
       </div>
       <button style="margin-left:auto;background:var(--bg2);border:1.5px solid var(--border2);border-radius:8px;padding:5px 10px;font-size:.7rem;font-weight:700;color:var(--text3);cursor:pointer;" onclick="closeIosSheet()">Done</button>
@@ -876,7 +897,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     </div>
     <div class="ios-step">
       <div class="ios-step-num">3</div>
-      <div class="ios-step-text">Tap <strong>"Add"</strong> in the top-right corner — My Ledger will appear on your home screen like a native app ✅</div>
+      <div class="ios-step-text">Tap <strong>"Add"</strong> in the top-right corner — Spendoodle will appear on your home screen like a native app ✅</div>
     </div>
     <div style="background:var(--accent-dim);border:1px solid var(--border2);border-radius:12px;padding:10px 14px;font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.6;">
       💡 <strong style="color:var(--accent)">Works offline</strong> — your data is stored on your device, not the cloud. No login needed.
@@ -895,7 +916,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <div class="ob-page">
         <div style="height:4px;"></div>
         <div class="ob-emoji" style="font-size:3rem;">📒</div>
-        <div class="ob-title">Meet <em>My Ledger</em></div>
+        <div class="ob-title">Meet <em>Spendoodle</em></div>
         <div class="ob-sub">Your personal pay-cycle money tracker — built to fit <strong style="color:var(--accent)">how you actually get paid</strong>, not the calendar.</div>
         <div class="ob-steps" style="gap:9px;">
           <div class="ob-step">
@@ -935,7 +956,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <!-- ── SLIDE 2: Theme (interactive) ── -->
       <div class="ob-page">
         <div style="height:4px;"></div>
-        <div class="ob-page-tag">Step 1 of 4 · Theme</div>
+        <div class="ob-page-tag">Step 1 of 5 · Theme</div>
         <div class="ob-emoji">🎨</div>
         <div class="ob-title">Choose Your <em>Look</em></div>
         <div class="ob-sub">Tap any card below — the <strong style="color:var(--accent)">whole app changes instantly</strong>. Try them all before you decide.</div>
@@ -984,7 +1005,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <!-- ── SLIDE 3: Pay Cycle (interactive) ── -->
       <div class="ob-page">
         <div style="height:4px;"></div>
-        <div class="ob-page-tag">Step 2 of 4 · Pay Cycle</div>
+        <div class="ob-page-tag">Step 2 of 5 · Pay Cycle</div>
         <div class="ob-emoji">📅</div>
         <div class="ob-title">When Do You Get <em>Paid?</em></div>
         <div class="ob-sub">Transactions are grouped by <strong style="color:var(--accent)">pay period</strong>, not calendar month — so your balance always reflects your real financial cycle.</div>
@@ -1065,7 +1086,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <!-- ── SLIDE 4: History Limit + Savings Goal (combined) ── -->
       <div class="ob-page">
         <div style="height:4px;"></div>
-        <div class="ob-page-tag">Step 3 of 4 · History &amp; Goal</div>
+        <div class="ob-page-tag">Step 3 of 5 · History &amp; Goal</div>
         <div class="ob-emoji">🎯</div>
         <div class="ob-title">History &amp; Your <em>First Goal</em></div>
         <div class="ob-sub">Two quick picks — how far back to store cycles, and what you're saving for.</div>
@@ -1104,6 +1125,18 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
             placeholder="Or type your own goal…"
             oninput="gOnGoalType()"
             style="width:100%;"/>
+          <!-- Target amount — slides in after goal is chosen -->
+          <div id="g-goal-target-wrap" style="display:none;margin-top:10px;transition:all .3s;">
+            <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:700;margin-bottom:6px;">💰 Target amount to reach</div>
+            <div style="position:relative;">
+              <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:.9rem;font-weight:700;color:var(--text3);pointer-events:none;" id="g-goal-currency-sym"></span>
+              <input class="goal-input" id="g-savings-goal-target"
+                type="number" min="1" placeholder="e.g. 50000"
+                oninput="gOnGoalTargetType()"
+                style="width:100%;padding-left:28px;"/>
+            </div>
+            <div id="g-goal-target-hint" style="margin-top:6px;font-size:.72rem;color:var(--text3);line-height:1.5;"></div>
+          </div>
           <div class="ob-goal-preview" id="g-goal-preview" style="margin-top:8px;font-size:.78rem;">🛡 Defaults to "Emergency Fund" if left blank</div>
         </div>
         <div class="ob-inline-tip" style="margin-top:10px;">Saved when you tap <strong>Save &amp; Next →</strong></div>
@@ -1112,7 +1145,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <!-- ── SLIDE 5: Credit Cards (optional) ── -->
       <div class="ob-page">
         <div style="height:4px;"></div>
-        <div class="ob-page-tag">Step 4 of 4 · Credit Cards <span style="color:var(--text3);font-weight:400;">(optional)</span></div>
+        <div class="ob-page-tag">Step 4 of 5 · Credit Cards <span style="color:var(--text3);font-weight:400;">(optional)</span></div>
         <div class="ob-emoji">💳</div>
         <div class="ob-title">Do You Have <em>Credit Cards?</em></div>
         <div class="ob-sub">Add your cards so the app can track your <strong style="color:var(--accent)">credit limit</strong> and <strong style="color:var(--accent)">outstanding balance</strong>. Charge expenses to a card instead of your cash, then pay the bill when you're ready.</div>
@@ -1175,6 +1208,72 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       </div>
 
 
+      <!-- ── PIN SLIDE — Step 5 of 5 ── -->
+      <div class="ob-page" id="ob-page-pin">
+        <div style="height:4px;"></div>
+        <div class="ob-page-tag">Step 5 of 5 · PIN Lock <span style="color:var(--text3);font-weight:400;">(optional)</span></div>
+        <div class="ob-emoji">🔐</div>
+        <div class="ob-title">Protect Your <em>Ledger</em></div>
+        <div class="ob-sub">Add a 4-digit PIN so only you can open the app. Great if others use your phone.</div>
+
+        <div class="ob-steps" style="gap:7px;margin-bottom:16px;">
+          <div class="ob-step">
+            <div class="ob-step-icon c-acc">🔒</div>
+            <div class="ob-step-body">
+              <div class="ob-step-title">Lock on every open</div>
+              <div class="ob-step-desc">The PIN screen appears every time you launch Spendoodle, keeping your finances private.</div>
+            </div>
+          </div>
+          <div class="ob-step">
+            <div class="ob-step-icon c-grn">🔑</div>
+            <div class="ob-step-body">
+              <div class="ob-step-title">Easy to change or remove</div>
+              <div class="ob-step-desc">Head to <strong>⚙️ Settings → PIN Lock</strong> anytime to update or remove your PIN.</div>
+            </div>
+          </div>
+          <div class="ob-step">
+            <div class="ob-step-icon c-blu">🛡️</div>
+            <div class="ob-step-body">
+              <div class="ob-step-title">Stored securely</div>
+              <div class="ob-step-desc">Your PIN is hashed with SHA-256 — it's never stored in plain text on your device.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PIN setup inline -->
+        <div class="ob-setup-block" id="ob-pin-block">
+          <div class="ob-setup-label">Set your PIN</div>
+          <div id="ob-pin-status" style="font-size:.78rem;color:var(--text3);text-align:center;margin-bottom:12px;">Enter a 4-digit PIN to activate lock</div>
+          <!-- dots -->
+          <div style="display:flex;justify-content:center;gap:12px;margin-bottom:16px;">
+            <div class="pin-dot" id="ob-pin-d0" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:background .15s;"></div>
+            <div class="pin-dot" id="ob-pin-d1" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:background .15s;"></div>
+            <div class="pin-dot" id="ob-pin-d2" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:background .15s;"></div>
+            <div class="pin-dot" id="ob-pin-d3" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:background .15s;"></div>
+          </div>
+          <!-- numpad -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:220px;margin:0 auto;">
+            <button onclick="obPinKey('1')" class="ob-pin-key">1</button>
+            <button onclick="obPinKey('2')" class="ob-pin-key">2</button>
+            <button onclick="obPinKey('3')" class="ob-pin-key">3</button>
+            <button onclick="obPinKey('4')" class="ob-pin-key">4</button>
+            <button onclick="obPinKey('5')" class="ob-pin-key">5</button>
+            <button onclick="obPinKey('6')" class="ob-pin-key">6</button>
+            <button onclick="obPinKey('7')" class="ob-pin-key">7</button>
+            <button onclick="obPinKey('8')" class="ob-pin-key">8</button>
+            <button onclick="obPinKey('9')" class="ob-pin-key">9</button>
+            <div></div>
+            <button onclick="obPinKey('0')" class="ob-pin-key">0</button>
+            <button onclick="obPinDel()" class="ob-pin-key" style="font-size:.85rem;">⌫</button>
+          </div>
+          <div id="ob-pin-set-msg" style="margin-top:12px;text-align:center;font-size:.75rem;font-weight:700;color:var(--green);min-height:18px;"></div>
+        </div>
+
+        <div class="ob-inline-tip" style="margin-top:12px;">
+          <strong>Optional</strong> — tap "Finish" to skip and set a PIN later via <strong>⚙️ Settings → PIN Lock</strong>.
+        </div>
+      </div>
+
     </div><!-- end ob-pages -->
 
     <div class="ob-footer">
@@ -1191,7 +1290,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 <!-- ══ PIN LOCK OVERLAY ══ -->
 <div class="pin-overlay hidden" id="pin-overlay">
   <div style="font-size:3rem;margin-bottom:16px;">🔐</div>
-  <div class="pin-title">My <span style="color:var(--accent)">Ledger</span></div>
+  <div class="pin-title">Spend<span style="color:var(--accent)">oodle</span></div>
   <div class="pin-sub" id="pin-sub">Enter your PIN to unlock</div>
   <div class="pin-dots" id="pin-dots">
     <div class="pin-dot" id="pd0"></div>
@@ -1226,6 +1325,68 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     <div class="confirm-btns">
       <button class="confirm-btn confirm-cancel" onclick="closeConfirm()">Cancel</button>
       <button class="confirm-btn confirm-ok" id="confirm-ok-btn" onclick="confirmOk()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ WHAT'S NEW SHEET ══ -->
+<div class="wn-overlay" id="wn-overlay" onclick="closeWhatsNew()">
+  <div class="wn-sheet" onclick="event.stopPropagation()">
+    <div class="wn-handle"></div>
+    <div class="wn-header">
+      <div class="wn-title">What's New ✨</div>
+      <div class="wn-sub">Latest features added to Spendoodle</div>
+    </div>
+    <div class="wn-body">
+      <div class="wn-item">
+        <div class="wn-icon" style="background:var(--red-dim)">👆</div>
+        <div class="wn-info">
+          <div class="wn-name">Swipe to Delete <span class="wn-new-pill">New</span></div>
+          <div class="wn-desc">On the feed, swipe any transaction left to reveal the delete button. Quick and easy without opening the card.</div>
+        </div>
+      </div>
+      <div class="wn-item">
+        <div class="wn-icon" style="background:var(--accent-dim)">⚡</div>
+        <div class="wn-info">
+          <div class="wn-name">Quick Add Templates <span class="wn-new-pill">New</span></div>
+          <div class="wn-desc">Your recurring transactions now appear as one-tap quick-add buttons at the top of the add sheet — no need to fill in the form every time.</div>
+        </div>
+      </div>
+      <div class="wn-item">
+        <div class="wn-icon" style="background:var(--blue-dim)">🔁</div>
+        <div class="wn-info">
+          <div class="wn-name">Smarter Recurring Transactions <span class="wn-new-pill">New</span></div>
+          <div class="wn-desc">Set recurring transactions as weekly or monthly. Monthly ones auto-generate into each new cycle so you never forget to log them.</div>
+        </div>
+      </div>
+      <div class="wn-item">
+        <div class="wn-icon" style="background:var(--green-dim)">📈</div>
+        <div class="wn-info">
+          <div class="wn-name">Cash Flow Projection <span class="wn-new-pill">New</span></div>
+          <div class="wn-desc">See a forecast of your cash flow for the rest of the cycle based on your recurring income and expenses.</div>
+        </div>
+      </div>
+      <div class="wn-item">
+        <div class="wn-icon" style="background:#a855f718">🎯</div>
+        <div class="wn-info">
+          <div class="wn-name">Savings Goal Targets <span class="wn-new-pill">New</span></div>
+          <div class="wn-desc">You can now set a target amount for each savings goal and track your progress with a visual ring indicator.</div>
+        </div>
+      </div>
+      <div class="wn-item">
+        <div class="wn-icon" style="background:var(--red-dim)">🔐</div>
+        <div class="wn-info">
+          <div class="wn-name">PIN Lock <span class="wn-new-pill">New</span></div>
+          <div class="wn-desc">Protect your financial data with a 4-digit PIN. Set it up in Settings anytime. Uses SHA-256 hashing to keep it secure.</div>
+        </div>
+      </div>
+      <div class="wn-item">
+        <div class="wn-icon" style="background:var(--bg2)">💬</div>
+        <div class="wn-info">
+          <div class="wn-name">Custom Confirm Dialogs</div>
+          <div class="wn-desc">Delete confirmations now use a sleek in-app modal instead of the browser's default popup — consistent with the app's design.</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1683,15 +1844,17 @@ function normGoal(s){
   return s.trim().toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
 }
 
-/** All unique goal names across all transactions (case-insensitive deduped) */
+/** All unique goal names across all transactions + any goal with a set target (case-insensitive deduped) */
 function getSavingsGoals(){
   const seen=new Map();
   transactions.filter(t=>t.type==='savings'&&t.savingsGoal)
     .forEach(t=>{ const k=t.savingsGoal.toLowerCase(); if(!seen.has(k)) seen.set(k,t.savingsGoal); });
+  // Also include goals that have a target set but no deposits yet
+  Object.keys(goalTargets).forEach(k=>{ if(!seen.has(k)) seen.set(k, k.replace(/\b\w/g,c=>c.toUpperCase())); });
   return [...seen.values()].sort((a,b)=>a.localeCompare(b));
 }
 
-/** Goals data: total saved per goal across ALL stored transactions */
+/** Goals data: total saved per goal across ALL stored transactions, including target-only goals */
 function goalsData(){
   const map=new Map();
   transactions.filter(t=>t.type==='savings'&&t.savingsGoal).forEach(t=>{
@@ -1701,6 +1864,15 @@ function goalsData(){
     g.total+=t.amount;
     g.count++;
     if(t.date>g.last) g.last=t.date;
+  });
+  // Add goals that have a target but no deposits yet
+  Object.keys(goalTargets).forEach(k=>{
+    if(!map.has(k)){
+      // Try to get a nicely-capitalised display name from ledger_defaultGoal or title-case the key
+      const stored=localStorage.getItem('ledger_defaultGoal')||'';
+      const displayName = stored.toLowerCase()===k ? stored : k.replace(/\b\w/g,c=>c.toUpperCase());
+      map.set(k,{name:displayName,total:0,count:0,last:''});
+    }
   });
   return [...map.values()].sort((a,b)=>b.total-a.total);
 }
@@ -2560,18 +2732,7 @@ function shiftCycle(dir){
   if(dir===-1){ const p=shiftKey(activeCycleKey,-1); if(cycleRange(p).start>='2020-01-01') setCycle(p); }
 }
 
-function setupMonthSwipe(){
-  const area=document.getElementById('view-feed');
-  let sx=0,moved=false;
-  area.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; moved=false; },{passive:true});
-  area.addEventListener('touchmove',e=>{ if(Math.abs(e.touches[0].clientX-sx)>10) moved=true; },{passive:true});
-  area.addEventListener('touchend',e=>{
-    if(!moved||sheetOpen) return;
-    const dx=e.changedTouches[0].clientX-sx;
-    if(Math.abs(dx)<60) return;
-    if(dx<-60) shiftCycle(-1); else shiftCycle(1);
-  },{passive:true});
-}
+
 
 // ════════════════════════════════════════════════════════════
 //  RENDER DASHBOARD
@@ -2760,21 +2921,25 @@ function renderDash(){
         </div>
         ${targetPct>=100?'<div style="font-size:.6rem;color:var(--green);font-weight:700;margin-top:2px;">🎉 Goal reached!</div>':''}
       </div>`:'';
+      const metaLine = g.count>0
+        ? `${g.count} deposit${g.count!==1?'s':''} · last ${formatDate(g.last)}`
+        : `<span style="color:var(--text3);font-style:italic;">No deposits yet — start saving!</span>`;
       return `<div class="goal-card">
         <div class="goal-card-rank">${rank}</div>
         <div class="goal-card-body">
           <div class="goal-card-name">🎯 ${g.name}</div>
-          <div class="goal-card-meta">${g.count} deposit${g.count!==1?'s':''} · last ${formatDate(g.last)}</div>
+          <div class="goal-card-meta">${metaLine}</div>
           <div class="goal-bar-track"><div class="goal-bar-fill" style="width:${barPct}%"></div></div>
           ${targetBar}
         </div>
-        <div class="goal-card-amt">${c$(g.total)}</div>
+        <div class="goal-card-amt">${g.total>0?c$(g.total):`<span style="color:var(--text3);font-size:.8rem;">${c$(0)}</span>`}</div>
       </div>`;
     }).join('');
     const grandTotal=gData.reduce((s,g)=>s+g.total,0);
+    const totalGoalsWithTarget=gData.filter(g=>goalTargets[g.name.toLowerCase()]>0).length;
     goalsHtml=`<div class="section">
       <div class="section-title">🎯 Savings Goals</div>
-      <div class="section-sub">All-time · ${gData.length} goal${gData.length!==1?'s':''} · ${c$(grandTotal)} total</div>
+      <div class="section-sub">All-time · ${gData.length} goal${gData.length!==1?'s':''}${grandTotal>0?' · '+c$(grandTotal)+' total':''}</div>
       <div class="goals-grid">${rows}</div>
     </div>`;
   }
@@ -2914,7 +3079,7 @@ function exportData(){
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   const dateStr=new Date().toISOString().slice(0,10);
-  a.href=url; a.download=`ledger-backup-${dateStr}.json`; a.click();
+  a.href=url; a.download=`spendoodle-backup-${dateStr}.json`; a.click();
   URL.revokeObjectURL(url);
   showSettingsToast('📤 Full backup exported!');
 }
@@ -2975,7 +3140,7 @@ function showSettingsToast(msg){
 // ════════════════════════════════════════════════════════════
 //  ONBOARDING — 5 slides: Welcome · Theme · Pay Cycle · History+Goal · Done
 // ════════════════════════════════════════════════════════════
-const OB_TOTAL = 5;
+const OB_TOTAL = 6;
 let obPage = 0;
 let gCycleMode = cycleMode;
 let gLimitVal  = cycleLimit;
@@ -3015,6 +3180,19 @@ function obRender(){
     nextBtn.onclick = ()=>obNav(1);
   }
   document.getElementById('ob-skip').style.display = obPage===OB_TOTAL-1 ? 'none':'block';
+  // Reset PIN pad when entering PIN slide
+  if(obPage===5){
+    _obPinBuf=''; _obPinFirst=''; _obPinStep='set';
+    obUpdatePinDots();
+    document.querySelectorAll('.ob-pin-key').forEach(b=>b.disabled=false);
+    document.getElementById('ob-pin-set-msg').textContent='';
+    if(pinHash){
+      document.getElementById('ob-pin-status').textContent='✅ PIN already set — you\'re protected!';
+      document.getElementById('ob-pin-set-msg').textContent='Tap keys below to change it.';
+    } else {
+      document.getElementById('ob-pin-status').textContent='Enter a 4-digit PIN to activate lock';
+    }
+  }
 }
 
 /* Save settings for the page we're leaving */
@@ -3052,12 +3230,18 @@ function obSaveCurrentPage(){
       enforceCycleLimit();
       const li=document.getElementById('cycle-limit-input');if(li)li.value=cycleLimit;
       const raw=(document.getElementById('g-savings-goal-input')?.value||'').trim();
-      if(raw) localStorage.setItem('ledger_defaultGoal', normGoal(raw));
+      const goalName = raw ? normGoal(raw) : 'Emergency Fund';
+      if(raw) localStorage.setItem('ledger_defaultGoal', goalName);
       else     localStorage.setItem('ledger_defaultGoal','Emergency Fund');
+      // Save target amount if provided
+      const targetAmt=parseFloat(document.getElementById('g-savings-goal-target')?.value)||0;
+      if(targetAmt>0) goalTargets[goalName.toLowerCase()]=targetAmt;
       persist(); activeCycleKey=currentCycleKey(); renderFeed(); renderSettings();
       break;
     case 4: // Credit Cards — already saved live when added; just persist & refresh
       persist(); renderSettingsCCList(); renderFeed(); renderCreditSection();
+      break;
+    case 5: // PIN — saved live via obPinKey; nothing extra needed
       break;
   }
 }
@@ -3112,9 +3296,23 @@ function gPickGoal(name){
 function gOnGoalType(){
   const v=(document.getElementById('g-savings-goal-input')?.value||'').trim();
   const preview=document.getElementById('g-goal-preview');
+  const targetWrap=document.getElementById('g-goal-target-wrap');
+  const symEl=document.getElementById('g-goal-currency-sym');
+  if(symEl) symEl.textContent=currencySymbol;
+  if(targetWrap) targetWrap.style.display = v ? 'block' : 'none';
   if(preview) preview.textContent = v
     ? `🎯 "${v}" will be your first savings goal`
     : '🛡 Defaults to "Emergency Fund" if left blank';
+  gOnGoalTargetType();
+}
+function gOnGoalTargetType(){
+  const v=(document.getElementById('g-savings-goal-input')?.value||'').trim();
+  const amt=parseFloat(document.getElementById('g-savings-goal-target')?.value)||0;
+  const hint=document.getElementById('g-goal-target-hint');
+  if(!hint) return;
+  if(!v||amt<=0){ hint.textContent=''; return; }
+  hint.textContent=`✓ You'll aim to save ${currencySymbol}${fmt(amt,0)} for "${v}"`;
+  hint.style.color='var(--green)';
 }
 function gUpdateCCHint(){
   const limit=parseFloat(document.getElementById('g-cc-limit')?.value)||0;
@@ -3250,6 +3448,12 @@ function gSyncGuideState(){
   const stored=localStorage.getItem('ledger_defaultGoal')||'';
   const inp=document.getElementById('g-savings-goal-input');
   if(inp) inp.value=stored;
+  // Restore target amount if already set for this goal
+  if(stored){
+    const existingTarget=goalTargets[stored.toLowerCase()]||0;
+    const tInp=document.getElementById('g-savings-goal-target');
+    if(tInp && existingTarget>0) tInp.value=existingTarget;
+  }
   gOnGoalType();
   // Render any already-added credit cards in the guide list
   gRenderGuideCards();
@@ -3265,9 +3469,13 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('f-amount').addEventListener('input',updateSaveBtn);
   buildCatGrid();
   renderFeed();
-  setupMonthSwipe();
   setupSwipeToDelete();
   checkPinOnLoad();
+  // Hide what's new badge if already seen
+  if(localStorage.getItem('ledger_wn_seen')){
+    const badge=document.getElementById('new-badge');
+    if(badge) badge.style.display='none';
+  }
   // Show onboarding for first-time users
   if(!localStorage.getItem('ledger_onboarded')){
     setTimeout(()=>obOpen(), 400);
@@ -3330,9 +3538,9 @@ function pwaInit(){
 
   // Build & inject manifest
   const manifest={
-    name:'My Ledger',
-    short_name:'My Ledger',
-    description:'Personal pay-cycle money tracker — income, expenses, savings & credit cards.',
+    name:'Spendoodle',
+    short_name:'Spendoodle',
+    description:'Spendoodle — personal pay-cycle money tracker — income, expenses, savings & credit cards.',
     start_url:location.href,
     scope:location.href,
     display:'standalone',
@@ -3354,7 +3562,7 @@ function pwaInit(){
   // Register service worker via blob
   if('serviceWorker' in navigator){
     const swCode=`
-const CACHE='myledger-v1';
+const CACHE='spendoodle-v1';
 const ASSETS=[${JSON.stringify(location.href)}];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));
@@ -3506,6 +3714,50 @@ function openPinSetup(cb){
   document.getElementById('pin-skip-btn').style.display='none';
   document.getElementById('pin-overlay').classList.remove('hidden');
 }
+/* ── Guide inline PIN pad ── */
+let _obPinBuf='', _obPinFirst='', _obPinStep='set'; // 'set' | 'confirm'
+function obPinKey(d){
+  if(_obPinBuf.length>=4) return;
+  _obPinBuf+=d;
+  obUpdatePinDots();
+  if(_obPinBuf.length===4){
+    setTimeout(async()=>{
+      const h=await sha256(_obPinBuf);
+      if(_obPinStep==='set'){
+        _obPinFirst=h; _obPinBuf=''; _obPinStep='confirm';
+        document.getElementById('ob-pin-status').textContent='Confirm your PIN';
+        obUpdatePinDots();
+      } else {
+        if(h===_obPinFirst){
+          pinHash=h; localStorage.setItem('ledger_pin',h);
+          document.getElementById('ob-pin-set-msg').textContent='✅ PIN set! Your ledger is protected.';
+          document.getElementById('ob-pin-status').textContent='PIN confirmed ✓';
+          _obPinBuf=''; _obPinFirst=''; _obPinStep='set';
+          obUpdatePinDots();
+          // grey out the pad to show done
+          document.querySelectorAll('.ob-pin-key').forEach(b=>b.disabled=true);
+        } else {
+          document.getElementById('ob-pin-set-msg').textContent='❌ PINs didn\'t match. Try again.';
+          _obPinBuf=''; _obPinFirst=''; _obPinStep='set';
+          document.getElementById('ob-pin-status').textContent='Enter a 4-digit PIN to activate lock';
+          obUpdatePinDots();
+        }
+      }
+    },80);
+  }
+}
+function obPinDel(){
+  _obPinBuf=_obPinBuf.slice(0,-1);
+  obUpdatePinDots();
+}
+function obUpdatePinDots(){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById(`ob-pin-d${i}`);
+    if(d){ d.style.background=i<_obPinBuf.length?'var(--accent)':'transparent';
+           d.style.borderColor=i<_obPinBuf.length?'var(--accent)':'var(--border2)'; }
+  }
+}
+
 function removePin(){
   pinHash=''; localStorage.removeItem('ledger_pin');
   showSettingsToast('🔓 PIN removed.');
@@ -3524,6 +3776,17 @@ function checkPinOnLoad(){
 //  CUSTOM CONFIRM MODAL
 // ════════════════════════════════════════════════════════════
 let _confirmCallback=null;
+function openWhatsNew(){
+  document.getElementById('wn-overlay').classList.add('active');
+  // Hide the badge dot once seen
+  const badge=document.getElementById('new-badge');
+  if(badge) badge.style.display='none';
+  localStorage.setItem('ledger_wn_seen','1');
+}
+function closeWhatsNew(){
+  document.getElementById('wn-overlay').classList.remove('active');
+}
+
 function showConfirm({icon='⚠️',title='Are you sure?',msg='This cannot be undone.',okLabel='Confirm',onOk}){
   document.getElementById('confirm-icon').textContent=icon;
   document.getElementById('confirm-title').textContent=title;
