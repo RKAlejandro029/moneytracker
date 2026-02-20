@@ -393,6 +393,31 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .ring-pct{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;line-height:1;}
 .ring-sub{font-size:.69rem;color:var(--text3);margin-top:4px;}
 
+/* ── BILL CALENDAR ── */
+.cal-header{display:flex;align-items:center;justify-content:space-between;padding:0 20px 14px;}
+.cal-month-label{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:0 14px 10px;}
+.cal-dow{text-align:center;font-size:.55rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;padding-bottom:4px;}
+.cal-day{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:5px;gap:2px;cursor:pointer;position:relative;transition:background .15s;}
+.cal-day:active{background:var(--bg3);}
+.cal-day.today .cal-day-num{background:var(--accent);color:var(--bg);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.cal-day.other-month{opacity:.25;}
+.cal-day-num{font-size:.72rem;font-weight:700;line-height:1;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.cal-dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;max-width:90%;}
+.cal-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.cal-legend{padding:0 20px 10px;display:flex;flex-wrap:wrap;gap:8px;}
+.cal-legend-item{display:flex;align-items:center;gap:5px;font-size:.65rem;font-weight:600;color:var(--text2);}
+.cal-bill-list{padding:0 20px;margin-bottom:16px;}
+.cal-bill-day-header{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin:12px 0 6px;}
+.cal-bill-row{display:flex;align-items:center;gap:10px;background:var(--bg1);border:1px solid var(--border);border-radius:13px;padding:10px 13px;margin-bottom:6px;}
+.cal-bill-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.cal-bill-info{flex:1;min-width:0;}
+.cal-bill-name{font-size:.82rem;font-weight:700;color:var(--text);}
+.cal-bill-meta{font-size:.63rem;color:var(--text3);margin-top:1px;}
+.cal-bill-amt{font-family:'Playfair Display',serif;font-size:.92rem;font-weight:700;}
+.cal-bill-badge{font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:99px;white-space:nowrap;}
+.cal-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:.82rem;line-height:1.7;}
+
 /* BOTTOM NAV */
 .bottom-nav{position:absolute;bottom:0;left:0;right:0;height:var(--nav-h);background:linear-gradient(to top,var(--bg) 60%,transparent);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding:10px 16px 0;gap:8px;z-index:50;}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:14px;cursor:pointer;border:none;background:transparent;transition:all .18s;}
@@ -888,7 +913,6 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <div style="display:flex;align-items:center;gap:7px;">
         <div class="top-date" id="top-date-label"></div>
         <button class="icon-btn" id="whats-new-btn" onclick="openWhatsNew()" title="What's New" style="position:relative;">✨<span id="new-badge" style="position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:var(--accent);border-radius:50%;border:1.5px solid var(--bg);display:block;"></span></button>
-        <button class="icon-btn" onclick="nav('settings')">⚙️</button>
       </div>
     </div>
     <div class="cycle-nav">
@@ -935,7 +959,6 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <div style="display:flex;align-items:center;gap:7px;">
         <div class="top-date" id="dash-date-label"></div>
         <button class="icon-btn" onclick="openWhatsNew()" title="What's New" style="position:relative;">✨</button>
-        <button class="icon-btn" onclick="nav('settings')">⚙️</button>
       </div>
     </div>
     <div class="cycle-nav">
@@ -965,6 +988,22 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <div class="dash-body" id="dash-content"></div>
 </div>
 
+<!-- ══ CALENDAR VIEW ══ -->
+<div class="view hidden" id="view-calendar">
+  <div class="topbar">
+    <div class="top-row">
+      <div>
+        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v0.3</span></div>
+        <div class="top-sub">Bill calendar</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;">
+        <button class="icon-btn" onclick="openWhatsNew()" style="position:relative;">✨</button>
+      </div>
+    </div>
+  </div>
+  <div id="cal-body"></div>
+</div>
+
 <!-- ══ SETTINGS VIEW ══ -->
 <div class="view hidden" id="view-settings">
   <div class="topbar" style="padding-bottom:14px;">
@@ -975,7 +1014,6 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       </div>
       <div style="display:flex;align-items:center;gap:7px;">
         <button class="icon-btn" onclick="openWhatsNew()" title="What's New" style="position:relative;">✨</button>
-        <button class="icon-btn" onclick="nav('feed')">✕</button>
       </div>
     </div>
   </div>
@@ -1025,6 +1063,56 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         </div>
         <button class="settings-btn btn-blue" onclick="testHaptic(this)" style="margin:0;">📳 Test Vibration</button>
         <div id="haptic-support-note" style="margin-top:8px;font-size:.68rem;color:var(--text3);display:none;"></div>
+      </div>
+    </div>
+
+    <!-- BILL NOTIFICATIONS -->
+    <div class="settings-card" id="sc-notifications">
+      <div class="settings-icon" style="background:var(--green-dim)">🔔</div>
+      <div class="settings-body">
+        <div class="settings-title">Bill Reminders</div>
+        <div class="settings-desc">Get a notification before your recurring bills are due. Works when the app is open or installed as a PWA.</div>
+
+        <!-- Permission banner — shown only when not yet granted -->
+        <div id="notif-permission-banner" style="display:none;background:var(--green-dim);border:1.5px solid var(--border2);border-radius:12px;padding:10px 13px;margin-bottom:10px;">
+          <div style="font-size:.75rem;font-weight:700;color:var(--green);margin-bottom:4px;">🔔 Permission required</div>
+          <div style="font-size:.68rem;color:var(--text3);margin-bottom:8px;line-height:1.5;">Tap below to allow notifications. You'll only be asked once.</div>
+          <button class="settings-btn btn-green" onclick="requestNotifPermission()" style="margin:0;">Allow Notifications</button>
+        </div>
+
+        <!-- Denied banner -->
+        <div id="notif-denied-banner" style="display:none;background:var(--red-dim);border:1.5px solid var(--border2);border-radius:12px;padding:10px 13px;margin-bottom:10px;">
+          <div style="font-size:.75rem;font-weight:700;color:var(--red);margin-bottom:3px;">⚠️ Permission blocked</div>
+          <div style="font-size:.68rem;color:var(--text3);line-height:1.5;">Notifications were denied. Go to your browser or phone Settings → Site permissions to re-enable them.</div>
+        </div>
+
+        <!-- Main toggle -->
+        <div class="toggle-row" onclick="toggleNotifications()" style="cursor:pointer;margin-bottom:10px;">
+          <div>
+            <div class="toggle-label">Bill Reminders</div>
+            <div class="toggle-sub" id="notif-toggle-sub">Off — tap to enable</div>
+          </div>
+          <div class="toggle" id="notif-toggle"></div>
+        </div>
+
+        <!-- Days before selector — only visible when enabled & granted -->
+        <div id="notif-advance-wrap" style="display:none;">
+          <div style="font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;">Remind me how many days before?</div>
+          <div style="display:flex;gap:7px;margin-bottom:10px;">
+            <button class="settings-btn btn-blue notif-days-btn" id="ndb-1" onclick="setNotifDays(1)" style="margin:0;flex:1;padding:9px 4px;font-size:.75rem;">1 day</button>
+            <button class="settings-btn btn-blue notif-days-btn" id="ndb-2" onclick="setNotifDays(2)" style="margin:0;flex:1;padding:9px 4px;font-size:.75rem;">2 days</button>
+            <button class="settings-btn btn-blue notif-days-btn" id="ndb-3" onclick="setNotifDays(3)" style="margin:0;flex:1;padding:9px 4px;font-size:.75rem;">3 days</button>
+          </div>
+
+          <!-- Upcoming bills preview -->
+          <div id="notif-upcoming" style="margin-bottom:10px;"></div>
+
+          <!-- Test notification button -->
+          <button class="settings-btn btn-green" onclick="testNotification(this)" style="margin:0;">🔔 Send Test Notification</button>
+        </div>
+
+        <!-- Status line -->
+        <div id="notif-status" style="font-size:.68rem;color:var(--text3);margin-top:6px;line-height:1.6;"></div>
       </div>
     </div>
 
@@ -1224,6 +1312,9 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <button class="nav-btn active" id="nav-feed" onclick="nav('feed')">
     <span class="nav-icon">🏠</span><span class="nav-lbl">Feed</span>
   </button>
+  <button class="nav-btn" id="nav-calendar" onclick="nav('calendar')">
+    <span class="nav-icon">📅</span><span class="nav-lbl">Bills</span>
+  </button>
   <div class="fab-wrap">
     <div class="fab-dial" id="fab-dial">
       <button class="fab-dial-btn fab-dial-income" onclick="openSheetType('income')"><span class="fab-dial-icon">💼</span><span class="fab-dial-lbl" style="color:var(--bg)">Income</span></button>
@@ -1235,6 +1326,9 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <div class="fab-backdrop" id="fab-backdrop" onclick="closeFabDial()"></div>
   <button class="nav-btn" id="nav-dashboard" onclick="nav('dashboard')">
     <span class="nav-icon">📊</span><span class="nav-lbl">Dashboard</span>
+  </button>
+  <button class="nav-btn" id="nav-settings-tab" onclick="nav('settings')">
+    <span class="nav-icon">⚙️</span><span class="nav-lbl">Settings</span>
   </button>
 </div>
 
@@ -1805,6 +1899,9 @@ let cycleConfig    = JSON.parse(localStorage.getItem('ledger_cycleConfig') || JS
 if(!cycleConfig.weekly) cycleConfig.weekly = { payDow: 1 };
 let cycleLimit     = Math.max(3, parseInt(localStorage.getItem('ledger_cycleLimit') || '12'));
 let hapticEnabled  = localStorage.getItem('ledger_haptic') !== 'off'; // on by default
+let notifEnabled   = localStorage.getItem('ledger_notif') === 'on';
+let notifDaysAhead = parseInt(localStorage.getItem('ledger_notif_days') || '1');
+let calViewMonth   = null; // {year, month} currently shown in calendar
 
 // UI state
 let currentView  = 'feed';
@@ -2238,32 +2335,42 @@ function autoGenerateRecurring(){
       added++;
 
     // ─────────────────────────────────────────────
-    //  WEEKLY — every 7 days, regardless of cycle mode
-    //  Backfills ALL missed weeks up to today.
+    //  WEEKLY — every 7 days from the first manual entry.
+    //  The anchor is always the earliest NON-auto-generated entry.
+    //  Generates every weekly date from anchor up to today (inclusive).
+    //  Never adds dates in the future.
     // ─────────────────────────────────────────────
     } else if(freq === 'weekly'){
-      if(!lastDate) return; // no anchor to start from
+      const allEntries = transactions.filter(
+        t => t.category===tmpl.category && t.label===tmpl.label && t.recurring
+      );
 
-      // Walk forward in 7-day steps from lastDate until we reach today
-      let cursor = new Date(lastDate + 'T00:00:00');
-      cursor.setDate(cursor.getDate() + 7); // start at "next expected"
+      // Anchor = earliest manually-entered date
+      const manualEntries = allEntries.filter(t => !t.autoGenerated).sort((a,b) => a.date.localeCompare(b.date));
+      if(!manualEntries.length) return;
+      const anchorDate = manualEntries[0].date; // e.g. "2025-02-08"
+
+      // Walk forward from anchor+7 (first expected occurrence after anchor)
+      // adding every date that has passed and doesn't already exist
+      let cursor = new Date(anchorDate + 'T00:00:00');
+      cursor.setDate(cursor.getDate() + 7); // first expected: Feb 8 → Feb 15
 
       while(true){
         const dateStr = ymd(cursor.getFullYear(), cursor.getMonth()+1, cursor.getDate());
-        if(dateStr > today) break; // hasn't arrived yet
+        if(dateStr > today) break; // future — stop
 
         if(!existingDates.has(dateStr)){
           transactions.push({
             ...tmpl,
-            id: Date.now() + Math.random() + added, // unique even in same ms
+            id: Date.now() + Math.random() + added,
             date: dateStr,
             autoGenerated: true
           });
-          existingDates.add(dateStr); // prevent double-add in this same loop
+          existingDates.add(dateStr);
           added++;
         }
 
-        cursor.setDate(cursor.getDate() + 7); // next week
+        cursor.setDate(cursor.getDate() + 7);
       }
     }
   });
@@ -2499,9 +2606,13 @@ function nav(v){
   const viewEl=document.getElementById(`view-${v}`);
   viewEl.classList.remove('hidden');
   viewEl.scrollTop=0;
-  if(v!=='settings'){ const nb=document.getElementById(`nav-${v}`); if(nb)nb.classList.add('active'); }
+  const nb=document.getElementById(`nav-${v}`);
+  if(nb) nb.classList.add('active');
+  // settings tab button alias
+  if(v==='settings'){ const st=document.getElementById('nav-settings-tab'); if(st) st.classList.add('active'); }
   if(v==='feed')      renderFeed();
   if(v==='dashboard') renderDash();
+  if(v==='calendar')  renderCalendar();
   if(v==='settings')  renderSettings();
 }
 
@@ -2825,8 +2936,9 @@ function saveTransaction(){
   if(editingId) transactions=transactions.filter(t=>t.id!==editingId);
   transactions.push(tx);
   transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
-  enforceCycleLimit(); // auto-trim oldest cycles if over the limit
-  persist(); // auto-save everything
+  enforceCycleLimit();
+  if(tx.recurring) autoGenerateRecurring(); // immediately generate any due occurrences
+  persist();
   activeCycleKey=getCycleKey(tx.date);
   expandedTx=null; deleteConfirm=null;
   haptic(HX.success);
@@ -3728,6 +3840,7 @@ function renderSettings(){
   renderSettingsInputs();
   renderSettingsCCList();
   syncHapticToggle();
+  syncNotifUI();
   document.getElementById('cycle-limit-input').value = cycleLimit;
   // Backup interval
   const bii=document.getElementById('backup-interval-input');
@@ -4459,6 +4572,9 @@ window.addEventListener('DOMContentLoaded',()=>{
   pwaInit();
   // Backup reminder check
   checkBackupReminder();
+  // Bill reminders check on load
+  setTimeout(checkBillRemindersOnLoad, 2000);
+  scheduleAllBillReminders();
 });
 
 // ════════════════════════════════════════════════════════════
@@ -5115,6 +5231,434 @@ function setupSwipeToDelete(){
   },{passive:true});
 }
 
+
+// ════════════════════════════════════════════════════════════
+//  BILL CALENDAR
+// ════════════════════════════════════════════════════════════
+function renderCalendar(){
+  const today = new Date();
+  if(!calViewMonth) calViewMonth = {year: today.getFullYear(), month: today.getMonth()};
+  const {year, month} = calViewMonth;
+  const el = document.getElementById('cal-body');
+  if(!el) return;
+
+  // Get all recurring templates
+  const templates = [];
+  const seen = new Map();
+  [...transactions].filter(t=>t.recurring).forEach(t=>{
+    const key = `${t.category}::${t.label}::${t.recurFreq||'monthly'}`;
+    if(!seen.has(key)){ seen.set(key,true); templates.push(t); }
+  });
+
+  // Build a map of date → [bills due]
+  const billMap = {}; // 'YYYY-MM-DD' → [{...tx}]
+  const daysInM = new Date(year, month+1, 0).getDate();
+  const todayStr2 = ymd(today.getFullYear(), today.getMonth()+1, today.getDate());
+
+  templates.forEach(tmpl => {
+    const freq = tmpl.recurFreq || 'monthly';
+    if(freq === 'monthly'){
+      // Find the day of month this bill usually fires — use the day from its last occurrence
+      const lastTx = [...transactions]
+        .filter(t=>t.recurring && t.category===tmpl.category && t.label===tmpl.label)
+        .sort((a,b)=>b.date.localeCompare(a.date))[0];
+      if(!lastTx) return;
+      const dayOfMonth = parseInt(lastTx.date.split('-')[2]);
+      const d = Math.min(dayOfMonth, daysInM);
+      const dateKey = ymd(year, month+1, d);
+      if(!billMap[dateKey]) billMap[dateKey]=[];
+      billMap[dateKey].push({...tmpl, _dueDate: dateKey});
+    } else if(freq === 'weekly'){
+      // Use earliest manual entry as anchor, project forward in 7-day steps
+      const anchorTx = [...transactions]
+        .filter(t=>t.recurring && t.category===tmpl.category && t.label===tmpl.label && !t.autoGenerated)
+        .sort((a,b)=>a.date.localeCompare(b.date))[0];
+      if(!anchorTx) return;
+      // Start from anchor+7 (first occurrence after the original entry)
+      let cursor = new Date(anchorTx.date+'T00:00:00');
+      cursor.setDate(cursor.getDate()+7);
+      const monthEnd = new Date(year, month+1, 0);
+      while(cursor <= monthEnd){
+        if(cursor.getFullYear()===year && cursor.getMonth()===month){
+          const dateKey = ymd(cursor.getFullYear(), cursor.getMonth()+1, cursor.getDate());
+          if(!billMap[dateKey]) billMap[dateKey]=[];
+          billMap[dateKey].push({...tmpl, _dueDate: dateKey});
+        }
+        cursor.setDate(cursor.getDate()+7);
+      }
+    }
+  });
+
+  // Calendar grid
+  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+  const prevDays = firstDay;
+  const totalCells = Math.ceil((prevDays + daysInM) / 7) * 7;
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const dowLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  // Color pool for bill types
+  const typeColor = t => t.type==='income'?'var(--green)':t.type==='savings'?'var(--accent)':'var(--red)';
+
+  let gridHTML = '';
+  dowLabels.forEach(d => { gridHTML += `<div class="cal-dow">${d}</div>`; });
+
+  for(let i=0; i<totalCells; i++){
+    const dayNum = i - prevDays + 1;
+    const isThisMonth = dayNum >= 1 && dayNum <= daysInM;
+    const dateKey = isThisMonth ? ymd(year, month+1, dayNum) : '';
+    const isToday = dateKey === todayStr2;
+    const bills = billMap[dateKey] || [];
+    const isPast = dateKey && dateKey < todayStr2;
+
+    const dots = bills.slice(0,3).map(b =>
+      `<div class="cal-dot" style="background:${typeColor(b)};opacity:${isPast?0.4:1};"></div>`
+    ).join('');
+
+    gridHTML += `<div class="cal-day${!isThisMonth?' other-month':''}${isToday?' today':''}"
+      onclick="${isThisMonth && bills.length ? `scrollToBillDay('${dateKey}')` : ''}">
+      <div class="cal-day-num">${isThisMonth ? dayNum : ''}</div>
+      ${dots ? `<div class="cal-dots">${dots}</div>` : ''}
+    </div>`;
+  }
+
+  // Bill list below calendar — grouped by date
+  const allDates = Object.keys(billMap).filter(d=>{
+    const [y,m] = d.split('-').map(Number);
+    return y===year && m-1===month;
+  }).sort();
+
+  let listHTML = '';
+  if(allDates.length === 0){
+    listHTML = `<div class="cal-empty">📅 No recurring bills found.<br/>Add a recurring transaction from the feed to see it here.</div>`;
+  } else {
+    allDates.forEach(dateKey => {
+      const bills = billMap[dateKey];
+      const d = new Date(dateKey+'T00:00:00');
+      const isPast = dateKey < todayStr2;
+      const isToday2 = dateKey === todayStr2;
+      const daysUntil = Math.round((d - new Date(todayStr2+'T00:00:00'))/86400000);
+      let badge = '';
+      if(isToday2) badge = `<span class="cal-bill-badge" style="background:var(--accent-dim);color:var(--accent);">Today</span>`;
+      else if(daysUntil > 0 && daysUntil <= 3) badge = `<span class="cal-bill-badge" style="background:var(--red-dim);color:var(--red);">In ${daysUntil}d</span>`;
+      else if(isPast) badge = `<span class="cal-bill-badge" style="background:var(--bg3);color:var(--text3);">Done</span>`;
+
+      listHTML += `<div class="cal-bill-day-header" id="bill-day-${dateKey}">${d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} ${badge}</div>`;
+      bills.forEach(b => {
+        const bgC = b.type==='income'?'var(--green-dim)':b.type==='savings'?'var(--accent-dim)':'var(--red-dim)';
+        const amtC = b.type==='income'?'var(--green)':b.type==='savings'?'var(--accent)':'var(--red)';
+        const sign = b.type==='income'?'+':'-';
+        listHTML += `<div class="cal-bill-row" style="opacity:${isPast?0.55:1}">
+          <div class="cal-bill-icon" style="background:${bgC}">${b.icon}</div>
+          <div class="cal-bill-info">
+            <div class="cal-bill-name">${b.label}</div>
+            <div class="cal-bill-meta">${b.recurFreq==='weekly'?'Every week':'Every month'} · ${b.type}</div>
+          </div>
+          <div class="cal-bill-amt" style="color:${amtC}">${sign}${currencySymbol}${fmt(b.amount)}</div>
+        </div>`;
+      });
+    });
+  }
+
+  // Monthly total of bills due
+  let totalDue = 0, totalIncome = 0;
+  allDates.forEach(d => {
+    billMap[d].forEach(b => {
+      if(b.type==='expense'||b.type==='savings') totalDue += b.amount;
+      else if(b.type==='income') totalIncome += b.amount;
+    });
+  });
+
+  const prevMonth = new Date(year, month-1, 1);
+  const nextMonth = new Date(year, month+1, 1);
+
+  el.innerHTML = `
+    <div class="cal-header">
+      <button class="mnav-btn" onclick="calShiftMonth(-1)">‹</button>
+      <div style="text-align:center;">
+        <div class="cal-month-label">${monthNames[month]} ${year}</div>
+        <div style="font-size:.62rem;color:var(--text3);margin-top:2px;">
+          ${totalDue>0?`<span style="color:var(--red)">−${currencySymbol}${fmt(totalDue)} due</span>`:''}
+          ${totalDue>0&&totalIncome>0?' · ':''}
+          ${totalIncome>0?`<span style="color:var(--green)">+${currencySymbol}${fmt(totalIncome)} income</span>`:''}
+          ${totalDue===0&&totalIncome===0?'No recurring bills':''}
+        </div>
+      </div>
+      <button class="mnav-btn" onclick="calShiftMonth(1)">›</button>
+    </div>
+    <div class="cal-grid">${gridHTML}</div>
+    <div class="cal-bill-list">${listHTML}</div>
+  `;
+}
+
+function calShiftMonth(delta){
+  haptic(HX.tap);
+  if(!calViewMonth){ const t=new Date(); calViewMonth={year:t.getFullYear(),month:t.getMonth()}; }
+  calViewMonth.month += delta;
+  if(calViewMonth.month > 11){ calViewMonth.month=0; calViewMonth.year++; }
+  if(calViewMonth.month < 0){  calViewMonth.month=11; calViewMonth.year--; }
+  renderCalendar();
+}
+function scrollToBillDay(dateKey){
+  haptic(HX.tap);
+  const el = document.getElementById(`bill-day-${dateKey}`);
+  if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+// ════════════════════════════════════════════════════════════
+//  BILL NOTIFICATIONS
+// ════════════════════════════════════════════════════════════
+function syncNotifUI(){
+  const toggle       = document.getElementById('notif-toggle');
+  const sub          = document.getElementById('notif-toggle-sub');
+  const wrap         = document.getElementById('notif-advance-wrap');
+  const status       = document.getElementById('notif-status');
+  const permBanner   = document.getElementById('notif-permission-banner');
+  const deniedBanner = document.getElementById('notif-denied-banner');
+  if(!toggle) return;
+
+  const perm = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
+
+  // Hide all banners first
+  if(permBanner)   permBanner.style.display   = 'none';
+  if(deniedBanner) deniedBanner.style.display = 'none';
+  if(status)       status.textContent = '';
+
+  if(perm === 'unsupported'){
+    toggle.classList.remove('on');
+    if(sub)   sub.textContent = 'Not supported on this browser';
+    if(wrap)  wrap.style.display = 'none';
+    if(status) status.textContent = '❌ Notifications are not supported on this browser. Try Chrome on Android or install as a PWA.';
+    return;
+  }
+
+  if(perm === 'denied'){
+    toggle.classList.remove('on');
+    if(sub)          sub.textContent = 'Blocked — see browser settings';
+    if(wrap)         wrap.style.display = 'none';
+    if(deniedBanner) deniedBanner.style.display = 'block';
+    return;
+  }
+
+  if(perm === 'default'){
+    toggle.classList.remove('on');
+    if(sub)        sub.textContent = 'Tap to enable';
+    if(wrap)       wrap.style.display = 'none';
+    if(permBanner) permBanner.style.display = 'block';
+    return;
+  }
+
+  // Permission granted
+  toggle.classList.toggle('on', notifEnabled);
+
+  if(notifEnabled){
+    if(sub)  sub.textContent = `On — ${notifDaysAhead} day${notifDaysAhead>1?'s':''} before due`;
+    if(wrap) wrap.style.display = 'block';
+
+    // Sync day buttons highlight
+    [1,2,3].forEach(n => {
+      const b = document.getElementById(`ndb-${n}`);
+      if(b){
+        b.style.background  = n === notifDaysAhead ? 'var(--blue)'     : '';
+        b.style.color       = n === notifDaysAhead ? '#fff'            : '';
+        b.style.borderColor = n === notifDaysAhead ? 'var(--blue)'     : '';
+        b.style.opacity     = n === notifDaysAhead ? '1'               : '0.5';
+      }
+    });
+
+    // Upcoming bills preview
+    const upcoming = getUpcomingBills(30);
+    const upcomingEl = document.getElementById('notif-upcoming');
+    if(upcomingEl){
+      if(!upcoming.length){
+        upcomingEl.innerHTML = `<div style="font-size:.68rem;color:var(--text3);padding:8px 0;">📭 No recurring bills found. Add a recurring transaction to get reminders.</div>`;
+      } else {
+        const rows = upcoming.slice(0,5).map(b => {
+          const amtC = b.type==='income'?'var(--green)':b.type==='savings'?'var(--accent)':'var(--red)';
+          const badge = b.daysUntil===0
+            ? `<span style="font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--accent-dim);color:var(--accent);">Today</span>`
+            : b.daysUntil===1
+            ? `<span style="font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--red-dim);color:var(--red);">Tomorrow</span>`
+            : `<span style="font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--bg3);color:var(--text3);">In ${b.daysUntil}d</span>`;
+          return `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:5px;">
+            <span style="font-size:1rem;">${b.icon}</span>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:.75rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${b.label}</div>
+              <div style="font-size:.63rem;color:var(--text3);">${b.nextDate}</div>
+            </div>
+            <div style="font-size:.78rem;font-weight:700;color:${amtC};margin-right:6px;">${currencySymbol}${fmt(b.amount)}</div>
+            ${badge}
+          </div>`;
+        }).join('');
+        upcomingEl.innerHTML = `
+          <div style="font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">Upcoming bills (next 30 days)</div>
+          ${rows}
+          ${upcoming.length>5?`<div style="font-size:.65rem;color:var(--text3);text-align:center;padding:4px;">+${upcoming.length-5} more</div>`:''}
+        `;
+      }
+    }
+  } else {
+    if(sub)  sub.textContent = 'Off — tap to enable';
+    if(wrap) wrap.style.display = 'none';
+  }
+}
+
+function testNotification(btn){
+  haptic(HX.soft);
+  if(typeof Notification === 'undefined' || Notification.permission !== 'granted'){
+    showSettingsToast('⚠️ Grant notification permission first.', 3000);
+    return;
+  }
+  const upcoming = getUpcomingBills(30);
+  let title, body;
+  if(upcoming.length){
+    const b = upcoming[0];
+    title = `🔔 Bill reminder — ${b.daysUntil===0?'due today':b.daysUntil===1?'due tomorrow':`due in ${b.daysUntil} days`}`;
+    body  = `${b.icon} ${b.label} · ${currencySymbol}${fmt(b.amount)} on ${b.nextDate}`;
+  } else {
+    title = '🔔 Spendoodle Bill Reminder';
+    body  = 'This is what your bill reminders will look like!';
+  }
+  try{
+    new Notification(title, { body, icon: '/icon-192.png', tag: 'spendoodle-test' });
+    showSettingsToast('✅ Test notification sent! Check your notification shade.', 3500);
+    if(btn){ btn.textContent='✅ Sent!'; setTimeout(()=>{ btn.textContent='🔔 Send Test Notification'; },2000); }
+  } catch(e){
+    showSettingsToast('❌ Could not send — try installing as a PWA.', 3500);
+  }
+}
+
+async function requestNotifPermission(){
+  if(!('Notification' in window)){ showSettingsToast('❌ Notifications not supported on this device.'); return; }
+  const result = await Notification.requestPermission();
+  if(result === 'granted'){
+    notifEnabled = true;
+    localStorage.setItem('ledger_notif','on');
+    scheduleAllBillReminders();
+    showSettingsToast('🔔 Notifications enabled! Bill reminders are set.', 3500);
+  } else {
+    showSettingsToast('❌ Permission denied — enable in browser settings.', 4000);
+  }
+  syncNotifUI();
+}
+
+function toggleNotifications(){
+  haptic(HX.tap);
+  if(!('Notification' in window)){ showSettingsToast('❌ Notifications not supported on this device.'); return; }
+  if(Notification.permission === 'denied'){ showSettingsToast('⚠️ Permission denied. Enable in browser/system settings.', 4000); return; }
+  if(Notification.permission === 'default'){ requestNotifPermission(); return; }
+  notifEnabled = !notifEnabled;
+  localStorage.setItem('ledger_notif', notifEnabled?'on':'off');
+  if(notifEnabled){ scheduleAllBillReminders(); haptic(HX.soft); }
+  syncNotifUI();
+}
+
+function setNotifDays(n){
+  haptic(HX.tap);
+  notifDaysAhead = n;
+  localStorage.setItem('ledger_notif_days', String(n));
+  scheduleAllBillReminders();
+  syncNotifUI();
+  showSettingsToast(`🔔 Reminders set to ${n} day${n>1?'s':''} before due`, 2500);
+}
+
+/** Get bills due within N days from today */
+function getUpcomingBills(withinDays){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayS = ymd(today.getFullYear(), today.getMonth()+1, today.getDate());
+  const results = [];
+
+  const seen = new Map();
+  [...transactions].filter(t=>t.recurring).forEach(t=>{
+    const key=`${t.category}::${t.label}::${t.recurFreq||'monthly'}`;
+    if(!seen.has(key)) seen.set(key,t);
+  });
+
+  seen.forEach(tmpl => {
+    const freq = tmpl.recurFreq || 'monthly';
+    const lastTx = [...transactions]
+      .filter(t=>t.recurring && t.category===tmpl.category && t.label===tmpl.label)
+      .sort((a,b)=>b.date.localeCompare(a.date))[0];
+    if(!lastTx) return;
+
+    let nextDate;
+    if(freq==='monthly'){
+      const dayOfMonth = parseInt(lastTx.date.split('-')[2]);
+      // Try this month first
+      const candidate = new Date(today.getFullYear(), today.getMonth(), dayOfMonth);
+      if(candidate <= today) candidate.setMonth(candidate.getMonth()+1);
+      nextDate = candidate;
+    } else {
+      // Use earliest manual entry as anchor, walk forward in 7-day steps
+      const anchorTx = [...transactions]
+        .filter(t=>t.recurring && t.category===tmpl.category && t.label===tmpl.label && !t.autoGenerated)
+        .sort((a,b)=>a.date.localeCompare(b.date))[0];
+      if(!anchorTx) return;
+      nextDate = new Date(anchorTx.date+'T00:00:00');
+      nextDate.setDate(nextDate.getDate()+7); // first occurrence after anchor
+      while(nextDate <= today) nextDate.setDate(nextDate.getDate()+7);
+    }
+
+    const daysUntil = Math.round((nextDate-today)/86400000);
+    if(daysUntil >= 0 && daysUntil <= withinDays){
+      results.push({...tmpl, nextDate: ymd(nextDate.getFullYear(),nextDate.getMonth()+1,nextDate.getDate()), daysUntil});
+    }
+  });
+  return results;
+}
+
+/** Schedule browser notifications for all upcoming bills */
+function scheduleAllBillReminders(){
+  if(!notifEnabled || Notification?.permission !== 'granted') return;
+  // Clear existing scheduled timers
+  if(window._notifTimers){ window._notifTimers.forEach(t=>clearTimeout(t)); }
+  window._notifTimers = [];
+
+  const bills = getUpcomingBills(30);
+  const now = Date.now();
+
+  bills.forEach(bill => {
+    const dueDate = new Date(bill.nextDate+'T09:00:00'); // 9am on due day
+    const notifyDate = new Date(dueDate);
+    notifyDate.setDate(notifyDate.getDate() - notifDaysAhead);
+
+    const msUntil = notifyDate.getTime() - now;
+    if(msUntil < 0) return; // already past
+
+    const timer = setTimeout(()=>{
+      if(!notifEnabled || Notification?.permission !== 'granted') return;
+      const title = `Bill due ${notifDaysAhead===0?'today':notifDaysAhead===1?'tomorrow':`in ${notifDaysAhead} days`}`;
+      const body  = `${bill.icon} ${bill.label} — ${currencySymbol}${fmt(bill.amount)} due on ${bill.nextDate}`;
+      try{
+        new Notification(title, { body, icon: '/icon-192.png', tag: `bill-${bill.label}-${bill.nextDate}` });
+      }catch(e){}
+    }, msUntil);
+
+    window._notifTimers.push(timer);
+  });
+}
+
+/** Check daily on app open — fire any missed notifications */
+function checkBillRemindersOnLoad(){
+  if(!notifEnabled || Notification?.permission !== 'granted') return;
+  const bills = getUpcomingBills(notifDaysAhead);
+  const lastCheck = localStorage.getItem('ledger_notif_lastcheck') || '';
+  const todayS = todayStr();
+  if(lastCheck === todayS) return; // already checked today
+  localStorage.setItem('ledger_notif_lastcheck', todayS);
+
+  bills.forEach(bill => {
+    if(bill.daysUntil <= notifDaysAhead){
+      const title = bill.daysUntil===0 ? `Bill due today!` : `Bill due in ${bill.daysUntil} day${bill.daysUntil>1?'s':''}`;
+      const body  = `${bill.icon} ${bill.label} — ${currencySymbol}${fmt(bill.amount)}`;
+      try{
+        new Notification(title, { body, icon: '/icon-192.png', tag: `bill-${bill.label}-${bill.nextDate}` });
+      }catch(e){}
+    }
+  });
+
+  // Re-schedule for future bills
+  scheduleAllBillReminders();
+}
 
 </script>
 </body>
