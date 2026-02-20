@@ -425,6 +425,22 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .nav-icon{font-size:1.25rem;line-height:1;}
 .nav-lbl{font-size:.57rem;font-weight:700;color:var(--text3);letter-spacing:.6px;text-transform:uppercase;}
 .nav-btn.active .nav-lbl{color:var(--text);}
+/* ── NAV BADGE ── */
+.nav-icon-wrap{position:relative;display:inline-flex;}
+.nav-badge{
+  position:absolute;top:-5px;right:-9px;
+  min-width:16px;height:16px;
+  background:var(--red);color:#fff;
+  font-size:.55rem;font-weight:800;
+  border-radius:99px;padding:0 4px;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--bg);
+  line-height:1;
+  opacity:0;transform:scale(0);
+  transition:opacity .2s,transform .25s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;
+}
+.nav-badge.visible{opacity:1;transform:scale(1);}
 .fab-wrap{flex-shrink:0;display:flex;align-items:flex-start;position:relative;z-index:51;}
 .fab{width:56px;height:56px;border-radius:18px;background:var(--accent);border:none;font-size:1.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px var(--accent-dim),0 8px 40px #00000050;transition:transform .2s;margin-top:-8px;color:var(--bg);font-weight:900;}
 .fab:active{transform:scale(.92);}
@@ -748,6 +764,28 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .ios-step-text{font-size:.83rem;color:var(--text2);line-height:1.55;}
 .ios-step-text strong{color:var(--text);}
 
+/* ── RECURRING DUE PROMPT ── */
+.recur-prompt-overlay{position:fixed;inset:0;z-index:600;background:#00000088;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.recur-prompt-overlay.open{opacity:1;pointer-events:all;}
+.recur-prompt-sheet{width:100%;max-width:430px;background:var(--bg1);border-radius:24px 24px 0 0;padding:22px 22px calc(env(safe-area-inset-bottom,0px)+22px);transform:translateY(100%);transition:transform .32s cubic-bezier(.32,0,.67,0);}
+.recur-prompt-overlay.open .recur-prompt-sheet{transform:translateY(0);}
+.recur-prompt-icon{font-size:2.2rem;text-align:center;margin-bottom:8px;}
+.recur-prompt-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;text-align:center;margin-bottom:6px;}
+.recur-prompt-msg{font-size:.8rem;color:var(--text3);text-align:center;line-height:1.7;margin-bottom:16px;}
+.recur-prompt-list{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:4px 0;margin-bottom:18px;max-height:180px;overflow-y:auto;scrollbar-width:none;}
+.recur-prompt-list::-webkit-scrollbar{display:none;}
+.recur-prompt-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);}
+.recur-prompt-item:last-child{border-bottom:none;}
+.recur-pi-icon{font-size:1.2rem;flex-shrink:0;}
+.recur-pi-info{flex:1;min-width:0;}
+.recur-pi-label{font-size:.82rem;font-weight:700;color:var(--text);}
+.recur-pi-date{font-size:.65rem;color:var(--text3);margin-top:1px;}
+.recur-pi-amt{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--accent);flex-shrink:0;}
+.recur-btn-row{display:flex;gap:8px;}
+.recur-btn{flex:1;padding:14px;border:none;border-radius:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.recur-btn:active{transform:scale(.97);}
+.recur-btn-skip{background:var(--bg2);color:var(--text3);}
+.recur-btn-add{background:var(--accent);color:var(--bg);}
 /* ── BACKUP REMINDER MODAL ── */
 .backup-overlay{position:fixed;inset:0;z-index:600;background:#00000088;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
 .backup-overlay.open{opacity:1;pointer-events:all;}
@@ -1071,22 +1109,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <div class="settings-icon" style="background:var(--green-dim)">🔔</div>
       <div class="settings-body">
         <div class="settings-title">Bill Reminders</div>
-        <div class="settings-desc">Get a notification before your recurring bills are due. Works when the app is open or installed as a PWA.</div>
-
-        <!-- Permission banner — shown only when not yet granted -->
-        <div id="notif-permission-banner" style="display:none;background:var(--green-dim);border:1.5px solid var(--border2);border-radius:12px;padding:10px 13px;margin-bottom:10px;">
-          <div style="font-size:.75rem;font-weight:700;color:var(--green);margin-bottom:4px;">🔔 Permission required</div>
-          <div style="font-size:.68rem;color:var(--text3);margin-bottom:8px;line-height:1.5;">Tap below to allow notifications. You'll only be asked once.</div>
-          <button class="settings-btn btn-green" onclick="requestNotifPermission()" style="margin:0;">Allow Notifications</button>
-        </div>
-
-        <!-- Denied banner -->
-        <div id="notif-denied-banner" style="display:none;background:var(--red-dim);border:1.5px solid var(--border2);border-radius:12px;padding:10px 13px;margin-bottom:10px;">
-          <div style="font-size:.75rem;font-weight:700;color:var(--red);margin-bottom:3px;">⚠️ Permission blocked</div>
-          <div style="font-size:.68rem;color:var(--text3);line-height:1.5;">Notifications were denied. Go to your browser or phone Settings → Site permissions to re-enable them.</div>
-        </div>
-
-        <!-- Main toggle -->
+        <div class="settings-desc">Get notified before recurring bills are due. Requires notification permission.</div>
         <div class="toggle-row" onclick="toggleNotifications()" style="cursor:pointer;margin-bottom:10px;">
           <div>
             <div class="toggle-label">Bill Reminders</div>
@@ -1094,25 +1117,17 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
           </div>
           <div class="toggle" id="notif-toggle"></div>
         </div>
-
-        <!-- Days before selector — only visible when enabled & granted -->
-        <div id="notif-advance-wrap" style="display:none;">
-          <div style="font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;">Remind me how many days before?</div>
-          <div style="display:flex;gap:7px;margin-bottom:10px;">
-            <button class="settings-btn btn-blue notif-days-btn" id="ndb-1" onclick="setNotifDays(1)" style="margin:0;flex:1;padding:9px 4px;font-size:.75rem;">1 day</button>
-            <button class="settings-btn btn-blue notif-days-btn" id="ndb-2" onclick="setNotifDays(2)" style="margin:0;flex:1;padding:9px 4px;font-size:.75rem;">2 days</button>
-            <button class="settings-btn btn-blue notif-days-btn" id="ndb-3" onclick="setNotifDays(3)" style="margin:0;flex:1;padding:9px 4px;font-size:.75rem;">3 days</button>
+        <div id="notif-advance-wrap" style="display:none;margin-bottom:10px;">
+          <div style="font-size:.72rem;font-weight:600;color:var(--text2);margin-bottom:6px;">Remind me how many days before?</div>
+          <div style="display:flex;gap:7px;">
+            <button class="settings-btn btn-blue notif-days-btn" id="ndb-1" onclick="setNotifDays(1)" style="margin:0;flex:1;padding:9px 4px;">1 day</button>
+            <button class="settings-btn btn-blue notif-days-btn" id="ndb-2" onclick="setNotifDays(2)" style="margin:0;flex:1;padding:9px 4px;">2 days</button>
+            <button class="settings-btn btn-blue notif-days-btn" id="ndb-3" onclick="setNotifDays(3)" style="margin:0;flex:1;padding:9px 4px;">3 days</button>
           </div>
-
-          <!-- Upcoming bills preview -->
-          <div id="notif-upcoming" style="margin-bottom:10px;"></div>
-
-          <!-- Test notification button -->
-          <button class="settings-btn btn-green" onclick="testNotification(this)" style="margin:0;">🔔 Send Test Notification</button>
         </div>
-
-        <!-- Status line -->
-        <div id="notif-status" style="font-size:.68rem;color:var(--text3);margin-top:6px;line-height:1.6;"></div>
+        <div id="notif-status" style="font-size:.68rem;color:var(--text3);margin-top:4px;line-height:1.6;"></div>
+        <button class="settings-btn btn-green" id="notif-permission-btn" onclick="requestNotifPermission()" style="margin:0;display:none;">🔔 Grant Permission</button>
+        <button class="settings-btn btn-blue" id="notif-test-btn" onclick="testNotification()" style="margin:8px 0 0;display:none;">🔔 Send Test Notification</button>
       </div>
     </div>
 
@@ -1312,8 +1327,12 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <button class="nav-btn active" id="nav-feed" onclick="nav('feed')">
     <span class="nav-icon">🏠</span><span class="nav-lbl">Feed</span>
   </button>
-  <button class="nav-btn" id="nav-calendar" onclick="nav('calendar')">
-    <span class="nav-icon">📅</span><span class="nav-lbl">Bills</span>
+  <button class="nav-btn" id="nav-calendar" onclick="onBillsNavTap()">
+    <span class="nav-icon-wrap">
+      <span class="nav-icon">📅</span>
+      <span class="nav-badge" id="recur-due-badge"></span>
+    </span>
+    <span class="nav-lbl">Bills</span>
   </button>
   <div class="fab-wrap">
     <div class="fab-dial" id="fab-dial">
@@ -1374,6 +1393,19 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 </div>
 
 <!-- ══ BACKUP REMINDER ══ -->
+<!-- ── RECURRING DUE PROMPT ── -->
+<div class="recur-prompt-overlay" id="recur-prompt-overlay" onclick="stopRecurringPrompt(event)">
+  <div class="recur-prompt-sheet" onclick="event.stopPropagation()">
+    <div class="recur-prompt-icon">🔁</div>
+    <div class="recur-prompt-title" id="recur-prompt-title">Recurring Items Due</div>
+    <div class="recur-prompt-msg" id="recur-prompt-msg">These recurring entries are due. Add them now to keep your ledger up to date.</div>
+    <div class="recur-prompt-list" id="recur-prompt-list"></div>
+    <div class="recur-btn-row">
+      <button class="recur-btn recur-btn-skip" onclick="stopRecurringPrompt(null)">🚫 Stop Recurring</button>
+      <button class="recur-btn recur-btn-add" onclick="addRecurringNow()">✅ Add Now</button>
+    </div>
+  </div>
+</div>
 <div class="backup-overlay" id="backup-overlay" onclick="dismissBackupReminder(event)">
   <div class="backup-sheet" onclick="event.stopPropagation()">
     <div class="backup-icon">💾</div>
@@ -1885,6 +1917,7 @@ let currencySymbol = localStorage.getItem('ledger_currency')            || '₱'
 let activeTheme    = localStorage.getItem('ledger_theme')               || 'dark';
 let creditCards    = JSON.parse(localStorage.getItem('ledger_cc')       || '[]');
 let goalTargets    = JSON.parse(localStorage.getItem('ledger_goalTargets') || '{}'); // {goalName: amount}
+let recurringStops = JSON.parse(localStorage.getItem('ledger_recur_stops') || '{}'); // {seriesKey: cutoffDate}
 let pinHash        = localStorage.getItem('ledger_pin')                 || '';  // SHA-256 hex of PIN
 
 // Cycle config
@@ -1932,6 +1965,7 @@ function persist(){
   localStorage.setItem('ledger_cc',          JSON.stringify(creditCards));
   localStorage.setItem('ledger_goalTargets', JSON.stringify(goalTargets));
   localStorage.setItem('ledger_haptic',      hapticEnabled ? 'on' : 'off');
+  localStorage.setItem('ledger_recur_stops', JSON.stringify(recurringStops));
 }
 
 // ════════════════════════════════════════════════════════════
@@ -2313,6 +2347,10 @@ function autoGenerateRecurring(){
       );
       if(inThisCycle) return;
 
+      // Check if this series was stopped
+      const monthlyKey = `${tmpl.category}::${tmpl.label}::monthly`;
+      if(recurringStops[monthlyKey]) return;
+
       // Require at least 28 days since the last occurrence
       if(lastDate){
         const daysSince = Math.floor(
@@ -2355,9 +2393,15 @@ function autoGenerateRecurring(){
       let cursor = new Date(anchorDate + 'T00:00:00');
       cursor.setDate(cursor.getDate() + 7); // first expected: Feb 8 → Feb 15
 
+      // Build key to check stop
+      const seriesKey = `${tmpl.category}::${tmpl.label}::weekly`;
+
       while(true){
         const dateStr = ymd(cursor.getFullYear(), cursor.getMonth()+1, cursor.getDate());
         if(dateStr > today) break; // future — stop
+
+        // Stop if this series was stopped at or before this date
+        if(recurringStops[seriesKey] && dateStr >= recurringStops[seriesKey]) break;
 
         if(!existingDates.has(dateStr)){
           transactions.push({
@@ -2934,6 +2978,15 @@ function saveTransaction(){
   }
   const tx={id,date:chosenDate,category:selectedCat,label:cat.l,icon:cat.i,type:cat.t,amount,note:document.getElementById('f-note').value.trim(),recurring:isRecurring,recurFreq:isRecurring?recurFreq:null,savingsGoal,creditCardId};
   if(editingId) transactions=transactions.filter(t=>t.id!==editingId);
+  // If user manually adds a recurring entry, clear any stop for that series (they're resuming it)
+  if(tx.recurring){
+    const freq = tx.recurFreq || 'monthly';
+    const seriesKey = `${tx.category}::${tx.label}::${freq}`;
+    if(recurringStops[seriesKey]){
+      delete recurringStops[seriesKey];
+      localStorage.setItem('ledger_recur_stops', JSON.stringify(recurringStops));
+    }
+  }
   transactions.push(tx);
   transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
   enforceCycleLimit();
@@ -2951,6 +3004,25 @@ let _undoTx = null;
 function deleteTx(id){
   const tx = transactions.find(t => t.id === id);
   if(!tx) return;
+
+  // If deleting a recurring entry, check if it's the most recent in its series
+  // If so, record a stop so future auto-generation won't re-add it or go further
+  if(tx.recurring){
+    const freq = tx.recurFreq || 'monthly';
+    const seriesKey = `${tx.category}::${tx.label}::${freq}`;
+    const seriesEntries = transactions.filter(
+      t => t.id !== id && t.category===tx.category && t.label===tx.label && t.recurring
+    );
+    const latestRemaining = seriesEntries
+      .map(t => t.date)
+      .sort((a,b) => b.localeCompare(a))[0] || null;
+
+    // Deleted date is later than (or equal to) all remaining → it was the latest → stop
+    if(!latestRemaining || tx.date >= latestRemaining){
+      recurringStops[seriesKey] = tx.date;
+      localStorage.setItem('ledger_recur_stops', JSON.stringify(recurringStops));
+    }
+  }
 
   // Remove from array immediately
   transactions = transactions.filter(t => t.id !== id);
@@ -4555,7 +4627,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   const df=document.getElementById('f-date'); df.value=todayStr(); df.max=todayStr();
   document.getElementById('f-amount').addEventListener('input',updateSaveBtn);
   buildCatGrid();
-  autoGenerateRecurring(); // populate recurring txs into current cycle on load
   renderFeed();
   setupSwipeToDelete();
   checkPinOnLoad();
@@ -4572,9 +4643,10 @@ window.addEventListener('DOMContentLoaded',()=>{
   pwaInit();
   // Backup reminder check
   checkBackupReminder();
+  // Show badge on Bills nav if recurring items are due
+  setTimeout(updateRecurBadge, 500);
   // Bill reminders check on load
-  setTimeout(checkBillRemindersOnLoad, 2000);
-  scheduleAllBillReminders();
+  setTimeout(checkBillRemindersOnLoad, 1500);
 });
 
 // ════════════════════════════════════════════════════════════
@@ -5257,6 +5329,10 @@ function renderCalendar(){
 
   templates.forEach(tmpl => {
     const freq = tmpl.recurFreq || 'monthly';
+    const seriesKey = `${tmpl.category}::${tmpl.label}::${freq}`;
+    // Skip stopped series entirely
+    if(recurringStops[seriesKey]) return;
+
     if(freq === 'monthly'){
       // Find the day of month this bill usually fires — use the day from its last occurrence
       const lastTx = [...transactions]
@@ -5406,125 +5482,75 @@ function scrollToBillDay(dateKey){
 
 // ════════════════════════════════════════════════════════════
 //  BILL NOTIFICATIONS
+//  Fires on app open via SW showNotification (reliable mobile).
+//  setTimeout scheduling removed — killed when app backgrounds.
 // ════════════════════════════════════════════════════════════
-function syncNotifUI(){
-  const toggle       = document.getElementById('notif-toggle');
-  const sub          = document.getElementById('notif-toggle-sub');
-  const wrap         = document.getElementById('notif-advance-wrap');
-  const status       = document.getElementById('notif-status');
-  const permBanner   = document.getElementById('notif-permission-banner');
-  const deniedBanner = document.getElementById('notif-denied-banner');
-  if(!toggle) return;
 
-  const perm = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
-
-  // Hide all banners first
-  if(permBanner)   permBanner.style.display   = 'none';
-  if(deniedBanner) deniedBanner.style.display = 'none';
-  if(status)       status.textContent = '';
-
-  if(perm === 'unsupported'){
-    toggle.classList.remove('on');
-    if(sub)   sub.textContent = 'Not supported on this browser';
-    if(wrap)  wrap.style.display = 'none';
-    if(status) status.textContent = '❌ Notifications are not supported on this browser. Try Chrome on Android or install as a PWA.';
-    return;
-  }
-
-  if(perm === 'denied'){
-    toggle.classList.remove('on');
-    if(sub)          sub.textContent = 'Blocked — see browser settings';
-    if(wrap)         wrap.style.display = 'none';
-    if(deniedBanner) deniedBanner.style.display = 'block';
-    return;
-  }
-
-  if(perm === 'default'){
-    toggle.classList.remove('on');
-    if(sub)        sub.textContent = 'Tap to enable';
-    if(wrap)       wrap.style.display = 'none';
-    if(permBanner) permBanner.style.display = 'block';
-    return;
-  }
-
-  // Permission granted
-  toggle.classList.toggle('on', notifEnabled);
-
-  if(notifEnabled){
-    if(sub)  sub.textContent = `On — ${notifDaysAhead} day${notifDaysAhead>1?'s':''} before due`;
-    if(wrap) wrap.style.display = 'block';
-
-    // Sync day buttons highlight
-    [1,2,3].forEach(n => {
-      const b = document.getElementById(`ndb-${n}`);
-      if(b){
-        b.style.background  = n === notifDaysAhead ? 'var(--blue)'     : '';
-        b.style.color       = n === notifDaysAhead ? '#fff'            : '';
-        b.style.borderColor = n === notifDaysAhead ? 'var(--blue)'     : '';
-        b.style.opacity     = n === notifDaysAhead ? '1'               : '0.5';
-      }
-    });
-
-    // Upcoming bills preview
-    const upcoming = getUpcomingBills(30);
-    const upcomingEl = document.getElementById('notif-upcoming');
-    if(upcomingEl){
-      if(!upcoming.length){
-        upcomingEl.innerHTML = `<div style="font-size:.68rem;color:var(--text3);padding:8px 0;">📭 No recurring bills found. Add a recurring transaction to get reminders.</div>`;
-      } else {
-        const rows = upcoming.slice(0,5).map(b => {
-          const amtC = b.type==='income'?'var(--green)':b.type==='savings'?'var(--accent)':'var(--red)';
-          const badge = b.daysUntil===0
-            ? `<span style="font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--accent-dim);color:var(--accent);">Today</span>`
-            : b.daysUntil===1
-            ? `<span style="font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--red-dim);color:var(--red);">Tomorrow</span>`
-            : `<span style="font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--bg3);color:var(--text3);">In ${b.daysUntil}d</span>`;
-          return `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:5px;">
-            <span style="font-size:1rem;">${b.icon}</span>
-            <div style="flex:1;min-width:0;">
-              <div style="font-size:.75rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${b.label}</div>
-              <div style="font-size:.63rem;color:var(--text3);">${b.nextDate}</div>
-            </div>
-            <div style="font-size:.78rem;font-weight:700;color:${amtC};margin-right:6px;">${currencySymbol}${fmt(b.amount)}</div>
-            ${badge}
-          </div>`;
-        }).join('');
-        upcomingEl.innerHTML = `
-          <div style="font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;">Upcoming bills (next 30 days)</div>
-          ${rows}
-          ${upcoming.length>5?`<div style="font-size:.65rem;color:var(--text3);text-align:center;padding:4px;">+${upcoming.length-5} more</div>`:''}
-        `;
+/** Fire via SW showNotification if available (works on mobile PWA), else direct Notification API */
+async function fireNotification(title, body, tag){
+  try{
+    if('serviceWorker' in navigator){
+      const reg = await navigator.serviceWorker.getRegistration();
+      if(reg && reg.showNotification){
+        await reg.showNotification(title, { body, tag, icon:'/icon-192.png', badge:'/icon-192.png', renotify:true });
+        return;
       }
     }
-  } else {
-    if(sub)  sub.textContent = 'Off — tap to enable';
-    if(wrap) wrap.style.display = 'none';
-  }
+    new Notification(title, { body, tag, icon:'/icon-192.png' });
+  }catch(e){ console.warn('Notification error:',e); }
 }
 
-function testNotification(btn){
-  haptic(HX.soft);
-  if(typeof Notification === 'undefined' || Notification.permission !== 'granted'){
-    showSettingsToast('⚠️ Grant notification permission first.', 3000);
+function syncNotifUI(){
+  const toggle  = document.getElementById('notif-toggle');
+  const sub     = document.getElementById('notif-toggle-sub');
+  const wrap    = document.getElementById('notif-advance-wrap');
+  const status  = document.getElementById('notif-status');
+  const permBtn = document.getElementById('notif-permission-btn');
+  const testBtn = document.getElementById('notif-test-btn');
+  if(!toggle) return;
+
+  const perm = Notification?.permission || 'default';
+  toggle.classList.toggle('on', notifEnabled && perm==='granted');
+
+  if(perm === 'denied'){
+    if(sub)     sub.textContent     = 'Blocked — check phone Settings';
+    if(status)  status.textContent  = '⚠️ Permission denied. Go to phone Settings → find this browser/app → allow Notifications.';
+    if(wrap)    wrap.style.display  = 'none';
+    if(permBtn) permBtn.style.display = 'none';
+    if(testBtn) testBtn.style.display = 'none';
     return;
   }
-  const upcoming = getUpcomingBills(30);
-  let title, body;
-  if(upcoming.length){
-    const b = upcoming[0];
-    title = `🔔 Bill reminder — ${b.daysUntil===0?'due today':b.daysUntil===1?'due tomorrow':`due in ${b.daysUntil} days`}`;
-    body  = `${b.icon} ${b.label} · ${currencySymbol}${fmt(b.amount)} on ${b.nextDate}`;
+  if(perm === 'default'){
+    if(sub)    sub.textContent    = 'Tap to enable bill reminders';
+    if(status) status.textContent = '';
+    if(wrap)   wrap.style.display = 'none';
+    if(permBtn){ permBtn.style.display='block'; permBtn.textContent='🔔 Grant Permission'; }
+    if(testBtn) testBtn.style.display = 'none';
+    return;
+  }
+  // Granted
+  if(permBtn) permBtn.style.display = 'none';
+  if(notifEnabled){
+    if(sub)    sub.textContent    = `On — ${notifDaysAhead} day${notifDaysAhead>1?'s':''} before due`;
+    if(wrap)   wrap.style.display = 'block';
+    if(status) status.textContent = getBillReminderStatusText();
+    if(testBtn) testBtn.style.display = 'block';
   } else {
-    title = '🔔 Spendoodle Bill Reminder';
-    body  = 'This is what your bill reminders will look like!';
+    if(sub)    sub.textContent    = 'Off — tap to enable';
+    if(wrap)   wrap.style.display = 'none';
+    if(status) status.textContent = '';
+    if(testBtn) testBtn.style.display = 'none';
   }
-  try{
-    new Notification(title, { body, icon: '/icon-192.png', tag: 'spendoodle-test' });
-    showSettingsToast('✅ Test notification sent! Check your notification shade.', 3500);
-    if(btn){ btn.textContent='✅ Sent!'; setTimeout(()=>{ btn.textContent='🔔 Send Test Notification'; },2000); }
-  } catch(e){
-    showSettingsToast('❌ Could not send — try installing as a PWA.', 3500);
-  }
+  [1,2,3].forEach(n=>{
+    const b = document.getElementById(`ndb-${n}`);
+    if(b) b.style.opacity = n===notifDaysAhead ? '1' : '0.45';
+  });
+}
+
+function getBillReminderStatusText(){
+  const upcoming = getUpcomingBills(7);
+  if(!upcoming.length) return '✅ No bills due in the next 7 days.';
+  return `📋 ${upcoming.length} bill${upcoming.length>1?'s':''} due in the next 7 days — you\'ll be notified when you open the app.`;
 }
 
 async function requestNotifPermission(){
@@ -5533,10 +5559,9 @@ async function requestNotifPermission(){
   if(result === 'granted'){
     notifEnabled = true;
     localStorage.setItem('ledger_notif','on');
-    scheduleAllBillReminders();
-    showSettingsToast('🔔 Notifications enabled! Bill reminders are set.', 3500);
+    showSettingsToast('🔔 Notifications enabled!', 3000);
   } else {
-    showSettingsToast('❌ Permission denied — enable in browser settings.', 4000);
+    showSettingsToast('❌ Permission denied — check phone Settings.', 4000);
   }
   syncNotifUI();
 }
@@ -5544,11 +5569,11 @@ async function requestNotifPermission(){
 function toggleNotifications(){
   haptic(HX.tap);
   if(!('Notification' in window)){ showSettingsToast('❌ Notifications not supported on this device.'); return; }
-  if(Notification.permission === 'denied'){ showSettingsToast('⚠️ Permission denied. Enable in browser/system settings.', 4000); return; }
+  if(Notification.permission === 'denied'){ showSettingsToast('⚠️ Blocked — go to phone Settings to allow notifications.', 4000); return; }
   if(Notification.permission === 'default'){ requestNotifPermission(); return; }
   notifEnabled = !notifEnabled;
   localStorage.setItem('ledger_notif', notifEnabled?'on':'off');
-  if(notifEnabled){ scheduleAllBillReminders(); haptic(HX.soft); }
+  haptic(HX.soft);
   syncNotifUI();
 }
 
@@ -5556,48 +5581,59 @@ function setNotifDays(n){
   haptic(HX.tap);
   notifDaysAhead = n;
   localStorage.setItem('ledger_notif_days', String(n));
-  scheduleAllBillReminders();
   syncNotifUI();
   showSettingsToast(`🔔 Reminders set to ${n} day${n>1?'s':''} before due`, 2500);
+}
+
+/** Test button — fires an immediate notification to verify it works */
+async function testNotification(){
+  haptic(HX.tap);
+  if(!notifEnabled || Notification?.permission !== 'granted'){
+    showSettingsToast('⚠️ Enable bill reminders first.', 2500); return;
+  }
+  const upcoming = getUpcomingBills(30);
+  if(upcoming.length){
+    const bill = upcoming[0];
+    const when = bill.daysUntil===0?'today':bill.daysUntil===1?'tomorrow':`in ${bill.daysUntil} days`;
+    await fireNotification(`${bill.icon} ${bill.label} due ${when}`, `${currencySymbol}${fmt(bill.amount)} — due on ${bill.nextDate}`, 'notif-test');
+  } else {
+    await fireNotification('🔔 Spendoodle', 'Test notification — reminders are working! No bills due in 30 days.', 'notif-test');
+  }
+  showSettingsToast('🔔 Test sent! Check your notifications bar.', 3000);
 }
 
 /** Get bills due within N days from today */
 function getUpcomingBills(withinDays){
   const today = new Date(); today.setHours(0,0,0,0);
-  const todayS = ymd(today.getFullYear(), today.getMonth()+1, today.getDate());
   const results = [];
-
   const seen = new Map();
   [...transactions].filter(t=>t.recurring).forEach(t=>{
     const key=`${t.category}::${t.label}::${t.recurFreq||'monthly'}`;
     if(!seen.has(key)) seen.set(key,t);
   });
-
   seen.forEach(tmpl => {
     const freq = tmpl.recurFreq || 'monthly';
+    const seriesKey = `${tmpl.category}::${tmpl.label}::${freq}`;
+    if(recurringStops[seriesKey]) return;
     const lastTx = [...transactions]
       .filter(t=>t.recurring && t.category===tmpl.category && t.label===tmpl.label)
       .sort((a,b)=>b.date.localeCompare(a.date))[0];
     if(!lastTx) return;
-
     let nextDate;
     if(freq==='monthly'){
       const dayOfMonth = parseInt(lastTx.date.split('-')[2]);
-      // Try this month first
       const candidate = new Date(today.getFullYear(), today.getMonth(), dayOfMonth);
       if(candidate <= today) candidate.setMonth(candidate.getMonth()+1);
       nextDate = candidate;
     } else {
-      // Use earliest manual entry as anchor, walk forward in 7-day steps
       const anchorTx = [...transactions]
         .filter(t=>t.recurring && t.category===tmpl.category && t.label===tmpl.label && !t.autoGenerated)
         .sort((a,b)=>a.date.localeCompare(b.date))[0];
       if(!anchorTx) return;
       nextDate = new Date(anchorTx.date+'T00:00:00');
-      nextDate.setDate(nextDate.getDate()+7); // first occurrence after anchor
+      nextDate.setDate(nextDate.getDate()+7);
       while(nextDate <= today) nextDate.setDate(nextDate.getDate()+7);
     }
-
     const daysUntil = Math.round((nextDate-today)/86400000);
     if(daysUntil >= 0 && daysUntil <= withinDays){
       results.push({...tmpl, nextDate: ymd(nextDate.getFullYear(),nextDate.getMonth()+1,nextDate.getDate()), daysUntil});
@@ -5606,58 +5642,220 @@ function getUpcomingBills(withinDays){
   return results;
 }
 
-/** Schedule browser notifications for all upcoming bills */
-function scheduleAllBillReminders(){
-  if(!notifEnabled || Notification?.permission !== 'granted') return;
-  // Clear existing scheduled timers
-  if(window._notifTimers){ window._notifTimers.forEach(t=>clearTimeout(t)); }
-  window._notifTimers = [];
+/** No-op stub — setTimeout scheduling removed (unreliable when app is backgrounded) */
+function scheduleAllBillReminders(){}
 
-  const bills = getUpcomingBills(30);
-  const now = Date.now();
+// ════════════════════════════════════════════════════════════
+//  RECURRING DUE PROMPT — shown on app open when items are due
+// ════════════════════════════════════════════════════════════
 
-  bills.forEach(bill => {
-    const dueDate = new Date(bill.nextDate+'T09:00:00'); // 9am on due day
-    const notifyDate = new Date(dueDate);
-    notifyDate.setDate(notifyDate.getDate() - notifDaysAhead);
+/** Computes what autoGenerateRecurring WOULD add, without adding anything. */
+function computePendingRecurring(){
+  const curKey = currentCycleKey();
+  const today  = todayStr();
+  const pending = [];
 
-    const msUntil = notifyDate.getTime() - now;
-    if(msUntil < 0) return; // already past
+  const templates = new Map();
+  [...transactions]
+    .sort((a,b) => a.date.localeCompare(b.date))
+    .filter(t => t.recurring)
+    .forEach(t => {
+      const key = `${t.category}::${t.label}::${t.recurFreq||'monthly'}`;
+      templates.set(key, t);
+    });
 
-    const timer = setTimeout(()=>{
-      if(!notifEnabled || Notification?.permission !== 'granted') return;
-      const title = `Bill due ${notifDaysAhead===0?'today':notifDaysAhead===1?'tomorrow':`in ${notifDaysAhead} days`}`;
-      const body  = `${bill.icon} ${bill.label} — ${currencySymbol}${fmt(bill.amount)} due on ${bill.nextDate}`;
-      try{
-        new Notification(title, { body, icon: '/icon-192.png', tag: `bill-${bill.label}-${bill.nextDate}` });
-      }catch(e){}
-    }, msUntil);
+  templates.forEach(tmpl => {
+    const freq = tmpl.recurFreq || 'monthly';
+    const seriesKey = `${tmpl.category}::${tmpl.label}::${freq}`;
 
-    window._notifTimers.push(timer);
-  });
-}
+    const existingDates = new Set(
+      transactions
+        .filter(t => t.category===tmpl.category && t.label===tmpl.label && t.recurring)
+        .map(t => t.date)
+    );
 
-/** Check daily on app open — fire any missed notifications */
-function checkBillRemindersOnLoad(){
-  if(!notifEnabled || Notification?.permission !== 'granted') return;
-  const bills = getUpcomingBills(notifDaysAhead);
-  const lastCheck = localStorage.getItem('ledger_notif_lastcheck') || '';
-  const todayS = todayStr();
-  if(lastCheck === todayS) return; // already checked today
-  localStorage.setItem('ledger_notif_lastcheck', todayS);
+    if(freq === 'monthly'){
+      const inThisCycle = cycleTxs(curKey).some(t =>
+        t.category===tmpl.category && t.label===tmpl.label && t.recurring
+      );
+      if(inThisCycle) return;
+      if(recurringStops[seriesKey]) return;
 
-  bills.forEach(bill => {
-    if(bill.daysUntil <= notifDaysAhead){
-      const title = bill.daysUntil===0 ? `Bill due today!` : `Bill due in ${bill.daysUntil} day${bill.daysUntil>1?'s':''}`;
-      const body  = `${bill.icon} ${bill.label} — ${currencySymbol}${fmt(bill.amount)}`;
-      try{
-        new Notification(title, { body, icon: '/icon-192.png', tag: `bill-${bill.label}-${bill.nextDate}` });
-      }catch(e){}
+      const sortedExisting = [...existingDates].sort((a,b)=>b.localeCompare(a));
+      const lastDate = sortedExisting[0]||null;
+      if(lastDate){
+        const daysSince = Math.floor((new Date(today+'T00:00:00') - new Date(lastDate+'T00:00:00'))/86400000);
+        if(daysSince < 28) return;
+      }
+      const {start: cStart} = cycleRange(curKey);
+      if(cStart <= today){
+        pending.push({...tmpl, dueDate: today, lastDate, seriesKey});
+      }
+
+    } else if(freq === 'weekly'){
+      const manualEntries = transactions
+        .filter(t => t.category===tmpl.category && t.label===tmpl.label && t.recurring && !t.autoGenerated)
+        .sort((a,b)=>a.date.localeCompare(b.date));
+      if(!manualEntries.length) return;
+      const anchorDate = manualEntries[0].date;
+
+      const sortedExisting = [...existingDates].sort((a,b)=>b.localeCompare(a));
+      const lastDate = sortedExisting[0]||null;
+
+      let cursor = new Date(anchorDate + 'T00:00:00');
+      cursor.setDate(cursor.getDate() + 7);
+      let addedForSeries = false;
+      while(true){
+        const dateStr = ymd(cursor.getFullYear(), cursor.getMonth()+1, cursor.getDate());
+        if(dateStr > today) break;
+        if(recurringStops[seriesKey] && dateStr >= recurringStops[seriesKey]) break;
+        if(!existingDates.has(dateStr)){
+          if(!addedForSeries){
+            // One row per series — show earliest missing date
+            pending.push({...tmpl, dueDate: dateStr, lastDate, seriesKey});
+            addedForSeries = true;
+          }
+          existingDates.add(dateStr);
+        }
+        cursor.setDate(cursor.getDate() + 7);
+      }
     }
   });
+  return pending;
+}
 
-  // Re-schedule for future bills
-  scheduleAllBillReminders();
+/** On app open — compute due items and show badge on Bills nav. No popup. */
+function checkAndPromptRecurring(){
+  updateRecurBadge();
+}
+
+/** Recomputes pending and updates the Bills nav badge */
+function updateRecurBadge(){
+  const todayS = todayStr();
+  const lastPrompt = localStorage.getItem('ledger_recur_prompted') || '';
+  const badge = document.getElementById('recur-due-badge');
+  if(!badge) return;
+
+  // User already acted today (Added or Stopped) — no badge
+  if(lastPrompt === todayS){
+    badge.textContent = '';
+    badge.classList.remove('visible');
+    localStorage.removeItem('ledger_recur_pending');
+    return;
+  }
+
+  // New day — clear yesterday's state so fresh check runs
+  if(lastPrompt && lastPrompt !== todayS){
+    localStorage.removeItem('ledger_recur_pending');
+  }
+
+  const pending = computePendingRecurring();
+  if(!pending.length){
+    badge.textContent = '';
+    badge.classList.remove('visible');
+    return;
+  }
+
+  // Store for when user taps Bills
+  localStorage.setItem('ledger_recur_pending', JSON.stringify(
+    pending.map(p => ({ icon:p.icon, label:p.label, amount:p.amount,
+                         recurFreq:p.recurFreq, dueDate:p.dueDate,
+                         lastDate:p.lastDate, seriesKey:p.seriesKey }))
+  ));
+
+  badge.textContent = String(pending.length);
+  badge.classList.add('visible');
+}
+
+/** Called when user taps the Bills nav — show due prompt if badge is active */
+function onBillsNavTap(){
+  nav('calendar');
+  const todayS = todayStr();
+  const lastPrompt = localStorage.getItem('ledger_recur_prompted') || '';
+  if(lastPrompt === todayS) return;
+
+  const raw = localStorage.getItem('ledger_recur_pending');
+  if(!raw) return;
+  try{
+    const pending = JSON.parse(raw);
+    if(pending.length) setTimeout(()=> _showRecurringSheet(pending), 250);
+  }catch(e){}
+}
+
+/** Builds and opens the recurring due sheet */
+function _showRecurringSheet(pending){
+  const overlay = document.getElementById('recur-prompt-overlay');
+  const titleEl = document.getElementById('recur-prompt-title');
+  const msgEl   = document.getElementById('recur-prompt-msg');
+  const listEl  = document.getElementById('recur-prompt-list');
+
+  const count = pending.length;
+  titleEl.textContent = `${count} Recurring Item${count!==1?'s':''} Due`;
+  msgEl.textContent   = `${count} recurring entr${count!==1?'ies':'y'} ${count!==1?'are':'is'} due today.`;
+
+  listEl.innerHTML = pending.map(p => {
+    const lastLabel = p.lastDate ? `Last: ${p.lastDate}` : 'First occurrence';
+    return `
+    <div class="recur-prompt-item">
+      <span class="recur-pi-icon">${p.icon}</span>
+      <div class="recur-pi-info">
+        <div class="recur-pi-label">${p.label}</div>
+        <div class="recur-pi-date">📅 Due <strong style="color:var(--text2)">${p.dueDate}</strong> &nbsp;·&nbsp; ${lastLabel} &nbsp;·&nbsp; ${p.recurFreq||'monthly'}</div>
+      </div>
+      <span class="recur-pi-amt">${currencySymbol}${fmt(p.amount,2)}</span>
+    </div>`;
+  }).join('');
+
+  overlay._pendingRecurring = pending;
+  overlay.classList.add('open');
+}
+
+function stopRecurringPrompt(e){
+  if(e && e.target !== document.getElementById('recur-prompt-overlay')) return;
+  const overlay = document.getElementById('recur-prompt-overlay');
+  const pending = overlay._pendingRecurring || [];
+
+  // Stop every series shown in the prompt
+  pending.forEach(p => {
+    recurringStops[p.seriesKey] = p.dueDate;
+  });
+  localStorage.setItem('ledger_recur_stops', JSON.stringify(recurringStops));
+  localStorage.setItem('ledger_recur_prompted', todayStr());
+  localStorage.removeItem('ledger_recur_pending');
+
+  overlay.classList.remove('open');
+  overlay._pendingRecurring = null;
+  haptic(HX.tap);
+  updateRecurBadge();
+  renderCalendar();
+}
+
+function addRecurringNow(){
+  const overlay = document.getElementById('recur-prompt-overlay');
+  overlay.classList.remove('open');
+  overlay._pendingRecurring = null;
+  localStorage.setItem('ledger_recur_prompted', todayStr());
+  localStorage.removeItem('ledger_recur_pending');
+  const added = autoGenerateRecurring();
+  if(added > 0){ renderFeed(); renderDash(); haptic(HX.success); }
+  updateRecurBadge();
+}
+
+/** Check daily on app open — fire reminders for bills due within notifDaysAhead days */
+async function checkBillRemindersOnLoad(){
+  if(!notifEnabled || Notification?.permission !== 'granted') return;
+  const todayS    = todayStr();
+  const lastCheck = localStorage.getItem('ledger_notif_lastcheck') || '';
+  if(lastCheck === todayS) return; // already fired today
+  localStorage.setItem('ledger_notif_lastcheck', todayS);
+
+  const bills = getUpcomingBills(notifDaysAhead);
+  for(const bill of bills){
+    const when  = bill.daysUntil===0 ? 'today' : bill.daysUntil===1 ? 'tomorrow' : `in ${bill.daysUntil} days`;
+    const title = `${bill.icon} ${bill.label} due ${when}`;
+    const body  = `${currencySymbol}${fmt(bill.amount)} — due on ${bill.nextDate}`;
+    await fireNotification(title, body, `bill-${bill.label}-${bill.nextDate}`);
+  }
 }
 
 </script>
