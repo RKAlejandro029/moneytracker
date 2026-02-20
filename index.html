@@ -300,6 +300,9 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .date-hdr-label{font-size:.67rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);flex-shrink:0;}
 .date-hdr-line{flex:1;height:1px;background:var(--border);}
 .date-hdr-total{font-size:.67rem;font-weight:700;color:var(--text3);}
+/* Feed body padding — keeps transactions away from screen edges */
+.feed-body{padding:0 16px 16px;}
+
 /* overflow:hidden handled per tx-wrap below */
 
 .tx{display:flex;align-items:center;gap:12px;background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:13px 15px;cursor:pointer;transition:border-color .2s,background .15s;position:relative;overflow:hidden;z-index:1;will-change:transform;}
@@ -309,11 +312,11 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .tx-icon.income{background:var(--green-dim);}
 .tx-icon.expense{background:var(--red-dim);}
 .tx-icon.savings{background:var(--accent-dim);}
-.tx-body{flex:1;min-width:0;z-index:1;overflow:hidden;}
-.tx-name{font-size:.87rem;font-weight:600;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.tx-body{flex:1;min-width:0;z-index:1;}
+.tx-name{font-size:.87rem;font-weight:600;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:5px;}
 .tx-note{font-size:.71rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.tx-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;z-index:1;flex-shrink:0;max-width:44%;}
-.tx-amt{font-family:'Playfair Display',serif;font-size:.98rem;font-weight:700;white-space:nowrap;}
+.tx-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;z-index:1;}
+.tx-amt{font-family:'Playfair Display',serif;font-size:.98rem;font-weight:700;}
 .recur-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;}
 .tx-recur-tag{font-size:.58rem;color:var(--blue);font-weight:700;}
 /* ── RECUR FREQUENCY ── */
@@ -938,132 +941,6 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   :root{ --pad:20px; --pad-i:20px; }
 }
 
-/* ══════════════════════════════════════════
-   GLOBAL UX — OVERFLOW & CLIPPING FIXES
-══════════════════════════════════════════ */
-
-/* Transaction label — truncate if too long, keep tags visible */
-.tx-name{
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-  flex-wrap:nowrap;
-}
-/* Tags inside tx-name (goal, CC) — never shrink to nothing */
-.tx-name .goal-tag,
-.tx-name .cc-tag{ flex-shrink:0; }
-
-/* Amount — never wrap or shrink on small screens */
-.tx-amt{ white-space:nowrap; flex-shrink:0; }
-.tx-right{ flex-shrink:0; max-width:45%; }
-
-/* tx-date inside tx-right */
-.tx-date{ white-space:nowrap; font-size:clamp(.58rem,1.9vw,.67rem); }
-
-/* Settings body — all children should stay within card */
-.settings-body{ overflow:hidden; }
-.settings-desc code{
-  font-family:'Plus Jakarta Sans',sans-serif;
-  background:var(--bg2);
-  border:1px solid var(--border);
-  border-radius:5px;
-  padding:1px 5px;
-  font-size:.82em;
-  word-break:break-all;
-}
-
-/* Settings buttons — prevent text overflow on narrow screens */
-.settings-btn{
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-/* Backup interval row — prevent label overflowing on small screens */
-.backup-interval-row{ flex-wrap:wrap; gap:6px; }
-.bir-label{ min-width:0; font-size:clamp(.72rem,2.4vw,.82rem); }
-
-/* Theme grid — 4-col but wraps gracefully on tiny screens */
-.theme-row{ grid-template-columns:repeat(4,1fr); }
-@media (max-width:340px){
-  .theme-row{ grid-template-columns:repeat(2,1fr); }
-}
-.theme-btn{ word-break:break-word; font-size:clamp(.62rem,2vw,.7rem); }
-
-/* Hero amount — never overflow card */
-.hero-amount{ word-break:break-all; }
-
-/* Hero stat values — truncate if giant number */
-.hs-val{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-/* Feed balance bar amount */
-.fbb-amount{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-/* CC amounts grid — values should never overflow boxes */
-.cc-amt-val{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:clamp(.72rem,2.4vw,.88rem); }
-.cc-card-name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-
-/* Goal card name */
-.goal-card-name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.goal-card-amt{ white-space:nowrap; flex-shrink:0; margin-left:8px; }
-
-/* Quick-add chip label */
-.qa-chip-label{ max-width:100%; overflow:hidden; text-overflow:ellipsis; }
-
-/* Calendar bill info */
-.cal-bill-label{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-
-/* Sheet / modal — ensure content never bleeds outside safe area */
-.sheet{ box-sizing:border-box; }
-.add-body{ box-sizing:border-box; }
-
-/* Pin overlay — center properly on all heights */
-.pin-overlay{
-  padding:env(safe-area-inset-top,20px) 24px env(safe-area-inset-bottom,20px);
-  overflow-y:auto;
-}
-
-/* Onboarding sheet — content never clips behind bottom safe area */
-.ob-footer{
-  padding-bottom:calc(env(safe-area-inset-bottom,12px) + 12px);
-  flex-shrink:0;
-}
-
-/* Bottom nav — respect safe area inset */
-.bottom-nav{
-  padding-bottom:calc(env(safe-area-inset-bottom,0px) + 4px);
-}
-
-/* Confirm modal inner — safe-area bottom already set but ensure no overflow */
-.confirm-inner{ box-sizing:border-box; overflow:hidden; }
-
-/* IOS install sheet steps — text wraps properly */
-.ios-step-text{ word-break:break-word; line-height:1.5; }
-
-/* Budget modal — field doesn't overflow on small phones */
-.bm-field{ min-width:0; width:clamp(60px,20vw,78px); }
-
-/* SBS table — prevent value overflow */
-.sbs-val{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.sbs-label{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-
-/* Bar chart labels */
-.bar-col-val{ max-width:48px; overflow:hidden; text-overflow:ellipsis; }
-
-/* What's New sheet — desc wraps */
-.wn-desc{ word-break:break-word; }
-
-/* PWA banner — stays within safe insets */
-.pwa-banner{
-  left:50%;
-  transform:translateX(-50%);
-  right:auto;
-  box-sizing:border-box;
-}
-
-/* Settings view scroll area bottom padding */
-#view-settings > div{ padding-bottom:max(100px, calc(env(safe-area-inset-bottom,0px) + 100px)); }
-
 </style>
 </head>
 <body>
@@ -1184,7 +1061,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       </div>
     </div>
   </div>
-  <div style="padding:0 20px calc(env(safe-area-inset-bottom,0px) + 110px);">
+  <div style="padding:0 20px 100px;">
 
     <!-- SHOW GUIDE -->
     <div class="settings-card" id="sc-guide">
@@ -1560,63 +1437,19 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     <div class="ob-handle"></div>
     <div class="ob-pages" id="ob-pages">
 
-      <!-- ══ SLIDE 0: Welcome — What is Spendoodle? ══ -->
-      <div class="ob-page">
-        <div style="height:6px;"></div>
-        <div class="ob-page-tag">Welcome · Before We Begin</div>
-        <div style="text-align:center;margin-bottom:16px;">
-          <div style="font-size:3.2rem;line-height:1;margin-bottom:10px;">🤑</div>
-          <div class="ob-title">Meet <em>Spendoodle.</em></div>
-          <div style="font-size:.8rem;color:var(--text3);line-height:1.75;margin-top:6px;">The money tracker that doesn't make you feel like you're filing taxes.</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
-          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;">
-            <span style="font-size:1.4rem;flex-shrink:0;line-height:1;">📅</span>
-            <div>
-              <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-bottom:2px;">Tracks your <em style="color:var(--accent);font-style:normal;">actual</em> pay cycle</div>
-              <div style="font-size:.7rem;color:var(--text3);line-height:1.55;">Not the calendar month. Gets paid on the 25th? Weekly on Fridays? Twice a month? We got you — unlike your bank app.</div>
-            </div>
-          </div>
-          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;">
-            <span style="font-size:1.4rem;flex-shrink:0;line-height:1;">⚡</span>
-            <div>
-              <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-bottom:2px;">Log a transaction in <em style="color:var(--accent);font-style:normal;">3 taps</em></div>
-              <div style="font-size:.7rem;color:var(--text3);line-height:1.55;">Tap +, pick a category, enter the amount. Done. Faster than deciding what to eat for dinner.</div>
-            </div>
-          </div>
-          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;">
-            <span style="font-size:1.4rem;flex-shrink:0;line-height:1;">🧠</span>
-            <div>
-              <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-bottom:2px;">Actually <em style="color:var(--accent);font-style:normal;">smart</em> about your money</div>
-              <div style="font-size:.7rem;color:var(--text3);line-height:1.55;">Budgets, savings goals, recurring bills, forecasts, credit cards, charts. All the good stuff, none of the overwhelm.</div>
-            </div>
-          </div>
-          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;">
-            <span style="font-size:1.4rem;flex-shrink:0;line-height:1;">🔒</span>
-            <div>
-              <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-bottom:2px;">100% <em style="color:var(--accent);font-style:normal;">private.</em> No cloud. No account.</div>
-              <div style="font-size:.7rem;color:var(--text3);line-height:1.55;">Everything lives on your device only. No server has any idea what you spent on that 3am Grab order. Your secret is safe with us.</div>
-            </div>
-          </div>
-        </div>
-        <div style="background:var(--accent-dim);border:1.5px solid var(--border2);border-radius:12px;padding:10px 13px;font-size:.72rem;color:var(--text2);line-height:1.6;text-align:center;">
-          ✨ <strong style="color:var(--accent);">Pro tip:</strong> The setup ahead takes about 30 seconds. Then you're done forever. Probably.
-        </div>
-      </div>
-
-      <!-- ══ SLIDE 1: Make It Yours (Currency + Theme) ══ -->
+      <!-- ══ SLIDE 0: Make It Yours (Currency + Theme) ══ -->
       <div class="ob-page">
         <div style="height:2px;"></div>
         <div class="ob-page-tag">Step 1 of 3 · Make It Yours</div>
         <div style="text-align:center;margin-bottom:12px;">
-          <div style="font-size:2.6rem;line-height:1.1;">🎨</div>
-          <div class="ob-title" style="margin-bottom:4px;">Let's make it <em>feel like you.</em></div>
-          <div style="font-size:.78rem;color:var(--text3);line-height:1.5;">Two quick choices. Currency and vibes. Very important stuff.</div>
+          <div style="font-size:2.6rem;line-height:1.1;">🤑</div>
+          <div class="ob-title" style="margin-bottom:4px;">Ooh, a new <em>money app.</em></div>
+          <div style="font-size:.78rem;color:var(--text3);line-height:1.5;">Two taps and you're in. Literally. We clocked it at 18 seconds.</div>
         </div>
 
         <!-- Currency -->
         <div class="ob-setup-block" style="margin-bottom:10px;">
-          <div class="ob-setup-label">💱 Which currency are you hemorrhaging? <span style="font-weight:400;color:var(--text3);">(tap one)</span></div>
+          <div class="ob-setup-label">💱 What's your money called? <span style="font-weight:400;color:var(--text3);">(tap one)</span></div>
           <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:8px 0 4px;">
             <button class="ob-currency-btn" onclick="gSetCurrency('₱')">₱<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">PHP</div></button>
             <button class="ob-currency-btn" onclick="gSetCurrency('$')">$<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">USD</div></button>
@@ -1636,7 +1469,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 
         <!-- Theme -->
         <div class="ob-setup-block">
-          <div class="ob-setup-label">🎨 Pick a vibe — <span style="font-weight:400;color:var(--text3);">this is legally binding. (jk, change anytime 👇)</span></div>
+          <div class="ob-setup-label">🎨 Pick a vibe — <span style="font-weight:400;color:var(--text3);">whole app changes live 👇</span></div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;">
             <div class="ob-theme-card" id="g-theme-dark" onclick="gSetTheme('dark')">
               <div class="ob-theme-preview" style="background:#141420;border-color:#252538;padding:9px 8px 7px;">
@@ -1752,7 +1585,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
             <div class="cf-row"><span class="cf-label">Days per cycle?</span><input class="cf-input" id="g-cust-len" type="number" min="7" max="90" value="30"/></div>
           </div>
         </div>
-        <div class="ob-inline-tip">Saved when you tap <strong>Next →</strong> · Changed your mind? ⚙️ Settings exists for exactly that.</div>
+        <div class="ob-inline-tip">Saved when you tap <strong>Next →</strong> · Panic-editable anytime in ⚙️ Settings.</div>
       </div>
 
       <!-- ══ SLIDE 2: Done + Customize prompts ══ -->
@@ -4850,7 +4683,7 @@ function showSettingsToast(msg, dur, cardId){
 // ════════════════════════════════════════════════════════════
 //  ONBOARDING — 5 slides: Welcome · Theme · Pay Cycle · History+Goal · Done
 // ════════════════════════════════════════════════════════════
-const OB_TOTAL = 4;
+const OB_TOTAL = 3;
 let obPage = 0;
 let gCycleMode = cycleMode;
 let gLimitVal  = cycleLimit;
@@ -4880,30 +4713,25 @@ function obRender(){
   document.getElementById('ob-back').style.display = obPage>0 ? 'block':'none';
   const nextBtn = document.getElementById('ob-next');
   if(obPage===OB_TOTAL-1){
-    nextBtn.textContent = "All done 🚀";
+    nextBtn.textContent = "Let's Go 🚀";
     nextBtn.onclick = ()=>{ obSaveCurrentPage(); obClose(); };
-  } else if(obPage===0){
-    nextBtn.textContent = "Let's Go →";
-    nextBtn.onclick = ()=>obNav(1);
   } else {
     nextBtn.textContent = 'Next →';
     nextBtn.onclick = ()=>obNav(1);
   }
   document.getElementById('ob-skip').style.display = obPage===OB_TOTAL-1 ? 'none':'block';
-  // Slide 1: Currency — sync preview (was slide 0)
-  if(obPage===1){ gUpdateCurrencyPreview(); }
+  // Slide 0: Currency — sync preview
+  if(obPage===0){ gUpdateCurrencyPreview(); }
 }
 
 /* Save settings for the page we're leaving */
 function obSaveCurrentPage(){
   switch(obPage){
-    case 0: // Welcome slide — nothing to save
-      break;
-    case 1: // Currency + Theme — theme already applied live; save currency
+    case 0: // Currency + Theme — theme already applied live; save currency
       currencySymbol = (document.getElementById('g-currency-custom')?.value.trim()) || currencySymbol;
       persist(); renderFeed();
       break;
-    case 2: // Pay Cycle
+    case 1: // Pay Cycle
       cycleMode = gCycleMode;
       if(cycleMode==='monthly'){
         const pd = parseInt(document.getElementById('g-pay-day')?.value)||25;
@@ -4927,7 +4755,7 @@ function obSaveCurrentPage(){
       const pdS=document.getElementById('pay-day');if(pdS)pdS.value=cycleConfig.monthly.payDay;
       persist(); activeCycleKey=currentCycleKey(); renderFeed(); renderSettings();
       break;
-    case 3: // Done slide — nothing to save
+    case 2: // Done slide — nothing to save
       break;
   }
 }
@@ -5298,7 +5126,6 @@ function pwaInit(){
 
   // Build & inject manifest
   const manifest={
-    id:'spendoodle-app',
     name:'Spendoodle',
     short_name:'Spendoodle',
     description:'Spendoodle — personal pay-cycle money tracker — income, expenses, savings & credit cards.',
