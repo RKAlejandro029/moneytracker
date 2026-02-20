@@ -559,6 +559,9 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .btn-expense{background:var(--red);color:#fff;}
 .btn-savings{background:var(--accent);color:var(--bg);}
 .toast{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--green-dim);color:var(--green);border:1px solid var(--border2);border-radius:11px;padding:9px 16px;font-size:.8rem;font-weight:700;margin-bottom:12px;animation:fadeUp .3s ease;}
+.sc-inline-toast{border-radius:10px;padding:9px 13px;font-size:.78rem;font-weight:700;margin-top:10px;text-align:center;animation:fadeUp .25s ease;}
+.sc-inline-toast.ok{background:var(--green-dim);color:var(--green);border:1px solid var(--border2);}
+.sc-inline-toast.err{background:var(--red-dim);color:var(--red);border:1px solid var(--red);}
 /* Undo delete toast */
 .undo-toast{position:fixed;bottom:calc(var(--nav-h) + 14px);left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:398px;z-index:400;background:var(--bg1);border:1.5px solid var(--border2);border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px #00000070;animation:slideUp .3s cubic-bezier(.34,1.56,.64,1);}
 .undo-toast-text{flex:1;font-size:.83rem;font-weight:600;color:var(--text);}
@@ -1058,7 +1061,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <div style="padding:0 20px 100px;">
 
     <!-- SHOW GUIDE -->
-    <div class="settings-card">
+    <div class="settings-card" id="sc-guide">
       <div class="settings-icon" style="background:var(--accent-dim)">📖</div>
       <div class="settings-body">
         <div class="settings-title">User Guide</div>
@@ -1068,7 +1071,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     </div>
 
     <!-- THEME -->
-    <div class="settings-card">
+    <div class="settings-card" id="sc-theme">
       <div class="settings-icon" style="background:var(--accent-dim)">🎨</div>
       <div class="settings-body">
         <div class="settings-title">Theme</div>
@@ -1087,7 +1090,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     </div>
 
     <!-- HAPTIC FEEDBACK -->
-    <div class="settings-card">
+    <div class="settings-card" id="sc-haptic">
       <div class="settings-icon" style="background:var(--blue-dim)">📳</div>
       <div class="settings-body">
         <div class="settings-title">Haptic Feedback</div>
@@ -1132,7 +1135,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     </div>
 
     <!-- PAY CYCLE -->
-    <div class="settings-card">
+    <div class="settings-card" id="sc-cycle">
       <div class="settings-icon" style="background:var(--accent-dim)">📅</div>
       <div class="settings-body">
         <div class="settings-title">Pay Cycle Setup</div>
@@ -1201,7 +1204,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     </div>
 
     <!-- CURRENCY -->
-    <div class="settings-card">
+    <div class="settings-card" id="sc-currency">
       <div class="settings-icon" style="background:var(--blue-dim)">💱</div>
       <div class="settings-body">
         <div class="settings-title">Currency Symbol</div>
@@ -1214,7 +1217,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     </div>
 
     <!-- CYCLE HISTORY LIMIT -->
-    <div class="settings-card">
+    <div class="settings-card" id="sc-history">
       <div class="settings-icon" style="background:var(--blue-dim)">🗂</div>
       <div class="settings-body">
         <div class="settings-title">History Limit</div>
@@ -1232,13 +1235,15 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     </div>
 
     <!-- EXPORT -->
-    <div class="settings-card">
+    <div class="settings-card" id="sc-export">
       <div class="settings-icon" style="background:var(--accent-dim)">📤</div>
       <div class="settings-body">
         <div class="settings-title">Export &amp; Backup</div>
         <div class="settings-desc">Exports <strong>everything</strong>: all transactions, budgets, currency, theme, and cycle settings — as a single <code>.json</code> backup file.<br/><br/>Your data auto-saves in the browser after every change. Use Export when switching devices or clearing your browser.</div>
         <button class="settings-btn btn-accent" onclick="exportData()">📤 Download Full Backup (.json)</button>
         <button class="settings-btn" style="background:var(--green-dim);color:var(--green);border:1.5px solid var(--green);margin-top:7px;" onclick="exportCSV()">📊 Export Transactions (.csv)</button>
+        <button class="settings-btn" style="background:#10b98118;color:#10b981;border:1.5px solid #10b98140;margin-top:7px;" onclick="exportExcel()">🟢 Export Transactions (.xlsx)</button>
+        <button class="settings-btn" style="background:#f0646418;color:#f06464;border:1.5px solid #f0646440;margin-top:7px;" onclick="exportPDF()">🔴 Export Transactions (.pdf)</button>
         <div class="backup-interval-row">
           <span class="bir-label">🔔 Remind me to back up every</span>
           <input class="bir-input" type="number" id="backup-interval-input" min="1" max="365" value="30" onchange="saveBackupInterval(this.value)"/>
@@ -1249,7 +1254,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     </div>
 
     <!-- IMPORT -->
-    <div class="settings-card">
+    <div class="settings-card" id="sc-import">
       <div class="settings-icon" style="background:var(--green-dim)">📥</div>
       <div class="settings-body">
         <div class="settings-title">Import Data</div>
@@ -1284,12 +1289,22 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     </div>
 
     <!-- CLEAR -->
-    <div class="settings-card">
+    <div class="settings-card" id="sc-clear">
       <div class="settings-icon" style="background:var(--red-dim)">🗑</div>
       <div class="settings-body">
         <div class="settings-title">Clear All Data</div>
         <div class="settings-desc">Permanently delete everything. Export a backup first!</div>
         <button class="settings-btn btn-red" onclick="clearAllData()">Delete Everything</button>
+      </div>
+    </div>
+
+    <!-- PWA INSTALL -->
+    <div class="settings-card" id="sc-pwa" style="display:none;">
+      <div class="settings-icon" style="background:var(--blue-dim)" id="pwa-sc-icon">📲</div>
+      <div class="settings-body">
+        <div class="settings-title" id="pwa-sc-title">Install App</div>
+        <div class="settings-desc" id="pwa-sc-desc">Install Spendoodle on your device for a faster, offline-ready experience.</div>
+        <button class="settings-btn btn-blue" id="pwa-sc-btn" onclick="pwaSettingsInstall()">📲 Install Now</button>
       </div>
     </div>
 
@@ -1311,9 +1326,6 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         <button class="settings-btn btn-blue" style="background:#a855f718;color:#a855f7;border-color:#a855f730;" onclick="addCreditCard()">+ Add Card</button>
       </div>
     </div>
-
-    <div id="settings-toast" style="display:none;margin-top:14px;" class="toast">✓ Done!</div>
-    <div id="settings-err" style="display:none;margin-top:14px;" class="date-err">⚠️ Invalid file.</div>
 
     <div style="margin-top:10px;background:var(--bg1);border:1px solid var(--border);border-radius:16px;padding:15px 17px;">
       <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-weight:700;margin-bottom:8px;">Your data summary</div>
@@ -2581,7 +2593,7 @@ function saveCycleSettings(){
   }
   persist();
   activeCycleKey=currentCycleKey();
-  showSettingsToast('📅 Pay cycle saved — ' + detail, 4000);
+  showSettingsToast('📅 Pay cycle saved — ' + detail, 4000, 'sc-cycle');
   renderFeed();
 }
 function renderSettingsInputs(){
@@ -3159,9 +3171,9 @@ function saveBudgets(){
   renderFeed(); renderSettings();
   const activeCount = Object.keys(budgets).length;
   if(activeCount > 0){
-    showSettingsToast(`💰 Budgets saved — ${activeCount} categor${activeCount!==1?'ies':'y'} with limits set`, 3500);
+    showSettingsToast(`💰 Budgets saved — ${activeCount} categor${activeCount!==1?'ies':'y'} with limits set`, 3500, 'sc-budgets');
   } else {
-    showSettingsToast('💰 Budgets cleared — no limits active', 3000);
+    showSettingsToast('💰 Budgets cleared — no limits active', 3000, 'sc-budgets');
   }
 }
 function toggleBudgetCollapse(){
@@ -3196,12 +3208,12 @@ function addCreditCard(){
   const name=(document.getElementById('cc-name-input').value||'').trim();
   const limit=parseFloat(document.getElementById('cc-limit-input').value)||0;
   const interest=parseFloat(document.getElementById('cc-interest-input').value)||0;
-  if(!name||limit<=0){ showSettingsToast('⚠️ Enter a card name and limit.'); return; }
+  if(!name||limit<=0){ showSettingsToast('⚠️ Enter a card name and limit.', 3000, 'sc-cards'); return; }
   creditCards.push({id:String(Date.now()), name, limit, billingFee: interest||0});
   document.getElementById('cc-name-input').value='';
   document.getElementById('cc-limit-input').value='';
   document.getElementById('cc-interest-input').value='';
-  persist(); renderSettingsCCList(); showSettingsToast('💳 Card added!');
+  persist(); renderSettingsCCList(); showSettingsToast('💳 Card added!', 3000, 'sc-cards');
 }
 function removeCreditCard(id){
   const info=getCardInfo(id);
@@ -3222,13 +3234,13 @@ function removeCreditCard(id){
       creditCards=creditCards.filter(c=>c.id!==id);
       transactions=transactions.filter(t=>t.creditCardId!==id);
       persist(); renderSettingsCCList(); renderFeed(); renderDash();
-      showSettingsToast('Card and all transactions removed.');
+      showSettingsToast('Card and all transactions removed.', 3000, 'sc-cards');
     },
     onSecondary:()=>{
       creditCards=creditCards.filter(c=>c.id!==id);
       transactions=transactions.map(t=>t.creditCardId===id?{...t,creditCardId:null}:t);
       persist(); renderSettingsCCList(); renderFeed(); renderDash();
-      showSettingsToast('Card removed. Transactions kept.');
+      showSettingsToast('Card removed. Transactions kept.', 3000, 'sc-cards');
     }
   });
 }
@@ -3972,7 +3984,7 @@ function saveCurrency(){
   const v=document.getElementById('currency-input').value.trim(); if(!v)return;
   const prev=currencySymbol;
   currencySymbol=v; persist();
-  showSettingsToast(`💱 Currency changed${prev!==v?' from '+prev+' to '+v:''} — applied everywhere!`, 4000);
+  showSettingsToast(`💱 Currency changed${prev!==v?' from '+prev+' to '+v:''} — applied everywhere!`, 4000, 'sc-currency');
   renderFeed(); renderDash();
 }
 function toggleHaptic(){
@@ -4022,9 +4034,9 @@ function saveCycleLimit(){
   renderSettings(); renderFeed();
   const monthLabel = val >= 12 ? `${(val/12).toFixed(1).replace(/\.0$/,'')} year${val!==12?'s':''}` : `${val} months`;
   if(removed > 0){
-    showSettingsToast(`🗂 History limit set to ${monthLabel} — ${removed} old record${removed!==1?'s':''} pruned`, 4000);
+    showSettingsToast(`🗂 History limit set to ${monthLabel} — ${removed} old record${removed!==1?'s':''} pruned`, 4000, 'sc-history');
   } else {
-    showSettingsToast(`🗂 History limit saved — keeping up to ${monthLabel} of history`, 3500);
+    showSettingsToast(`🗂 History limit saved — keeping up to ${monthLabel} of history`, 3500, 'sc-history');
   }
 }
 
@@ -4048,7 +4060,7 @@ function exportData(){
   // Stamp last backup time
   localStorage.setItem('ledger_lastBackup', Date.now().toString());
   updateLastBackupLabel();
-  showSettingsToast('📤 Full backup exported!');
+  showSettingsToast('📤 Full backup exported!', 3000, 'sc-export');
 }
 function exportCSV(){
   const headers=['Date','Label','Type','Category','Amount','Currency','Note','Recurring','Savings Goal','Cycle'];
@@ -4074,7 +4086,403 @@ function exportCSV(){
   const dateStr=new Date().toISOString().slice(0,10);
   a.href=url; a.download=`spendoodle-transactions-${dateStr}.csv`; a.click();
   URL.revokeObjectURL(url);
-  showSettingsToast('📊 CSV exported!');
+  showSettingsToast('📊 CSV exported!', 3000, 'sc-export');
+}
+
+async function exportExcel(){
+  showSettingsToast('🟢 Preparing Excel…', 60000, 'sc-export');
+  try {
+    const sym=currencySymbol;
+    const symSafe=(()=>{const m={'₱':'PHP','$':'$','€':'EUR','£':'GBP','¥':'JPY','₩':'KRW','฿':'THB','₫':'VND','₹':'INR'};return m[sym]||sym.replace(/[^\x20-\x7E]/g,'?');})();
+    const dateStr=new Date().toISOString().slice(0,10);
+    const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+    const inc=transactions.filter(t=>t.type==='income' ).reduce((a,t)=>a+(parseFloat(t.amount)||0),0);
+    const exp=transactions.filter(t=>t.type==='expense').reduce((a,t)=>a+(parseFloat(t.amount)||0),0);
+    const sav=transactions.filter(t=>t.type==='savings').reduce((a,t)=>a+(parseFloat(t.amount)||0),0);
+    const net=inc-exp-sav;
+
+    // ── Shared strings ──
+    const strings=[];
+    const si=v=>{const i=strings.length;strings.push(String(v));return i;};
+
+    // ── Style IDs (index into styles array) ──
+    // We define fills, fonts, borders, then cellXfs
+    // Format: we'll build the styles XML manually
+
+    // Cell ref helper
+    const col=c=>{let s='';c++;while(c>0){s=String.fromCharCode(64+(c%26||26))+s;c=Math.floor((c-1)/26);}return s;};
+    const ref=(r,c)=>col(c)+(r+1);
+
+    // ── Build worksheet rows ──
+    // styleId map (matches cellXfs order defined below)
+    const ST={
+      title:0, subtitle:1, blank:2,
+      sumLblInc:3, sumLblExp:4, sumLblSav:5, sumLblNet:6, sumLblNetNeg:7,
+      sumValInc:8, sumValExp:9, sumValSav:10, sumValNet:11, sumValNetNeg:12,
+      hdr:13,  hdrAmt:14,
+      cellNorm:15, cellAlt:16, cellMuted:17, cellMutedAlt:18,
+      cellBold:19, cellBoldAlt:20,
+      amtInc:21, amtExp:22, amtSav:23,
+      amtIncAlt:24, amtExpAlt:25, amtSavAlt:26,
+    };
+
+    const wsRows=[];
+    const addRow=(cells)=>wsRows.push(cells); // each cell: {r,c,v,s,t,z}
+
+    let r=0;
+    // Row 0 — Title
+    addRow([{r,c:0,v:si('Spendoodle'),s:ST.title,t:'s'}]);
+    r++;
+    // Row 1 — Subtitle
+    addRow([{r,c:0,v:si(`Transaction Report  ·  Exported ${dateStr}  ·  Currency: ${symSafe}`),s:ST.subtitle,t:'s'}]);
+    r++;
+    // Row 2 — blank
+    addRow([]);
+    r++;
+    // Row 3 — Summary labels
+    addRow([
+      {r,c:0,v:si('INCOME'),  s:ST.sumLblInc,t:'s'},
+      {r,c:1,v:si('EXPENSES'),s:ST.sumLblExp,t:'s'},
+      {r,c:2,v:si('SAVINGS'), s:ST.sumLblSav,t:'s'},
+      {r,c:3,v:si(`NET (${symSafe})`),s:net>=0?ST.sumLblNet:ST.sumLblNetNeg,t:'s'},
+    ]);
+    r++;
+    // Row 4 — Summary values
+    addRow([
+      {r,c:0,v:inc, s:ST.sumValInc,t:'n',z:'#,##0.00'},
+      {r,c:1,v:exp, s:ST.sumValExp,t:'n',z:'#,##0.00'},
+      {r,c:2,v:sav, s:ST.sumValSav,t:'n',z:'#,##0.00'},
+      {r,c:3,v:Math.abs(net),s:net>=0?ST.sumValNet:ST.sumValNetNeg,t:'n',z:'#,##0.00'},
+    ]);
+    r++;
+    // Row 5 — blank
+    addRow([]);
+    r++;
+    // Row 6 — Column headers
+    const hdrs=['Date','Label','Type','Category',`Amount (${symSafe})`,'Note','Recurring'];
+    addRow(hdrs.map((h,c)=>({r,c,v:si(h),s:c===4?ST.hdrAmt:ST.hdr,t:'s'})));
+    r++;
+    // Data rows
+    transactions.forEach((t,i)=>{
+      const alt=i%2===1;
+      const amt=parseFloat(t.amount)||0;
+      const tp=t.type;
+      const amtS=tp==='income'?(alt?ST.amtIncAlt:ST.amtInc):tp==='savings'?(alt?ST.amtSavAlt:ST.amtSav):(alt?ST.amtExpAlt:ST.amtExp);
+      addRow([
+        {r,c:0,v:si(t.date),            s:alt?ST.cellMutedAlt:ST.cellMuted,  t:'s'},
+        {r,c:1,v:si(t.label||''),        s:alt?ST.cellBoldAlt:ST.cellBold,    t:'s'},
+        {r,c:2,v:si(t.type.charAt(0).toUpperCase()+t.type.slice(1)),s:alt?ST.cellAlt:ST.cellNorm,t:'s'},
+        {r,c:3,v:si(t.category||''),     s:alt?ST.cellMutedAlt:ST.cellMuted,  t:'s'},
+        {r,c:4,v:amt,                    s:amtS,t:'n',z:'#,##0.00'},
+        {r,c:5,v:si(t.note||''),         s:alt?ST.cellMutedAlt:ST.cellMuted,  t:'s'},
+        {r,c:6,v:si(t.recurring?'Yes':'No'),s:alt?ST.cellAlt:ST.cellNorm,   t:'s'},
+      ]);
+      r++;
+    });
+
+    // ── Shared strings XML ──
+    const ssXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${strings.length}" uniqueCount="${strings.length}">
+${strings.map(s=>`<si><t xml:space="preserve">${esc(s)}</t></si>`).join('\n')}
+</sst>`;
+
+    // ── Number formats ──
+    const numFmts=`<numFmts count="1"><numFmt numFmtId="164" formatCode="#,##0.00"/></numFmts>`;
+
+    // ── Fonts ──
+    const fonts=`<fonts count="8">
+<font><sz val="18"/><b/><color rgb="FFD4A853"/><name val="Calibri"/></font>
+<font><sz val="9"/><color rgb="FF8A8598"/><name val="Calibri"/></font>
+<font><sz val="10"/><color rgb="FFEDE8E0"/><name val="Calibri"/></font>
+<font><sz val="9"/><b/><color rgb="FF4FD87C"/><name val="Calibri"/></font>
+<font><sz val="9"/><b/><color rgb="FFF06464"/><name val="Calibri"/></font>
+<font><sz val="9"/><b/><color rgb="FFD4A853"/><name val="Calibri"/></font>
+<font><sz val="14"/><b/><color rgb="FF4FD87C"/><name val="Calibri"/></font>
+<font><sz val="14"/><b/><color rgb="FFF06464"/><name val="Calibri"/></font>
+</fonts>`;
+    // font ids: 0=title,1=sub,2=normal,3=incLbl,4=expLbl,5=savLbl,6=incVal,7=expVal
+
+    // ── Fills ──
+    // 0,1 reserved by Excel
+    const fills=`<fills count="16">
+<fill><patternFill patternType="none"/></fill>
+<fill><patternFill patternType="gray125"/></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF080810"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF0F0F1A"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF14141C"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF0A1F10"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF200808"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF181208"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF0D1A0A"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF280A0A"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF1C160A"/></patternFill></fill>
+</fills>`;
+    // fill ids: 2=dark,3=alt,4=hdr,5=incBg,6=expBg,7=savBg,8=incBgAlt,9=expBgAlt,10=savBgAlt
+
+    // ── Borders ──
+    const borders=`<borders count="2">
+<border><left/><right/><top/><bottom/><diagonal/></border>
+<border><left style="thin"><color rgb="FF1E1E30"/></left><right style="thin"><color rgb="FF1E1E30"/></right><top style="thin"><color rgb="FF1E1E30"/></top><bottom style="thin"><color rgb="FF1E1E30"/></bottom><diagonal/></border>
+</borders>`;
+
+    // ── Cell styles (cellXfs) ──
+    // Each: fontId, fillId, borderId, numFmtId, alignment
+    const xf=(fi,filli,bi,nfi,halign,bold)=>{
+      const applyN=nfi?'applyNumberFormat="1"':'';
+      const applyA=halign?'applyAlignment="1"':'';
+      const applyB=bold?'applyFont="1"':'applyFont="1"';
+      return `<xf numFmtId="${nfi||0}" fontId="${fi}" fillId="${filli}" borderId="${bi}" applyFill="1" ${applyN} ${applyB} ${applyA}>${halign?`<alignment horizontal="${halign}" vertical="center"/>`:'<alignment vertical="center"/>'}</xf>`;
+    };
+    const cellXfs=`<cellXfs count="27">
+${xf(0,2,0,0,'left')}
+${xf(1,2,0,0,'left')}
+${xf(2,2,0,0,'left')}
+${xf(3,2,0,0,'left')}
+${xf(4,2,0,0,'left')}
+${xf(5,2,0,0,'left')}
+${xf(2,2,0,0,'left')}
+${xf(2,2,0,0,'left')}
+${xf(6,5,0,164,'left',1)}
+${xf(7,6,0,164,'left',1)}
+${xf(5,7,0,164,'left',1)}
+${xf(6,5,0,164,'left',1)}
+${xf(7,6,0,164,'left',1)}
+${xf(2,4,1,0,'center',1)}
+${xf(2,4,1,0,'right',1)}
+${xf(2,2,1,0,'left')}
+${xf(2,3,1,0,'left')}
+${xf(1,2,1,0,'left')}
+${xf(1,3,1,0,'left')}
+${xf(2,2,1,0,'left',1)}
+${xf(2,3,1,0,'left',1)}
+${xf(6,5,1,164,'right',1)}
+${xf(4,6,1,164,'right',1)}
+${xf(5,7,1,164,'right',1)}
+${xf(6,8,1,164,'right',1)}
+${xf(4,9,1,164,'right',1)}
+${xf(5,10,1,164,'right',1)}
+</cellXfs>`;
+
+    const stylesXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+${numFmts}${fonts}${fills}${borders}
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+${cellXfs}
+</styleSheet>`;
+
+    // ── Worksheet XML ──
+    const rowsXml=wsRows.map((cells,ri)=>{
+      if(!cells.length) return `<row r="${ri+1}" ht="15" customHeight="1"/>`;
+      const ht=ri===0?32:ri===1?14:ri===3?14:ri===4?24:ri===6?20:15;
+      const cellsXml=cells.map(({r,c,v,s,t,z})=>{
+        const cr=ref(r,c);
+        const nfi=z?` s="${s}"`:` s="${s}"`;
+        if(t==='n') return `<c r="${cr}" s="${s}" t="n"><v>${v}</v></c>`;
+        return `<c r="${cr}" s="${s}" t="s"><v>${v}</v></c>`;
+      }).join('');
+      return `<row r="${ri+1}" ht="${ht}" customHeight="1">${cellsXml}</row>`;
+    }).join('\n');
+
+    // Merge cells for title/subtitle rows
+    const lastDataRow=r;
+    const merges=`<mergeCells count="3">
+<mergeCell ref="A1:G1"/>
+<mergeCell ref="A2:G2"/>
+<mergeCell ref="A3:G3"/>
+</mergeCells>`;
+
+    const colsXml=`<cols>
+<col min="1" max="1" width="13" customWidth="1"/>
+<col min="2" max="2" width="28" customWidth="1"/>
+<col min="3" max="3" width="12" customWidth="1"/>
+<col min="4" max="4" width="18" customWidth="1"/>
+<col min="5" max="5" width="16" customWidth="1"/>
+<col min="6" max="6" width="32" customWidth="1"/>
+<col min="7" max="7" width="11" customWidth="1"/>
+</cols>`;
+
+    const wsXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetView workbookViewId="0"><selection activeCell="A1"/></sheetView>
+<sheetFormatPr defaultRowHeight="15"/>
+${colsXml}
+<sheetData>
+${rowsXml}
+</sheetData>
+${merges}
+<pageSetup orientation="portrait"/>
+</worksheet>`;
+
+    // ── Workbook XML ──
+    const wbXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<sheets><sheet name="Transactions" sheetId="1" r:id="rId1"/></sheets>
+</workbook>`;
+
+    const wbRels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>
+<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>`;
+
+    const relsXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>`;
+
+    const contentTypes=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+<Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>
+<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+</Types>`;
+
+    // ── ZIP it using JSZip (load on demand from cdnjs) ──
+    if(!window.JSZip){
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        s.onload=res; s.onerror=()=>rej(new Error('No internet — Excel export requires a one-time download.'));
+        document.head.appendChild(s);
+      });
+    }
+    const zip=new JSZip();
+    zip.file('[Content_Types].xml', contentTypes);
+    zip.file('_rels/.rels', relsXml);
+    zip.file('xl/workbook.xml', wbXml);
+    zip.file('xl/_rels/workbook.xml.rels', wbRels);
+    zip.file('xl/worksheets/sheet1.xml', wsXml);
+    zip.file('xl/sharedStrings.xml', ssXml);
+    zip.file('xl/styles.xml', stylesXml);
+
+    const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=`spendoodle-transactions-${dateStr}.xlsx`; a.click();
+    URL.revokeObjectURL(url);
+    showSettingsToast('🟢 Excel exported!', 3000, 'sc-export');
+  } catch(err){
+    console.error('[Excel export]', err);
+    const isOffline=!navigator.onLine||err.message.includes('internet');
+    showSettingsToast(isOffline?'⚠️ No internet — connect once to enable Excel export.':'⚠️ Excel export failed. Try again.', 5000, 'sc-export');
+  }
+}
+
+async function exportPDF(){
+  showSettingsToast('🔴 Preparing PDF…', 60000, 'sc-export');
+  try {
+    if(!window.jspdf){
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        s.onload=res; s.onerror=()=>rej(new Error('Failed to load jsPDF'));
+        document.head.appendChild(s);
+      });
+    }
+    if(typeof window.jspdf.jsPDF.prototype.autoTable==='undefined'){
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
+        s.onload=res; s.onerror=()=>rej(new Error('Failed to load AutoTable'));
+        document.head.appendChild(s);
+      });
+    }
+
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const dateStr=new Date().toISOString().slice(0,10);
+    const pageW=doc.internal.pageSize.getWidth();
+
+    // jsPDF built-in fonts only support latin — encode symbol as ASCII fallback
+    const symRaw=currencySymbol;
+    // Try to encode to latin; if it fails or has weird chars use the code name
+    const symSafe=(()=>{
+      // Common symbols mapped to safe ASCII equivalents for PDF
+      const map={'₱':'PHP','$':'$','€':'EUR','£':'GBP','¥':'JPY','₩':'KRW','฿':'THB','₫':'VND','Rp':'Rp','RM':'RM','₹':'INR'};
+      return map[symRaw] || symRaw.replace(/[^\x20-\x7E]/g,'?');
+    })();
+
+    // ── Header ──
+    doc.setFillColor(8,8,16);
+    doc.rect(0,0,pageW,28,'F');
+    doc.setTextColor(212,168,83);
+    doc.setFontSize(20); doc.setFont('helvetica','bold');
+    doc.text('Spendoodle',14,12);
+    doc.setFontSize(9); doc.setFont('helvetica','normal');
+    doc.setTextColor(138,133,152);
+    doc.text('Transaction Report  -  Exported '+dateStr+'  -  Currency: '+symSafe, 14, 20);
+
+    // ── Summary strip ──
+    const inc=transactions.filter(t=>t.type==='income').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
+    const exp=transactions.filter(t=>t.type==='expense').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
+    const sav=transactions.filter(t=>t.type==='savings').reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
+    const net=inc-exp-sav;
+
+    const summaryY=34;
+    const colW=pageW/4;
+    [
+      ['INCOME',      fmt(inc,2), [79,216,124]],
+      ['EXPENSES',    fmt(exp,2), [240,100,100]],
+      ['SAVINGS',     fmt(sav,2), [212,168,83]],
+      ['NET ('+symSafe+')', fmt(Math.abs(net),2)+(net<0?' (-)':''), net>=0?[79,216,124]:[240,100,100]]
+    ].forEach(([lbl,val,rgb],i)=>{
+      const x=colW*i+14;
+      doc.setFontSize(7); doc.setFont('helvetica','bold');
+      doc.setTextColor(100,100,120);
+      doc.text(lbl,x,summaryY);
+      doc.setFontSize(11); doc.setFont('helvetica','bold');
+      doc.setTextColor(...rgb);
+      doc.text(symSafe+' '+val,x,summaryY+7);
+    });
+
+    // ── Transactions table ──
+    const tableRows=transactions.map(t=>[
+      t.date,
+      (t.label||'').slice(0,30),
+      t.type.charAt(0).toUpperCase()+t.type.slice(1),
+      (t.category||'-').slice(0,18),
+      fmt(parseFloat(t.amount)||0, 2),   // plain number string — no symbol
+      (t.note||'').slice(0,28)
+    ]);
+
+    doc.autoTable({
+      startY: summaryY+16,
+      head:[[`Date`,`Label`,`Type`,`Category`,`Amount (${symSafe})`,`Note`]],
+      body: tableRows,
+      theme:'grid',
+      headStyles:{fillColor:[20,20,32],textColor:[212,168,83],fontStyle:'bold',fontSize:8},
+      bodyStyles:{fontSize:7.5,textColor:[40,38,60]},
+      alternateRowStyles:{fillColor:[245,244,248]},
+      columnStyles:{
+        0:{cellWidth:22},
+        1:{cellWidth:46},
+        2:{cellWidth:22},
+        3:{cellWidth:28},
+        4:{cellWidth:26,halign:'right'},
+        5:{cellWidth:'auto'}
+      },
+      margin:{left:14,right:14},
+      didDrawPage:()=>{
+        const pg=doc.internal.getCurrentPageInfo().pageNumber;
+        const total=doc.internal.getNumberOfPages();
+        doc.setFontSize(7); doc.setTextColor(160,158,180);
+        doc.text(`Page ${pg} of ${total}`,pageW/2,doc.internal.pageSize.getHeight()-6,{align:'center'});
+        doc.text('Spendoodle',14,doc.internal.pageSize.getHeight()-6);
+      }
+    });
+
+    doc.save(`spendoodle-transactions-${dateStr}.pdf`);
+    showSettingsToast('🔴 PDF exported!', 3000, 'sc-export');
+  } catch(err) {
+    console.error('[PDF export]', err);
+    showSettingsToast('⚠️ PDF export failed — check connection.', 4000, 'sc-export');
+  }
 }
 function importData(e){
   const file=e.target.files[0]; if(!file)return;
@@ -4126,10 +4534,9 @@ function importData(e){
       if(expCount) _parts.push(`${expCount} expense`);
       if(savCount) _parts.push(`${savCount} savings`);
       const _detail=_parts.length?` · ${_parts.join(', ')}`:'';
-      showSettingsToast(`✅ Imported ${newOnes.length} new record${newOnes.length!==1?'s':''}${_detail} at ${_time}`,5000);
+      showSettingsToast(`✅ Imported ${newOnes.length} new record${newOnes.length!==1?'s':''}${_detail} at ${_time}`, 5000, 'sc-import');
     }catch{
-      document.getElementById('settings-err').style.display='block';
-      setTimeout(()=>document.getElementById('settings-err').style.display='none',3500);
+      showSettingsToast('⚠️ Invalid file.', 3500, 'sc-import');
     }
     e.target.value='';
   };
@@ -4147,7 +4554,7 @@ function saveBackupInterval(val){
   localStorage.setItem('ledger_backupInterval', days.toString());
   const inp=document.getElementById('backup-interval-input');
   if(inp) inp.value=days;
-  showSettingsToast(`🔔 Backup reminder set to every ${days} days`);
+  showSettingsToast(`🔔 Backup reminder set to every ${days} days`, 3000, 'sc-export');
 }
 function updateLastBackupLabel(){
   const el=document.getElementById('last-backup-label');
@@ -4249,12 +4656,25 @@ function doDeleteEverything(){
   transactions=[]; budgets={}; creditCards=[]; goalTargets={};
   persist(); activeCycleKey=currentCycleKey();
   renderSettings(); renderFeed(); renderDash();
-  showSettingsToast('🗑 All data cleared. Fresh start!', 4000);
+  showSettingsToast('🗑 All data cleared. Fresh start!', 4000, 'sc-clear');
 }
-function showSettingsToast(msg,dur){
-  const t=document.getElementById('settings-toast');
-  t.textContent=msg; t.style.display='flex';
-  setTimeout(()=>t.style.display='none',dur||3000);
+function showSettingsToast(msg, dur, cardId){
+  // Determine card: use provided cardId or fall back to a sensible default
+  const card = cardId ? document.getElementById(cardId) : null;
+  const body = card ? card.querySelector('.settings-body') : null;
+  if(!body){ return; } // no target, silently skip
+
+  // Remove any existing inline toast in this card
+  const existing = body.querySelector('.sc-inline-toast');
+  if(existing) existing.remove();
+
+  const t = document.createElement('div');
+  t.className = 'sc-inline-toast ' + (msg.startsWith('⚠️') || msg.startsWith('❌') ? 'err' : 'ok');
+  t.textContent = msg;
+  body.appendChild(t);
+
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>{ t.style.transition='opacity .3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),320); }, dur||3000);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -4703,6 +5123,7 @@ function pwaInit(){
 
   // Build & inject manifest
   const manifest={
+    id:'spendoodle-app',
     name:'Spendoodle',
     short_name:'Spendoodle',
     description:'Spendoodle — personal pay-cycle money tracker — income, expenses, savings & credit cards.',
@@ -4747,9 +5168,13 @@ function pwaInit(){
   const isInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
   if(isInstalled){ document.getElementById('pwa-banner').style.display='none'; return; }
 
+  // Show settings card since not installed; update state once prompt fires
+  setTimeout(pwaUpdateSettingsCard, 200);
+
   window.addEventListener('beforeinstallprompt', e=>{
     e.preventDefault();
     _pwaPrompt = e;
+    pwaUpdateSettingsCard();
     if(!dismissed){
       setTimeout(()=>{
         document.getElementById('pwa-banner').style.display='flex';
@@ -4771,12 +5196,60 @@ function pwaInit(){
   }
 }
 
+function pwaUpdateSettingsCard(){
+  const card  = document.getElementById('sc-pwa');
+  const icon  = document.getElementById('pwa-sc-icon');
+  const title = document.getElementById('pwa-sc-title');
+  const desc  = document.getElementById('pwa-sc-desc');
+  const btn   = document.getElementById('pwa-sc-btn');
+  if(!card) return;
+
+  const isInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isSafari = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent);
+
+  if(isInstalled){
+    // Already a PWA — hide card entirely, no clutter
+    card.style.display = 'none';
+  } else if(_pwaPrompt){
+    card.style.display = '';
+    if(icon){ icon.textContent='📲'; icon.style.background='var(--blue-dim)'; }
+    title.textContent = 'Install App';
+    desc.textContent  = 'Install Spendoodle on your device for a faster, offline-ready experience — no App Store needed.';
+    btn.textContent   = '📲 Install Now';
+    btn.style.display = 'block';
+  } else if(isIos && isSafari){
+    card.style.display = '';
+    if(icon){ icon.textContent='📲'; icon.style.background='var(--blue-dim)'; }
+    title.textContent = 'Install on iPhone / iPad';
+    desc.textContent  = 'Not running as an app yet. Tap the button below for step-by-step instructions to add Spendoodle to your Home Screen.';
+    btn.textContent   = '📲 How to Install';
+    btn.style.display = 'block';
+  } else {
+    // Other browser — can't install, hide card
+    card.style.display = 'none';
+  }
+}
+
+function pwaSettingsInstall(){
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if(_pwaPrompt){
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(r=>{
+      if(r.outcome==='accepted'){ pwaDismiss(); pwaUpdateSettingsCard(); }
+      _pwaPrompt=null;
+    });
+  } else if(isIos){
+    document.getElementById('ios-install-sheet').classList.add('open');
+  }
+}
+
 function pwaInstall(){
   const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
   if(_pwaPrompt){
     _pwaPrompt.prompt();
     _pwaPrompt.userChoice.then(r=>{
-      if(r.outcome==='accepted') pwaDismiss();
+      if(r.outcome==='accepted'){ pwaDismiss(); pwaUpdateSettingsCard(); }
       _pwaPrompt=null;
     });
   } else if(isIos){
@@ -4826,7 +5299,7 @@ async function pinSubmit(){
       pinHash=''; localStorage.removeItem('ledger_pin');
       document.getElementById('pin-overlay').classList.add('hidden');
       _pinBuffer=''; _pinMode='unlock'; updatePinDots();
-      showSettingsToast('🔓 PIN removed — app is now unlocked.', 3500);
+      showSettingsToast('🔓 PIN removed — app is now unlocked.', 3500, 'sc-pin');
       renderSettings();
     } else {
       document.getElementById('pin-error').textContent='Wrong PIN. Removal cancelled.';
@@ -4874,7 +5347,7 @@ async function pinSubmit(){
       localStorage.setItem('ledger_pin',hash);
       _pinBuffer=''; _pinFirst=''; _pinMode='unlock';
       document.getElementById('pin-overlay').classList.add('hidden');
-      showSettingsToast('🔐 PIN changed successfully!');
+      showSettingsToast('🔐 PIN changed successfully!', 3000, 'sc-pin');
       if(_pinCallback){ _pinCallback(); _pinCallback=null; }
     } else {
       document.getElementById('pin-error').textContent='PINs don\'t match. Start again.';
@@ -5554,22 +6027,22 @@ function getBillReminderStatusText(){
 }
 
 async function requestNotifPermission(){
-  if(!('Notification' in window)){ showSettingsToast('❌ Notifications not supported on this device.'); return; }
+  if(!('Notification' in window)){ showSettingsToast('❌ Notifications not supported on this device.', 3000, 'sc-notifications'); return; }
   const result = await Notification.requestPermission();
   if(result === 'granted'){
     notifEnabled = true;
     localStorage.setItem('ledger_notif','on');
-    showSettingsToast('🔔 Notifications enabled!', 3000);
+    showSettingsToast('🔔 Notifications enabled!', 3000, 'sc-notifications');
   } else {
-    showSettingsToast('❌ Permission denied — check phone Settings.', 4000);
+    showSettingsToast('❌ Permission denied — check phone Settings.', 4000, 'sc-notifications');
   }
   syncNotifUI();
 }
 
 function toggleNotifications(){
   haptic(HX.tap);
-  if(!('Notification' in window)){ showSettingsToast('❌ Notifications not supported on this device.'); return; }
-  if(Notification.permission === 'denied'){ showSettingsToast('⚠️ Blocked — go to phone Settings to allow notifications.', 4000); return; }
+  if(!('Notification' in window)){ showSettingsToast('❌ Notifications not supported on this device.', 3000, 'sc-notifications'); return; }
+  if(Notification.permission === 'denied'){ showSettingsToast('⚠️ Blocked — go to phone Settings to allow notifications.', 4000, 'sc-notifications'); return; }
   if(Notification.permission === 'default'){ requestNotifPermission(); return; }
   notifEnabled = !notifEnabled;
   localStorage.setItem('ledger_notif', notifEnabled?'on':'off');
@@ -5582,14 +6055,14 @@ function setNotifDays(n){
   notifDaysAhead = n;
   localStorage.setItem('ledger_notif_days', String(n));
   syncNotifUI();
-  showSettingsToast(`🔔 Reminders set to ${n} day${n>1?'s':''} before due`, 2500);
+  showSettingsToast(`🔔 Reminders set to ${n} day${n>1?'s':''} before due`, 2500, 'sc-notifications');
 }
 
 /** Test button — fires an immediate notification to verify it works */
 async function testNotification(){
   haptic(HX.tap);
   if(!notifEnabled || Notification?.permission !== 'granted'){
-    showSettingsToast('⚠️ Enable bill reminders first.', 2500); return;
+    showSettingsToast('⚠️ Enable bill reminders first.', 2500, 'sc-notifications'); return;
   }
   const upcoming = getUpcomingBills(30);
   if(upcoming.length){
@@ -5599,7 +6072,7 @@ async function testNotification(){
   } else {
     await fireNotification('🔔 Spendoodle', 'Test notification — reminders are working! No bills due in 30 days.', 'notif-test');
   }
-  showSettingsToast('🔔 Test sent! Check your notifications bar.', 3000);
+  showSettingsToast('🔔 Test sent! Check your notifications bar.', 3000, 'sc-notifications');
 }
 
 /** Get bills due within N days from today */
