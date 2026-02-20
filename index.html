@@ -300,9 +300,6 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .date-hdr-label{font-size:.67rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);flex-shrink:0;}
 .date-hdr-line{flex:1;height:1px;background:var(--border);}
 .date-hdr-total{font-size:.67rem;font-weight:700;color:var(--text3);}
-/* Feed body padding — keeps transactions away from screen edges */
-.feed-body{padding:0 16px 16px;}
-
 /* overflow:hidden handled per tx-wrap below */
 
 .tx{display:flex;align-items:center;gap:12px;background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:13px 15px;cursor:pointer;transition:border-color .2s,background .15s;position:relative;overflow:hidden;z-index:1;will-change:transform;}
@@ -405,6 +402,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .cal-day:active{background:var(--bg3);}
 .cal-day.today .cal-day-num{background:var(--accent);color:var(--bg);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
 .cal-day.other-month{opacity:.25;}
+.cal-day.future{opacity:.38;}
 .cal-day-num{font-size:.72rem;font-weight:700;line-height:1;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
 .cal-dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;max-width:90%;}
 .cal-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
@@ -713,6 +711,25 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .ob-pin-key{padding:12px 8px;border-radius:12px;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all .15s;}
 .ob-pin-key:active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
 
+/* ── GUIDE: progress bar ── */
+.ob-progress-track{height:3px;background:var(--border);border-radius:99px;margin:10px 24px 0;flex-shrink:0;overflow:hidden;}
+.ob-progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .4s cubic-bezier(.34,1.56,.64,1);}
+
+/* ── GUIDE: staggered intro cards ── */
+.ob-intro-card{opacity:0;transform:translateY(16px);transition:opacity .35s ease, transform .35s ease;}
+.ob-intro-card.visible{opacity:1;transform:translateY(0);}
+
+/* ── GUIDE: currency quip ── */
+.ob-currency-quip{font-size:.72rem;font-weight:700;color:var(--accent);text-align:center;min-height:20px;margin-top:4px;transition:opacity .2s;animation:quipPop .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes quipPop{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+.ob-currency-btn.active-cur{border-color:var(--accent);background:var(--accent-dim);color:var(--accent);animation:btnBounce .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes btnBounce{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
+
+/* ── GUIDE: confetti ── */
+.ob-confetti-wrap{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:10;}
+.ob-confetti-piece{position:absolute;width:8px;height:8px;border-radius:2px;opacity:0;animation:confettiFall 1.8s ease-in forwards;}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(-10px) rotate(0deg);}100%{opacity:0;transform:translateY(600px) rotate(720deg);}}
+
 /* ── GUIDE: page tag ── */
 .ob-page-tag{font-size:.65rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent);font-weight:700;text-align:center;margin-bottom:8px;}
 
@@ -805,6 +822,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .backup-btn:active{transform:scale(.97);}
 .backup-btn-skip{background:var(--bg2);color:var(--text3);}
 .backup-btn-now{background:var(--accent);color:var(--bg);}
+.backup-since{font-size:.72rem;font-weight:700;color:var(--accent);text-align:center;margin:-10px 0 16px;min-height:18px;}
+.backup-auto-row{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:13px;padding:11px 13px;margin-bottom:16px;}
 /* Backup interval row in settings */
 .backup-interval-row{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:11px;padding:10px 13px;margin-top:8px;}
 .bir-label{flex:1;font-size:.82rem;font-weight:600;color:var(--text2);}
@@ -1252,6 +1271,20 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
           <input class="bir-input" type="number" id="backup-interval-input" min="1" max="365" value="30" onchange="saveBackupInterval(this.value)"/>
           <span class="bir-unit">days</span>
         </div>
+        <div class="toggle-row" onclick="toggleAutoBackup()" style="cursor:pointer;margin-top:8px;">
+          <div class="toggle-info">
+            <div class="toggle-label">🤖 Auto-download when due</div>
+            <div class="toggle-sub" id="auto-backup-sub">Off — downloads backup silently when reminder fires</div>
+          </div>
+          <div class="toggle" id="auto-backup-toggle-settings"></div>
+        </div>
+        <div class="toggle-row" onclick="toggleBackupPushNotif()" style="cursor:pointer;margin-top:6px;">
+          <div class="toggle-info">
+            <div class="toggle-label">🔔 Push notification when due</div>
+            <div class="toggle-sub" id="backup-push-sub">Off — sends a push reminder even when app is closed</div>
+          </div>
+          <div class="toggle" id="backup-push-toggle"></div>
+        </div>
         <div style="font-size:.68rem;color:var(--text3);margin-top:6px;" id="last-backup-label"></div>
       </div>
     </div>
@@ -1423,33 +1456,105 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 </div>
 <div class="backup-overlay" id="backup-overlay" onclick="dismissBackupReminder(event)">
   <div class="backup-sheet" onclick="event.stopPropagation()">
-    <div class="backup-icon">💾</div>
-    <div class="backup-title">Time to Back Up</div>
-    <div class="backup-msg" id="backup-msg">It's been a while since your last backup. Download a copy to keep your data safe in case you clear your browser or switch devices.</div>
+    <div class="backup-icon" id="backup-icon">💾</div>
+    <div class="backup-title" id="backup-title">Time to Back Up</div>
+    <div class="backup-msg" id="backup-msg">It's been a while since your last backup.</div>
+    <div class="backup-since" id="backup-since"></div>
+    <div class="backup-auto-row" id="backup-auto-row">
+      <div style="flex:1;">
+        <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:2px;">🤖 Auto-download on open</div>
+        <div style="font-size:.68rem;color:var(--text3);line-height:1.5;">Silently saves a backup file every time the reminder fires. No pop-up needed.</div>
+      </div>
+      <div class="toggle" id="auto-backup-toggle" onclick="toggleAutoBackup()" style="flex-shrink:0;"></div>
+    </div>
     <div class="backup-btn-row">
-      <button class="backup-btn backup-btn-skip" onclick="snoozeBackup()">Remind me later</button>
+      <button class="backup-btn backup-btn-skip" onclick="snoozeBackup()">Snooze 1 day</button>
       <button class="backup-btn backup-btn-now" onclick="backupNow()">📤 Back Up Now</button>
+    </div>
+    <div style="text-align:center;margin-top:10px;">
+      <button onclick="dismissBackupReminder()" style="background:none;border:none;color:var(--text3);font-size:.72rem;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Dismiss</button>
     </div>
   </div>
 </div>
 <div class="ob-overlay" id="ob-overlay">
   <div class="ob-sheet">
     <div class="ob-handle"></div>
+    <div class="ob-progress-track"><div class="ob-progress-fill" id="ob-progress"></div></div>
     <div class="ob-pages" id="ob-pages">
 
-      <!-- ══ SLIDE 0: Make It Yours (Currency + Theme) ══ -->
+      <!-- ══ SLIDE 0: What Is This Thing? (Intro / Hype) ══ -->
       <div class="ob-page">
         <div style="height:2px;"></div>
-        <div class="ob-page-tag">Step 1 of 3 · Make It Yours</div>
+        <div class="ob-page-tag">Welcome · Buckle Up</div>
+
+        <!-- Hero -->
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:2.8rem;line-height:1;margin-bottom:8px;">💸</div>
+          <div class="ob-title" style="margin-bottom:5px;">Meet <em>Spendoodle.</em></div>
+          <div style="font-size:.76rem;color:var(--text3);line-height:1.55;">Your money's new best friend.<br/>Or therapist. Depends how bad it is.</div>
+        </div>
+
+        <!-- 2-column feature grid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;" id="ob-intro-grid">
+
+          <div class="ob-intro-card" style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:13px 12px;">
+            <div style="font-size:1.5rem;margin-bottom:6px;">📊</div>
+            <div style="font-size:.76rem;font-weight:700;color:var(--text);margin-bottom:3px;">Track it all</div>
+            <div style="font-size:.65rem;color:var(--text3);line-height:1.45;">Income, expenses, savings. Finally find out where your money "just disappeared" to.</div>
+          </div>
+
+          <div class="ob-intro-card" style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:13px 12px;">
+            <div style="font-size:1.5rem;margin-bottom:6px;">📅</div>
+            <div style="font-size:.76rem;font-weight:700;color:var(--text);margin-bottom:3px;">Payday cycles</div>
+            <div style="font-size:.65rem;color:var(--text3);line-height:1.45;">Resets on YOUR payday, not Jan 1st. Radical concept, we know.</div>
+          </div>
+
+          <div class="ob-intro-card" style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:13px 12px;">
+            <div style="font-size:1.5rem;margin-bottom:6px;">🔄</div>
+            <div style="font-size:.76rem;font-weight:700;color:var(--text);margin-bottom:3px;">Recurring bills</div>
+            <div style="font-size:.65rem;color:var(--text3);line-height:1.45;">That gym membership you'll cancel "next month" — logged automatically.</div>
+          </div>
+
+          <div class="ob-intro-card" style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:13px 12px;">
+            <div style="font-size:1.5rem;margin-bottom:6px;">🎯</div>
+            <div style="font-size:.76rem;font-weight:700;color:var(--text);margin-bottom:3px;">Spending budgets</div>
+            <div style="font-size:.65rem;color:var(--text3);line-height:1.45;">Turns red when you're overspending. Like a financial conscience, but louder.</div>
+          </div>
+
+          <div class="ob-intro-card" style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:13px 12px;">
+            <div style="font-size:1.5rem;margin-bottom:6px;">💳</div>
+            <div style="font-size:.76rem;font-weight:700;color:var(--text);margin-bottom:3px;">Credit cards</div>
+            <div style="font-size:.65rem;color:var(--text3);line-height:1.45;">Track balances & limits. So the bill at month-end is dramatic, not shocking.</div>
+          </div>
+
+          <div class="ob-intro-card" style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:13px 12px;">
+            <div style="font-size:1.5rem;margin-bottom:6px;">🔒</div>
+            <div style="font-size:.76rem;font-weight:700;color:var(--text);margin-bottom:3px;">100% private</div>
+            <div style="font-size:.65rem;color:var(--text3);line-height:1.45;">Lives on this device only. Nobody's judging the bubble tea budget. Probably.</div>
+          </div>
+
+        </div>
+
+        <!-- Footer nudge -->
+        <div style="background:var(--accent-dim);border:1px solid var(--border2);border-radius:12px;padding:10px 14px;text-align:center;">
+          <span style="font-size:.72rem;font-weight:700;color:var(--accent);">Setup takes ~30 seconds. Your broke era ends here. 👇</span>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 1: Make It Yours (Currency + Theme) ══ -->
+
+      <div class="ob-page">
+        <div style="height:2px;"></div>
+        <div class="ob-page-tag">Step 2 of 4 · Make It Yours</div>
         <div style="text-align:center;margin-bottom:12px;">
-          <div style="font-size:2.6rem;line-height:1.1;">🤑</div>
-          <div class="ob-title" style="margin-bottom:4px;">Ooh, a new <em>money app.</em></div>
-          <div style="font-size:.78rem;color:var(--text3);line-height:1.5;">Two taps and you're in. Literally. We clocked it at 18 seconds.</div>
+          <div style="font-size:2.6rem;line-height:1.1;">🎨</div>
+          <div class="ob-title" style="margin-bottom:4px;">Let's make it <em>feel like yours.</em></div>
+          <div style="font-size:.78rem;color:var(--text3);line-height:1.5;">Pick your currency and a theme. This is the fun part — enjoy it before we ask you about your pay cycle.</div>
         </div>
 
         <!-- Currency -->
         <div class="ob-setup-block" style="margin-bottom:10px;">
-          <div class="ob-setup-label">💱 What's your money called? <span style="font-weight:400;color:var(--text3);">(tap one)</span></div>
+          <div class="ob-setup-label">💱 Which symbol represents your suffering? <span style="font-weight:400;color:var(--text3);">(tap one)</span></div>
           <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:8px 0 4px;">
             <button class="ob-currency-btn" onclick="gSetCurrency('₱')">₱<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">PHP</div></button>
             <button class="ob-currency-btn" onclick="gSetCurrency('$')">$<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">USD</div></button>
@@ -1464,12 +1569,12 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
             <button class="ob-currency-btn" onclick="gSetCurrency('₫')">₫<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">VND</div></button>
             <button class="ob-currency-btn" onclick="gSetCurrency('S$')">S$<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">SGD</div></button>
           </div>
-          <div id="g-currency-preview" style="font-size:.75rem;font-weight:700;color:var(--accent);text-align:center;min-height:18px;margin-top:2px;"></div>
+          <div id="g-currency-preview" class="ob-currency-quip"></div>
         </div>
 
         <!-- Theme -->
         <div class="ob-setup-block">
-          <div class="ob-setup-label">🎨 Pick a vibe — <span style="font-weight:400;color:var(--text3);">whole app changes live 👇</span></div>
+          <div class="ob-setup-label">🎨 Pick a vibe — <span style="font-weight:400;color:var(--text3);">the whole app transforms instantly. Very dramatic. 👇</span></div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;">
             <div class="ob-theme-card" id="g-theme-dark" onclick="gSetTheme('dark')">
               <div class="ob-theme-preview" style="background:#141420;border-color:#252538;padding:9px 8px 7px;">
@@ -1534,7 +1639,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <!-- ══ SLIDE 1: Pay Cycle ══ -->
       <div class="ob-page">
         <div style="height:4px;"></div>
-        <div class="ob-page-tag">Step 2 of 3 · The Important Bit</div>
+        <div class="ob-page-tag">Step 3 of 4 · The Important Bit</div>
         <div class="ob-emoji">📅</div>
         <div class="ob-title">When does the <em>money drop?</em></div>
         <div class="ob-sub">Every budget app resets on Jan 1st like some kind of financial New Year's resolution. <strong style="color:var(--accent)">We reset on YOUR payday.</strong> Radical concept, we know.</div>
@@ -1585,16 +1690,16 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
             <div class="cf-row"><span class="cf-label">Days per cycle?</span><input class="cf-input" id="g-cust-len" type="number" min="7" max="90" value="30"/></div>
           </div>
         </div>
-        <div class="ob-inline-tip">Saved when you tap <strong>Next →</strong> · Panic-editable anytime in ⚙️ Settings.</div>
+        <div class="ob-inline-tip">Saved when you tap <strong>Next →</strong> · Changed your mind? ⚙️ Settings exists for a reason.</div>
       </div>
 
       <!-- ══ SLIDE 2: Done + Customize prompts ══ -->
       <div class="ob-page">
         <div style="height:6px;"></div>
-        <div class="ob-page-tag">Step 3 of 3 · You're Dangerous Now</div>
-        <div class="ob-emoji" style="font-size:2.8rem;">🎉</div>
-        <div class="ob-title" style="margin-bottom:5px;"><em>That's it.</em> You're in.</div>
-        <div class="ob-sub" style="margin-bottom:14px;">Look at you, making financial decisions. The app is ready — but if you want to go full <em>responsible adult mode,</em> these are worth setting up:</div>
+        <div class="ob-page-tag">Step 4 of 4 · You're Dangerous Now</div>
+        <div class="ob-emoji" style="font-size:3rem;animation:quipPop .5s cubic-bezier(.34,1.56,.64,1);">🎉</div>
+        <div class="ob-title" style="margin-bottom:5px;"><em>You're in.</em> Welcome to adulting.</div>
+        <div class="ob-sub" style="margin-bottom:14px;">The app is armed and ready. Your finances don't know what's coming. If you want to go full <em>responsible adult mode,</em> these are worth setting up — but zero pressure right now:</div>
 
         <div style="display:flex;flex-direction:column;gap:7px;">
           <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:11px 13px;display:flex;gap:11px;align-items:center;">
@@ -1641,7 +1746,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         <button class="ob-btn ob-btn-secondary" id="ob-back" onclick="obNav(-1)" style="display:none;">← Back</button>
         <button class="ob-btn ob-btn-primary" id="ob-next" onclick="obNav(1)">Let's Go →</button>
       </div>
-      <button class="ob-btn ob-btn-ghost" id="ob-skip" onclick="obClose()">Skip · come back anytime via ⚙️ Settings</button>
+      <button class="ob-btn ob-btn-ghost" id="ob-skip" onclick="obClose()">I'll figure it out myself →</button>
     </div>
   </div>
 </div>
@@ -1742,7 +1847,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 </div>
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
 <div class="sheet" id="add-sheet">
-  <div class="sheet-handle"></div>
+  <div class="sheet-handle" id="sheet-handle" style="cursor:grab;touch-action:none;"></div>
   <div class="sheet-header">
     <div class="sheet-title" id="sheet-title">Log a <em>Transaction</em></div>
     <button class="sheet-close" onclick="closeSheet()">✕</button>
@@ -2671,7 +2776,7 @@ function nav(v){
   if(v==='settings'){ const st=document.getElementById('nav-settings-tab'); if(st) st.classList.add('active'); }
   if(v==='feed')      renderFeed();
   if(v==='dashboard') renderDash();
-  if(v==='calendar')  renderCalendar();
+  if(v==='calendar')  { const t=new Date(); calViewMonth={year:t.getFullYear(),month:t.getMonth()}; renderCalendar(); }
   if(v==='settings')  renderSettings();
 }
 
@@ -2786,7 +2891,10 @@ function openSheet(tx=null){
 }
 function closeSheet(){
   document.getElementById('sheet-overlay').classList.remove('active');
-  document.getElementById('add-sheet').classList.remove('open');
+  const sheet=document.getElementById('add-sheet');
+  sheet.classList.remove('open');
+  sheet.style.transition=''; sheet.style.transform='translateX(-50%) translateY(100%)';
+  setTimeout(()=>{ sheet.style.transform=''; }, 350);
   sheetOpen=false; expandedTx=null; sheetTypeFilter=null;
 }
 function toggleRecur(){
@@ -3934,6 +4042,7 @@ function renderSettings(){
   if(bii) bii.value=getBackupInterval();
   updateLastBackupLabel();
   updateLastImportLabel();
+  syncBackupToggles();
   const cycleKeys=[...new Set(transactions.map(t=>getCycleKey(t.date)))];
   const cycleCount=cycleKeys.length;
   const recur=transactions.filter(t=>t.recurring).length;
@@ -4586,33 +4695,107 @@ function updateLastImportLabel(){
     el.innerHTML='📥 Last import: <strong>'+dateStr+'</strong> at '+timeStr+' — <strong>'+m.total+'</strong> record'+(m.total!==1?'s':'')+detail+fileName;
   }catch{ el.innerHTML=''; }
 }
-function checkBackupReminder(){
+
+/* Auto-backup toggle */
+function isAutoBackupOn(){ return localStorage.getItem('ledger_autoBackup')==='on'; }
+function toggleAutoBackup(){
+  const on = !isAutoBackupOn();
+  localStorage.setItem('ledger_autoBackup', on?'on':'off');
+  syncBackupToggles();
+  showSettingsToast(on?'🤖 Auto-download enabled':'🤖 Auto-download disabled', 2500, 'sc-export');
+}
+/* Backup push notification toggle */
+function isBackupPushOn(){ return localStorage.getItem('ledger_backupPush')==='on'; }
+async function toggleBackupPushNotif(){
+  if(!isBackupPushOn()){
+    // Need permission first
+    if(Notification?.permission !== 'granted'){
+      const perm = await Notification?.requestPermission?.();
+      if(perm !== 'granted'){
+        showSettingsToast('⚠️ Notification permission denied', 3000, 'sc-export');
+        return;
+      }
+    }
+    localStorage.setItem('ledger_backupPush','on');
+    showSettingsToast('🔔 Push backup reminders enabled', 2500, 'sc-export');
+  } else {
+    localStorage.setItem('ledger_backupPush','off');
+    showSettingsToast('🔔 Push backup reminders disabled', 2500, 'sc-export');
+  }
+  syncBackupToggles();
+}
+function syncBackupToggles(){
+  const autoOn = isAutoBackupOn();
+  const pushOn = isBackupPushOn();
+  // settings toggles
+  ['auto-backup-toggle','auto-backup-toggle-settings'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.classList.toggle('on', autoOn);
+  });
+  const autoSub=document.getElementById('auto-backup-sub');
+  if(autoSub) autoSub.textContent = autoOn ? 'On — backup downloads automatically when due' : 'Off — downloads backup silently when reminder fires';
+  const pushTog=document.getElementById('backup-push-toggle');
+  if(pushTog) pushTog.classList.toggle('on', pushOn);
+  const pushSub=document.getElementById('backup-push-sub');
+  if(pushSub) pushSub.textContent = pushOn ? 'On — you\'ll get a push reminder even when app is closed' : 'Off — sends a push reminder even when app is closed';
+}
+
+async function checkBackupReminder(){
   // Don't nag on first use (no transactions yet)
   if(!transactions.length) return;
   const interval=getBackupInterval();
   const last=parseInt(localStorage.getItem('ledger_lastBackup')||'0');
   const snoozed=parseInt(localStorage.getItem('ledger_backupSnoozed')||'0');
   const now=Date.now();
-  // Check snooze (1 day)
   if(snoozed && now - snoozed < 86400000) return;
   const daysSince=last ? Math.floor((now-last)/86400000) : Infinity;
-  if(daysSince >= interval){
-    // Delay slightly so app renders first
-    setTimeout(()=>openBackupReminder(daysSince), 1500);
+  if(daysSince < interval) return;
+
+  // Auto-download mode — skip popup, just download
+  if(isAutoBackupOn()){
+    exportData();
+    // Still fire push if enabled so user knows it happened
+    if(isBackupPushOn() && Notification?.permission==='granted'){
+      const label = daysSince===Infinity ? 'First backup saved!' : `Backup saved — ${daysSince} days since last`;
+      await fireNotification('💾 Spendoodle Auto-Backup', label, 'backup-auto');
+    }
+    return;
   }
+
+  // Push notification (fires even if app is backgrounded next open)
+  if(isBackupPushOn() && Notification?.permission==='granted'){
+    const pushMsg = daysSince===Infinity
+      ? "You've never backed up — your data could vanish if you clear the browser."
+      : `It's been ${daysSince} day${daysSince!==1?'s':''} since your last backup. Tap to back up now.`;
+    await fireNotification('💾 Spendoodle Backup Due', pushMsg, 'backup-reminder');
+  }
+
+  // Show popup
+  setTimeout(()=>openBackupReminder(daysSince), 1500);
 }
+
 function openBackupReminder(days){
-  const msg=document.getElementById('backup-msg');
-  if(msg){
-    if(days===Infinity)
-      msg.textContent="You haven't backed up yet! Download a copy to keep your data safe in case you clear your browser or switch devices.";
-    else
-      msg.textContent=`It's been ${days} day${days!==1?'s':''} since your last backup. Download a copy to keep your data safe.`;
-  }
+  const isFirst = days===Infinity;
+  const icon  = document.getElementById('backup-icon');
+  const title = document.getElementById('backup-title');
+  const msg   = document.getElementById('backup-msg');
+  const since = document.getElementById('backup-since');
+
+  if(icon)  icon.textContent  = isFirst ? '⚠️' : '💾';
+  if(title) title.textContent = isFirst ? 'No Backup on Record!' : 'Time to Back Up';
+  if(msg)   msg.textContent   = isFirst
+    ? "You've never downloaded a backup. One cleared browser cache and your data is gone forever. Dramatic? Yes. True? Also yes."
+    : `It's been ${days} day${days!==1?'s':''} since your last backup. One wrong tap in browser settings and it's all gone.`;
+  if(since) since.textContent = isFirst
+    ? '⚠️ Never backed up'
+    : `📅 Last backup: ${days} day${days!==1?'s':''} ago`;
+
+  // Sync auto-download toggle state in popup
+  syncBackupToggles();
   document.getElementById('backup-overlay').classList.add('open');
 }
 function dismissBackupReminder(e){
-  if(e&&e.target!==document.getElementById('backup-overlay')) return;
+  if(e && e.target!==document.getElementById('backup-overlay') && e.type==='click' && e.currentTarget===document.getElementById('backup-overlay')) return;
   document.getElementById('backup-overlay').classList.remove('open');
 }
 function snoozeBackup(){
@@ -4683,7 +4866,7 @@ function showSettingsToast(msg, dur, cardId){
 // ════════════════════════════════════════════════════════════
 //  ONBOARDING — 5 slides: Welcome · Theme · Pay Cycle · History+Goal · Done
 // ════════════════════════════════════════════════════════════
-const OB_TOTAL = 3;
+const OB_TOTAL = 4;
 let obPage = 0;
 let gCycleMode = cycleMode;
 let gLimitVal  = cycleLimit;
@@ -4710,6 +4893,11 @@ function obRender(){
   document.querySelectorAll('.ob-page').forEach((p,i)=>p.classList.toggle('active', i===obPage));
   document.getElementById('ob-dots').innerHTML=[...Array(OB_TOTAL)].map((_,i)=>
     `<div class="ob-dot ${i===obPage?'active':''}"></div>`).join('');
+
+  // Progress bar
+  const prog = document.getElementById('ob-progress');
+  if(prog) prog.style.width = `${((obPage+1)/OB_TOTAL)*100}%`;
+
   document.getElementById('ob-back').style.display = obPage>0 ? 'block':'none';
   const nextBtn = document.getElementById('ob-next');
   if(obPage===OB_TOTAL-1){
@@ -4720,18 +4908,46 @@ function obRender(){
     nextBtn.onclick = ()=>obNav(1);
   }
   document.getElementById('ob-skip').style.display = obPage===OB_TOTAL-1 ? 'none':'block';
-  // Slide 0: Currency — sync preview
-  if(obPage===0){ gUpdateCurrencyPreview(); }
+
+  // Slide 0: staggered intro card animation
+  if(obPage===0){
+    const cards = document.querySelectorAll('#ob-intro-grid .ob-intro-card');
+    cards.forEach((c,i)=>{ c.classList.remove('visible'); setTimeout(()=>c.classList.add('visible'), 120 + i*90); });
+  }
+  // Slide 1: Currency — sync preview
+  if(obPage===1){ gUpdateCurrencyPreview(); }
+  // Final slide: confetti burst
+  if(obPage===OB_TOTAL-1){ setTimeout(obFireConfetti, 200); }
 }
 
-/* Save settings for the page we're leaving */
+function obFireConfetti(){
+  const page = document.querySelectorAll('.ob-page')[OB_TOTAL-1];
+  if(!page) return;
+  // Remove old wrapper if re-triggered
+  const old = page.querySelector('.ob-confetti-wrap');
+  if(old) old.remove();
+  const wrap = document.createElement('div');
+  wrap.className = 'ob-confetti-wrap';
+  const colors = ['var(--accent)','var(--green)','var(--blue)','var(--red)','var(--accent2)'];
+  for(let i=0;i<38;i++){
+    const p = document.createElement('div');
+    p.className = 'ob-confetti-piece';
+    p.style.cssText = `left:${Math.random()*100}%;top:${-10-Math.random()*20}px;background:${colors[i%colors.length]};width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;border-radius:${Math.random()>0.5?'50%':'2px'};animation-delay:${Math.random()*0.6}s;animation-duration:${1.4+Math.random()*0.8}s;`;
+    wrap.appendChild(p);
+  }
+  page.prepend(wrap);
+  setTimeout(()=>wrap.remove(), 3000);
+}
+
 function obSaveCurrentPage(){
   switch(obPage){
-    case 0: // Currency + Theme — theme already applied live; save currency
+    case 0: // Intro slide — nothing to save
+      break;
+    case 1: // Currency + Theme — theme already applied live; save currency
       currencySymbol = (document.getElementById('g-currency-custom')?.value.trim()) || currencySymbol;
       persist(); renderFeed();
       break;
-    case 1: // Pay Cycle
+    case 2: // Pay Cycle
       cycleMode = gCycleMode;
       if(cycleMode==='monthly'){
         const pd = parseInt(document.getElementById('g-pay-day')?.value)||25;
@@ -4755,7 +4971,7 @@ function obSaveCurrentPage(){
       const pdS=document.getElementById('pay-day');if(pdS)pdS.value=cycleConfig.monthly.payDay;
       persist(); activeCycleKey=currentCycleKey(); renderFeed(); renderSettings();
       break;
-    case 2: // Done slide — nothing to save
+    case 3: // Done slide — nothing to save
       break;
   }
 }
@@ -4944,15 +5160,33 @@ function gRemoveGuideCard(id){
   persist(); gRenderGuideCards();
 }
 
+const _currencyQuips = {
+  '₱': "₱ — payday hits different. Mabuhay! 🇵🇭",
+  '$': "$ — the universal symbol of dreams. And debt. 🇺🇸",
+  '€': "€ — très chic. Even your expenses sound fancy. 🇪🇺",
+  '£': "£ — old money energy. Very respectable. 🇬🇧",
+  '¥': "¥ — precision currency for a precise spender. 🇯🇵",
+  '₩': "₩ — big numbers, bigger ambitions. 🇰🇷",
+  '₹': "₹ — chai money managed properly. 🇮🇳",
+  'Rp': "Rp — millions in the account feels good. 🇮🇩",
+  'RM': "RM — ringgit & responsible. That's the vibe. 🇲🇾",
+  '฿': "฿ — land of smiles, land of savings. 🇹🇭",
+  '₫': "₫ — more zeros, more character. 🇻🇳",
+  'S$': "S$ — Singapore dollars. Overachiever detected. 🇸🇬",
+};
 function gSetCurrency(sym){
   if(!sym) return;
   currencySymbol = sym;
   // Update custom input to match
   const ci = document.getElementById('g-currency-custom');
   if(ci && !['₱','$','€','£','¥','₩','₹','Rp','RM','฿','₫','S$'].includes(sym)) ci.value = sym;
-  // Highlight active button
+  // Highlight active button with bounce
   document.querySelectorAll('.ob-currency-btn').forEach(b=>{
-    b.classList.toggle('active-cur', b.textContent.trim().startsWith(sym));
+    const wasActive = b.classList.contains('active-cur');
+    const isActive = b.textContent.trim().startsWith(sym);
+    b.classList.toggle('active-cur', isActive);
+    // Re-trigger animation by removing and re-adding class
+    if(isActive && !wasActive){ b.classList.remove('active-cur'); void b.offsetWidth; b.classList.add('active-cur'); }
   });
   gUpdateCurrencyPreview();
   // update currency input in settings too
@@ -4965,7 +5199,10 @@ function gUpdateCurrencyPreview(){
   const el = document.getElementById('g-currency-preview');
   if(!el) return;
   const sym = currencySymbol || '₱';
-  el.textContent = `✓ Amounts will show as ${sym}1,234`;
+  const quip = _currencyQuips[sym] || `✓ Amounts will show as ${sym}1,234`;
+  // Re-trigger animation
+  el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+  el.textContent = quip;
   // also highlight the matching button
   document.querySelectorAll('.ob-currency-btn').forEach(b=>{
     b.classList.toggle('active-cur', b.textContent.trim().startsWith(sym));
@@ -5519,6 +5756,47 @@ function closeWhatsNew(){
   });
 })();
 
+// ── Drag-to-dismiss for Transaction Sheet ──
+(function(){
+  let startY=0, currentY=0, dragging=false;
+  function onStart(e){
+    dragging=true;
+    startY=e.touches?e.touches[0].clientY:e.clientY;
+    const sheet=document.getElementById('add-sheet');
+    if(sheet) sheet.style.transition='none';
+  }
+  function onMove(e){
+    if(!dragging) return;
+    currentY=e.touches?e.touches[0].clientY:e.clientY;
+    const dy=Math.max(0, currentY-startY);
+    const sheet=document.getElementById('add-sheet');
+    if(sheet) sheet.style.transform=`translateX(-50%) translateY(${dy}px)`;
+    if(e.cancelable) e.preventDefault();
+  }
+  function onEnd(){
+    if(!dragging) return;
+    dragging=false;
+    const dy=Math.max(0, currentY-startY);
+    const sheet=document.getElementById('add-sheet');
+    if(dy>80){
+      if(sheet){ sheet.style.transition='transform .3s cubic-bezier(.32,0,.67,0)'; sheet.style.transform='translateX(-50%) translateY(100%)'; }
+      closeSheet();
+    } else {
+      if(sheet){ sheet.style.transition='transform .3s cubic-bezier(.34,1.56,.64,1)'; sheet.style.transform='translateX(-50%) translateY(0)'; }
+    }
+  }
+  window.addEventListener('DOMContentLoaded',()=>{
+    const handle=document.getElementById('sheet-handle');
+    if(!handle) return;
+    handle.addEventListener('touchstart', onStart, {passive:true});
+    handle.addEventListener('touchmove', onMove, {passive:false});
+    handle.addEventListener('touchend', onEnd, {passive:true});
+    handle.addEventListener('mousedown', onStart);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onEnd);
+  });
+})();
+
 let _confirmCallback=null, _confirmCancelCallback=null, _confirmSecondaryCallback=null;
 function showConfirm({icon='⚠️',title='Are you sure?',msg='This cannot be undone.',okLabel='Confirm',cancelLabel='Cancel',secondaryLabel=null,onOk,onCancel,onSecondary}={}){
   document.getElementById('confirm-icon').textContent=icon;
@@ -5861,11 +6139,13 @@ function renderCalendar(){
     const bills = billMap[dateKey] || [];
     const isPast = dateKey && dateKey < todayStr2;
 
+    const isFuture = dateKey && dateKey > todayStr2;
+
     const dots = bills.slice(0,3).map(b =>
-      `<div class="cal-dot" style="background:${typeColor(b)};opacity:${isPast?0.4:1};"></div>`
+      `<div class="cal-dot" style="background:${typeColor(b)};opacity:${isFuture?0.4:1};"></div>`
     ).join('');
 
-    gridHTML += `<div class="cal-day${!isThisMonth?' other-month':''}${isToday?' today':''}"
+    gridHTML += `<div class="cal-day${!isThisMonth?' other-month':''}${isToday?' today':''}${isFuture?' future':''}"
       onclick="${isThisMonth && bills.length ? `scrollToBillDay('${dateKey}')` : ''}">
       <div class="cal-day-num">${isThisMonth ? dayNum : ''}</div>
       ${dots ? `<div class="cal-dots">${dots}</div>` : ''}
@@ -5886,6 +6166,7 @@ function renderCalendar(){
       const bills = billMap[dateKey];
       const d = new Date(dateKey+'T00:00:00');
       const isPast = dateKey < todayStr2;
+      const isFuture = dateKey > todayStr2;
       const isToday2 = dateKey === todayStr2;
       const daysUntil = Math.round((d - new Date(todayStr2+'T00:00:00'))/86400000);
       let badge = '';
@@ -5893,12 +6174,12 @@ function renderCalendar(){
       else if(daysUntil > 0 && daysUntil <= 3) badge = `<span class="cal-bill-badge" style="background:var(--red-dim);color:var(--red);">In ${daysUntil}d</span>`;
       else if(isPast) badge = `<span class="cal-bill-badge" style="background:var(--bg3);color:var(--text3);">Done</span>`;
 
-      listHTML += `<div class="cal-bill-day-header" id="bill-day-${dateKey}">${d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} ${badge}</div>`;
+      listHTML += `<div class="cal-bill-day-header" id="bill-day-${dateKey}" style="opacity:${isFuture?0.42:1}">${d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} ${badge}</div>`;
       bills.forEach(b => {
         const bgC = b.type==='income'?'var(--green-dim)':b.type==='savings'?'var(--accent-dim)':'var(--red-dim)';
         const amtC = b.type==='income'?'var(--green)':b.type==='savings'?'var(--accent)':'var(--red)';
         const sign = b.type==='income'?'+':'-';
-        listHTML += `<div class="cal-bill-row" style="opacity:${isPast?0.55:1}">
+        listHTML += `<div class="cal-bill-row" style="opacity:${isFuture?0.38:1}">
           <div class="cal-bill-icon" style="background:${bgC}">${b.icon}</div>
           <div class="cal-bill-info">
             <div class="cal-bill-name">${b.label}</div>
