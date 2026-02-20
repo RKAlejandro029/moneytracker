@@ -295,8 +295,9 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .confirm-cancel{background:var(--bg2);color:var(--text2);}
 .confirm-ok{background:var(--red);color:#fff;}
 .confirm-secondary{background:var(--bg2);color:var(--accent);border:1.5px solid var(--accent);}
-.date-group{margin-bottom:4px;}
+.date-group{margin-bottom:4px;padding:0 20px;}
 .date-hdr{display:flex;align-items:center;gap:10px;padding:12px 0 7px;}
+#feed-list{padding-bottom:24px;}
 .date-hdr-label{font-size:.67rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);flex-shrink:0;}
 .date-hdr-line{flex:1;height:1px;background:var(--border);}
 .date-hdr-total{font-size:.67rem;font-weight:700;color:var(--text3);}
@@ -649,7 +650,6 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .pay-balance-lbl{font-size:.72rem;color:var(--text3);}
 .pay-balance-val{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#a855f7;}
 .pay-save{width:100%;padding:14px;border:none;border-radius:13px;background:#a855f7;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;margin-top:4px;}
-/* ══ WHAT'S NEW MODAL ══ */
 .wn-overlay{position:fixed;inset:0;z-index:800;background:#00000090;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
 .wn-overlay.active{opacity:1;pointer-events:all;}
 .wn-sheet{width:100%;max-width:430px;background:var(--bg1);border-radius:24px 24px 0 0;padding:0 0 env(safe-area-inset-bottom,28px);max-height:82vh;overflow:hidden;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,0,.67,0);}
@@ -788,6 +788,69 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .ios-step-text strong{color:var(--text);}
 
 /* ── RECURRING DUE PROMPT ── */
+/* ── Settings section dividers ── */
+.settings-section-label{
+  display:flex;align-items:center;gap:10px;
+  padding:18px 0 8px;
+  font-size:.58rem;text-transform:uppercase;letter-spacing:1.4px;
+  color:var(--text3);font-weight:800;
+}
+.settings-section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.settings-section-label:first-child{padding-top:4px;}
+
+/* ── Cycle-change warning banner ── */
+.cycle-change-warn{
+  display:none;
+  background:var(--accent-dim);border:1.5px solid var(--accent);
+  border-radius:12px;padding:10px 13px;
+  font-size:.75rem;color:var(--accent);line-height:1.6;
+  margin-top:10px;font-weight:600;
+}
+.cycle-change-warn.show{display:block;}
+
+/* ── Recurring per-item checkboxes ── */
+.recur-pi-check{
+  width:22px;height:22px;border-radius:7px;
+  border:2px solid var(--border2);background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;cursor:pointer;transition:all .15s;font-size:.8rem;
+}
+.recur-pi-check.checked{background:var(--accent);border-color:var(--accent);color:var(--bg);}
+
+/* ── Recurring snooze btn ── */
+.recur-btn-snooze{background:var(--bg2);color:var(--text2);border:1.5px solid var(--border2);}
+
+/* ── Global app toast (floating, above nav) ── */
+.app-toast{
+  position:fixed;bottom:calc(var(--nav-h) + 14px);left:50%;
+  transform:translateX(-50%) translateY(0);
+  background:var(--bg1);border:1.5px solid var(--border2);
+  border-radius:14px;padding:11px 18px;
+  display:flex;align-items:center;gap:9px;
+  font-size:.82rem;font-weight:700;color:var(--text);
+  box-shadow:0 8px 28px #00000055;
+  z-index:700;white-space:nowrap;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s, transform .25s;
+}
+.app-toast.show{opacity:1;}
+.app-toast.success{color:var(--green);border-color:var(--green);}
+.app-toast.warn{color:var(--accent);border-color:var(--accent);}
+
+/* ── Backup prominence banner ── */
+.backup-nudge{
+  display:flex;align-items:center;gap:11px;
+  background:var(--red-dim);border:1.5px solid var(--red);
+  border-radius:14px;padding:12px 14px;margin-bottom:10px;
+  cursor:pointer;transition:opacity .15s;
+}
+.backup-nudge:active{opacity:.8;}
+.backup-nudge-icon{font-size:1.4rem;flex-shrink:0;}
+.backup-nudge-body{flex:1;min-width:0;}
+.backup-nudge-title{font-size:.82rem;font-weight:800;color:var(--red);margin-bottom:2px;}
+.backup-nudge-sub{font-size:.67rem;color:var(--text3);line-height:1.5;}
+.backup-nudge-arrow{font-size:.9rem;color:var(--red);flex-shrink:0;}
+
 .recur-prompt-overlay{position:fixed;inset:0;z-index:600;background:#00000088;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
 .recur-prompt-overlay.open{opacity:1;pointer-events:all;}
 .recur-prompt-sheet{width:100%;max-width:430px;background:var(--bg1);border-radius:24px 24px 0 0;padding:22px 22px calc(env(safe-area-inset-bottom,0px)+22px);transform:translateY(100%);transition:transform .32s cubic-bezier(.32,0,.67,0);}
@@ -970,13 +1033,12 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <div class="topbar">
     <div class="top-row">
       <div>
-        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v0.3</span></div>
+        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v1</span></div>
         <div class="top-sub" id="cycle-mode-label">Pay-cycle tracker</div>
       </div>
       <div style="display:flex;align-items:center;gap:7px;">
         <div class="top-date" id="top-date-label"></div>
-        <button class="icon-btn" id="whats-new-btn" onclick="openWhatsNew()" title="What's New" style="position:relative;">✨<span id="new-badge" style="position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:var(--accent);border-radius:50%;border:1.5px solid var(--bg);display:block;"></span></button>
-      </div>
+        <button class="icon-btn" id="whats-new-btn" onclick="openWhatsNew()" title="What's New" style="position:relative;display:none;">✨<span id="new-badge" style="position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:var(--accent);border-radius:50%;border:1.5px solid var(--bg);display:block;"></span></button>      </div>
     </div>
     <div class="cycle-nav">
       <button class="mnav-btn" id="mnav-prev" onclick="shiftCycle(-1)">‹</button>
@@ -1016,13 +1078,12 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <div class="topbar">
     <div class="top-row">
       <div>
-        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v0.3</span></div>
+        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v1</span></div>
         <div class="top-sub">Trends & insights</div>
       </div>
       <div style="display:flex;align-items:center;gap:7px;">
         <div class="top-date" id="dash-date-label"></div>
-        <button class="icon-btn" onclick="openWhatsNew()" title="What's New" style="position:relative;">✨</button>
-      </div>
+        <button class="icon-btn" onclick="openWhatsNew()" title="What's New" style="position:relative;display:none;">✨</button>      </div>
     </div>
     <div class="cycle-nav">
       <button class="mnav-btn" id="dash-mnav-prev" onclick="shiftCycle(-1);renderDash()">‹</button>
@@ -1056,12 +1117,11 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <div class="topbar">
     <div class="top-row">
       <div>
-        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v0.3</span></div>
+        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v1</span></div>
         <div class="top-sub">Bill calendar</div>
       </div>
       <div style="display:flex;align-items:center;gap:7px;">
-        <button class="icon-btn" onclick="openWhatsNew()" style="position:relative;">✨</button>
-      </div>
+        <button class="icon-btn" onclick="openWhatsNew()" style="position:relative;display:none;">✨</button>      </div>
     </div>
   </div>
   <div id="cal-body"></div>
@@ -1072,15 +1132,26 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <div class="topbar" style="padding-bottom:14px;">
     <div class="top-row">
       <div>
-        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v0.3</span></div>
+        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v1</span></div>
         <div class="top-sub">Preferences & backup</div>
       </div>
       <div style="display:flex;align-items:center;gap:7px;">
-        <button class="icon-btn" onclick="openWhatsNew()" title="What's New" style="position:relative;">✨</button>
-      </div>
+        <button class="icon-btn" onclick="openWhatsNew()" title="What's New" style="position:relative;display:none;">✨</button>      </div>
     </div>
   </div>
   <div style="padding:0 20px 100px;">
+
+    <!-- BACKUP NUDGE (shown only when overdue) -->
+    <div id="backup-nudge-banner" class="backup-nudge" style="display:none;" onclick="openBackupReminderManual()">
+      <div class="backup-nudge-icon">⚠️</div>
+      <div class="backup-nudge-body">
+        <div class="backup-nudge-title">Backup overdue!</div>
+        <div class="backup-nudge-sub" id="backup-nudge-sub">Tap to download a backup before it's too late.</div>
+      </div>
+      <div class="backup-nudge-arrow">›</div>
+    </div>
+
+    <div class="settings-section-label">Getting Started</div>
 
     <!-- SHOW GUIDE -->
     <div class="settings-card" id="sc-guide">
@@ -1091,6 +1162,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         <button class="settings-btn btn-accent" onclick="obOpen();nav('feed')">📖 Open Guide</button>
       </div>
     </div>
+
+    <div class="settings-section-label">Appearance</div>
 
     <!-- THEME -->
     <div class="settings-card" id="sc-theme">
@@ -1110,6 +1183,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         </div>
       </div>
     </div>
+
+    <div class="settings-section-label">Notifications & Feedback</div>
 
     <!-- HAPTIC FEEDBACK -->
     <div class="settings-card" id="sc-haptic">
@@ -1155,6 +1230,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         <button class="settings-btn btn-blue" id="notif-test-btn" onclick="testNotification()" style="margin:8px 0 0;display:none;">🔔 Send Test Notification</button>
       </div>
     </div>
+
+    <div class="settings-section-label">Cycle & Currency</div>
 
     <!-- PAY CYCLE -->
     <div class="settings-card" id="sc-cycle">
@@ -1222,6 +1299,9 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         </div>
 
         <button class="settings-btn btn-accent" style="margin-top:10px;" onclick="saveCycleSettings()">Save Cycle Settings</button>
+        <div class="cycle-change-warn" id="cycle-change-warn">
+          ⚠️ Changing your cycle will <strong>re-group your existing transactions</strong> into new periods. Your data won't be lost, but the current cycle view will shift. Make sure this is intentional.
+        </div>
       </div>
     </div>
 
@@ -1255,6 +1335,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         <div id="cycle-limit-preview" style="margin-top:8px;font-size:.7rem;color:var(--text3);line-height:1.6;"></div>
       </div>
     </div>
+
+    <div class="settings-section-label">Data & Backup</div>
 
     <!-- EXPORT -->
     <div class="settings-card" id="sc-export">
@@ -1303,6 +1385,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       </div>
     </div>
 
+    <div class="settings-section-label">Budgets & Goals</div>
+
     <!-- BUDGETS -->
     <div class="settings-card" id="sc-budgets">
       <div class="settings-icon" style="background:var(--green-dim)">💰</div>
@@ -1313,6 +1397,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         <button class="settings-btn btn-accent" onclick="openBudgetModal()">💰 Edit Budgets</button>
       </div>
     </div>
+
+    <div class="settings-section-label">Security</div>
 
     <!-- PIN LOCK -->
     <div class="settings-card" id="sc-pin">
@@ -1333,6 +1419,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
         <button class="settings-btn btn-red" onclick="clearAllData()">Delete Everything</button>
       </div>
     </div>
+
+    <div class="settings-section-label">Device</div>
 
     <!-- PWA INSTALL -->
     <div class="settings-card" id="sc-pwa" style="display:none;">
@@ -1446,11 +1534,15 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <div class="recur-prompt-sheet" onclick="event.stopPropagation()">
     <div class="recur-prompt-icon">🔁</div>
     <div class="recur-prompt-title" id="recur-prompt-title">Recurring Items Due</div>
-    <div class="recur-prompt-msg" id="recur-prompt-msg">These recurring entries are due. Add them now to keep your ledger up to date.</div>
+    <div class="recur-prompt-msg" id="recur-prompt-msg">Tap items to select which ones to add.</div>
     <div class="recur-prompt-list" id="recur-prompt-list"></div>
     <div class="recur-btn-row">
-      <button class="recur-btn recur-btn-skip" onclick="stopRecurringPrompt(null)">🚫 Stop Recurring</button>
-      <button class="recur-btn recur-btn-add" onclick="addRecurringNow()">✅ Add Now</button>
+      <button class="recur-btn recur-btn-snooze" onclick="snoozeRecurringPrompt()">⏰ Later</button>
+      <button class="recur-btn recur-btn-skip" onclick="stopRecurringPrompt(null)" style="flex:0.8;">🚫 Stop</button>
+      <button class="recur-btn recur-btn-add" id="recur-add-btn" onclick="addRecurringNow()">✅ Add Selected</button>
+    </div>
+    <div style="text-align:center;margin-top:8px;">
+      <button onclick="selectAllRecurring()" style="background:none;border:none;color:var(--text3);font-size:.7rem;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;padding:4px 8px;">Select All</button>
     </div>
   </div>
 </div>
@@ -1799,29 +1891,29 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     <div class="wn-handle" id="wn-handle" style="cursor:grab;touch-action:none;"></div>
     <div class="wn-header">
       <div class="wn-title">What's New ✨</div>
-      <div class="wn-sub">Spendoodle v0.3 — latest updates</div>
+      <div class="wn-sub">Spendoodle v1 — latest updates</div>
     </div>
     <div class="wn-body">
 
-      <!-- v0.3 items -->
+      <!-- v1 items -->
       <div class="wn-item">
         <div class="wn-icon" style="background:var(--red-dim)">💰</div>
         <div class="wn-info">
-          <div class="wn-name">Smarter Budget Alerts <span class="wn-new-pill">v0.3</span></div>
+          <div class="wn-name">Smarter Budget Alerts <span class="wn-new-pill">v1</span></div>
           <div class="wn-desc">Budget Tracker removed from the feed — no clutter. A single alert line appears on the dashboard when you're overspending: total amount over + which categories. Tap to expand the full breakdown.</div>
         </div>
       </div>
       <div class="wn-item">
         <div class="wn-icon" style="background:var(--green-dim)">🔁</div>
         <div class="wn-info">
-          <div class="wn-name">Weekly Recurring Backfill <span class="wn-new-pill">v0.3</span></div>
+          <div class="wn-name">Weekly Recurring Backfill <span class="wn-new-pill">v1</span></div>
           <div class="wn-desc">Weekly recurring transactions now backfill all missed weeks in one go — even across cycle boundaries. No gaps even if you haven't opened the app in weeks.</div>
         </div>
       </div>
       <div class="wn-item">
         <div class="wn-icon" style="background:var(--accent-dim)">⚙️</div>
         <div class="wn-info">
-          <div class="wn-name">Budgets in Settings & Guide <span class="wn-new-pill">v0.3</span></div>
+          <div class="wn-name">Budgets in Settings & Guide <span class="wn-new-pill">v1</span></div>
           <div class="wn-desc">Set spending limits once from Settings → Spending Budgets. Also added as Step 5 in the onboarding guide so you can configure it from the very start.</div>
         </div>
       </div>
@@ -2426,7 +2518,7 @@ function goalsData(){
  *              occurrence up to (and including) today across ALL cycles,
  *              so no gaps appear when the user navigates between cycles.
  */
-function autoGenerateRecurring(){
+function autoGenerateRecurring(selectedKeys=null){
   const curKey = currentCycleKey();
   const today  = todayStr();
 
@@ -2443,7 +2535,9 @@ function autoGenerateRecurring(){
 
   let added = 0;
 
-  templates.forEach(tmpl => {
+  templates.forEach((tmpl, seriesKey) => {
+    // If called with a filter set, only process selected series
+    if(selectedKeys && !selectedKeys.has(seriesKey)) return;
     const freq = tmpl.recurFreq || 'monthly';
 
     // All dates that already have an entry for this recurring item
@@ -2661,6 +2755,9 @@ function selectCycleMode(mode){
     if(f){ f.style.display=m===mode?'flex':'none'; f.style.flexDirection='column'; }
   });
   if(mode==='bimonthly') updateBiPreview();
+  // Show warning if user is selecting a different mode than currently saved
+  const warn = document.getElementById('cycle-change-warn');
+  if(warn) warn.classList.toggle('show', mode !== cycleMode);
 }
 /** Live preview of bi-monthly cycle dates shown in settings */
 function updateBiPreview(){
@@ -2701,6 +2798,8 @@ function saveCycleSettings(){
   }
   persist();
   activeCycleKey=currentCycleKey();
+  const warn = document.getElementById('cycle-change-warn');
+  if(warn) warn.classList.remove('show');
   showSettingsToast('📅 Pay cycle saved — ' + detail, 4000, 'sc-cycle');
   renderFeed();
 }
@@ -4043,6 +4142,20 @@ function renderSettings(){
   updateLastBackupLabel();
   updateLastImportLabel();
   syncBackupToggles();
+
+  // ── Backup nudge banner ──
+  const nudge = document.getElementById('backup-nudge-banner');
+  if(nudge && transactions.length){
+    const interval = getBackupInterval();
+    const last = parseInt(localStorage.getItem('ledger_lastBackup')||'0');
+    const daysSince = last ? Math.floor((Date.now()-last)/86400000) : Infinity;
+    const overdue = daysSince >= interval;
+    nudge.style.display = overdue ? 'flex' : 'none';
+    const sub = document.getElementById('backup-nudge-sub');
+    if(sub) sub.textContent = daysSince === Infinity
+      ? "You've never backed up. One browser clear and it's all gone."
+      : `Last backup was ${daysSince} day${daysSince!==1?'s':''} ago — time to save a copy.`;
+  }
   const cycleKeys=[...new Set(transactions.map(t=>getCycleKey(t.date)))];
   const cycleCount=cycleKeys.length;
   const recur=transactions.filter(t=>t.recurring).length;
@@ -4774,6 +4887,11 @@ async function checkBackupReminder(){
   setTimeout(()=>openBackupReminder(daysSince), 1500);
 }
 
+function openBackupReminderManual(){
+  const last = parseInt(localStorage.getItem('ledger_lastBackup')||'0');
+  const days = last ? Math.floor((Date.now()-last)/86400000) : Infinity;
+  openBackupReminder(days);
+}
 function openBackupReminder(days){
   const isFirst = days===Infinity;
   const icon  = document.getElementById('backup-icon');
@@ -5987,11 +6105,17 @@ function setupSwipeToDelete(){
   const list = document.getElementById('feed-list');
   let startX=0, startY=0, activeWrap=null, swipeDist=0, dirLocked=false, thresholdFired=false;
   const THRESHOLD = 72;
+  const EDGE_GUARD = 22;   // px from screen edge — ignore touches that start here (iOS back-swipe zone)
+  const DEAD_ZONE  = 10;   // px of total movement before we commit to any direction
+  const ANGLE_RATIO = 1.4; // horizontal must be this much stronger than vertical to lock as a swipe
 
   list.addEventListener('touchstart', e=>{
     const wrap = e.target.closest('.tx-wrap');
     if(!wrap) return;
-    startX=e.touches[0].clientX; startY=e.touches[0].clientY;
+    const x = e.touches[0].clientX;
+    // Ignore touches starting in the edge guard zone (left or right)
+    if(x < EDGE_GUARD || x > window.innerWidth - EDGE_GUARD) return;
+    startX=x; startY=e.touches[0].clientY;
     activeWrap=wrap; swipeDist=0; dirLocked=false; thresholdFired=false;
   },{passive:true});
 
@@ -6001,8 +6125,10 @@ function setupSwipeToDelete(){
     const dy = e.touches[0].clientY - startY;
 
     if(!dirLocked){
-      if(Math.abs(dx)<4 && Math.abs(dy)<4) return;
-      if(Math.abs(dy) > Math.abs(dx)){ activeWrap=null; return; }
+      // Wait for enough movement before deciding direction
+      if(Math.abs(dx) < DEAD_ZONE && Math.abs(dy) < DEAD_ZONE) return;
+      // Require horizontal to be clearly dominant — kills accidental diagonal swipes
+      if(Math.abs(dy) * ANGLE_RATIO > Math.abs(dx)){ activeWrap=null; return; }
       dirLocked=true;
     }
 
@@ -6016,7 +6142,6 @@ function setupSwipeToDelete(){
       activeWrap.classList.add('swiping');
       activeWrap.classList.remove('swiping-edit');
       txEl.style.transform = `translateX(${clamped}px)`;
-      // Haptic pulse when threshold hit
       if(!thresholdFired && dx < -THRESHOLD){ thresholdFired=true; haptic(HX.warning); }
     } else if(dx > 0){
       // ── Swipe RIGHT → edit (accent) ──
@@ -6035,20 +6160,17 @@ function setupSwipeToDelete(){
     const id   = parseInt(activeWrap.dataset.id);
 
     if(swipeDist < -THRESHOLD){
-      // Confirmed delete
       haptic(HX.delete);
       if(txEl){ txEl.style.transition='transform .15s ease'; txEl.style.transform='translateX(-110%)'; }
       activeWrap.classList.remove('swiping');
       setTimeout(()=>{ if(id) deleteTx(id); }, 150);
     } else if(swipeDist > THRESHOLD){
-      // Confirmed edit
       haptic(HX.soft);
       if(txEl){ txEl.style.transition='transform .2s ease'; txEl.style.transform=''; setTimeout(()=>{ if(txEl) txEl.style.transition=''; },200); }
       activeWrap.classList.remove('swiping-edit');
       const tx = getTx(id);
       if(tx) openSheet(tx);
     } else {
-      // Snap back
       if(txEl){ txEl.style.transition='transform .2s ease'; txEl.style.transform=''; setTimeout(()=>{ if(txEl) txEl.style.transition=''; },200); }
       activeWrap.classList.remove('swiping','swiping-edit');
     }
@@ -6488,7 +6610,8 @@ function checkAndPromptRecurring(){
 /** Recomputes pending and updates the Bills nav badge */
 function updateRecurBadge(){
   const todayS = todayStr();
-  const lastPrompt = localStorage.getItem('ledger_recur_prompted') || '';
+  const lastPrompt  = localStorage.getItem('ledger_recur_prompted') || '';
+  const snoozedDate = localStorage.getItem('ledger_recur_snoozed')  || '';
   const badge = document.getElementById('recur-due-badge');
   if(!badge) return;
 
@@ -6497,6 +6620,13 @@ function updateRecurBadge(){
     badge.textContent = '';
     badge.classList.remove('visible');
     localStorage.removeItem('ledger_recur_pending');
+    return;
+  }
+
+  // Snoozed today — hide badge but keep pending for tomorrow
+  if(snoozedDate === todayS){
+    badge.textContent = '';
+    badge.classList.remove('visible');
     return;
   }
 
@@ -6547,12 +6677,16 @@ function _showRecurringSheet(pending){
 
   const count = pending.length;
   titleEl.textContent = `${count} Recurring Item${count!==1?'s':''} Due`;
-  msgEl.textContent   = `${count} recurring entr${count!==1?'ies':'y'} ${count!==1?'are':'is'} due today.`;
+  msgEl.textContent   = count === 1
+    ? 'Tap to select this item, then choose what to do.'
+    : 'Tap items to select which ones to add — or select all.';
 
-  listEl.innerHTML = pending.map(p => {
+  // Render with per-item checkboxes (all checked by default)
+  listEl.innerHTML = pending.map((p,i) => {
     const lastLabel = p.lastDate ? `Last: ${p.lastDate}` : 'First occurrence';
     return `
-    <div class="recur-prompt-item">
+    <div class="recur-prompt-item" onclick="toggleRecurItem(${i})" style="cursor:pointer;" id="recur-item-${i}">
+      <div class="recur-pi-check checked" id="recur-check-${i}">✓</div>
       <span class="recur-pi-icon">${p.icon}</span>
       <div class="recur-pi-info">
         <div class="recur-pi-label">${p.label}</div>
@@ -6563,7 +6697,61 @@ function _showRecurringSheet(pending){
   }).join('');
 
   overlay._pendingRecurring = pending;
+  // All checked by default
+  overlay._checkedItems = new Set(pending.map((_,i)=>i));
+  _updateRecurAddBtn(overlay._checkedItems.size);
   overlay.classList.add('open');
+}
+
+function toggleRecurItem(idx){
+  const overlay = document.getElementById('recur-prompt-overlay');
+  const checked = overlay._checkedItems;
+  const checkEl = document.getElementById('recur-check-'+idx);
+  if(checked.has(idx)){
+    checked.delete(idx);
+    checkEl.classList.remove('checked');
+    checkEl.textContent = '';
+  } else {
+    checked.add(idx);
+    checkEl.classList.add('checked');
+    checkEl.textContent = '✓';
+  }
+  _updateRecurAddBtn(checked.size);
+}
+
+function selectAllRecurring(){
+  const overlay = document.getElementById('recur-prompt-overlay');
+  const pending = overlay._pendingRecurring || [];
+  const allChecked = overlay._checkedItems.size === pending.length;
+  // Toggle: if all checked → uncheck all; otherwise check all
+  overlay._checkedItems = new Set(allChecked ? [] : pending.map((_,i)=>i));
+  pending.forEach((_,i)=>{
+    const el = document.getElementById('recur-check-'+i);
+    if(el){
+      el.classList.toggle('checked', !allChecked);
+      el.textContent = allChecked ? '' : '✓';
+    }
+  });
+  _updateRecurAddBtn(overlay._checkedItems.size);
+}
+
+function _updateRecurAddBtn(count){
+  const btn = document.getElementById('recur-add-btn');
+  if(!btn) return;
+  btn.textContent = count === 0 ? '✅ Add Selected' : `✅ Add ${count} Item${count!==1?'s':''}`;
+  btn.style.opacity = count === 0 ? '0.4' : '1';
+}
+
+function snoozeRecurringPrompt(){
+  // Dismiss for today only — badge clears, prompt won't re-show until tomorrow
+  const overlay = document.getElementById('recur-prompt-overlay');
+  overlay.classList.remove('open');
+  overlay._pendingRecurring = null;
+  // Don't mark as "prompted" — just snooze by storing a snooze timestamp
+  localStorage.setItem('ledger_recur_snoozed', todayStr());
+  haptic(HX.tap);
+  showAppToast('⏰ Snoozed until tomorrow', 'warn');
+  updateRecurBadge();
 }
 
 function stopRecurringPrompt(e){
@@ -6588,13 +6776,59 @@ function stopRecurringPrompt(e){
 
 function addRecurringNow(){
   const overlay = document.getElementById('recur-prompt-overlay');
+  const pending = overlay._pendingRecurring || [];
+  const checked = overlay._checkedItems || new Set();
+
+  if(checked.size === 0){ showAppToast('Select at least one item first', 'warn'); return; }
+
+  // Only process checked items
+  const selectedPending = pending.filter((_,i) => checked.has(i));
+  const skippedPending  = pending.filter((_,i) => !checked.has(i));
+
   overlay.classList.remove('open');
   overlay._pendingRecurring = null;
-  localStorage.setItem('ledger_recur_prompted', todayStr());
-  localStorage.removeItem('ledger_recur_pending');
-  const added = autoGenerateRecurring();
-  if(added > 0){ renderFeed(); renderDash(); haptic(HX.success); }
+
+  // Mark prompted only if all items handled
+  if(skippedPending.length === 0){
+    localStorage.setItem('ledger_recur_prompted', todayStr());
+    localStorage.removeItem('ledger_recur_pending');
+  } else {
+    // Keep skipped items pending for next open
+    localStorage.setItem('ledger_recur_pending', JSON.stringify(
+      skippedPending.map(p => ({ icon:p.icon, label:p.label, amount:p.amount,
+                                   recurFreq:p.recurFreq, dueDate:p.dueDate,
+                                   lastDate:p.lastDate, seriesKey:p.seriesKey }))
+    ));
+  }
+
+  // Auto-generate only for selected series keys
+  const selectedKeys = new Set(selectedPending.map(p => p.seriesKey));
+  const added = autoGenerateRecurring(selectedKeys);
+
+  if(added > 0){
+    renderFeed(); renderDash(); haptic(HX.success);
+    showAppToast(`✅ ${added} transaction${added!==1?'s':''} added`, 'success');
+  }
   updateRecurBadge();
+}
+
+// ── Global floating toast ──
+let _appToastTimer = null;
+function showAppToast(msg, type='success', duration=3000){
+  let el = document.getElementById('app-toast-el');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'app-toast-el';
+    el.className = 'app-toast';
+    document.getElementById('app').appendChild(el);
+  }
+  el.textContent = msg;
+  el.className = `app-toast ${type}`;
+  // Force reflow then show
+  el.offsetHeight;
+  el.classList.add('show');
+  if(_appToastTimer) clearTimeout(_appToastTimer);
+  _appToastTimer = setTimeout(()=>{ el.classList.remove('show'); }, duration);
 }
 
 /** Check daily on app open — fire reminders for bills due within notifDaysAhead days */
