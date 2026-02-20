@@ -20,6 +20,7 @@
    THEMES
 ══════════════════════════════════════════ */
 :root{
+  --vh:1vh;--sab:env(safe-area-inset-bottom,0px);
   --bg:#080810;--bg1:#0f0f1a;--bg2:#141420;--bg3:#1a1a28;
   --border:#1e1e30;--border2:#252538;
   --text:#ede8e0;--text2:#8a8598;--text3:#45435a;
@@ -109,12 +110,12 @@ body.theme-midnight{
    RESET & BASE
 ══════════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;background:var(--bg);}
+html,body{height:100%;height:calc(var(--vh,1vh)*100);overflow:hidden;background:var(--bg);}@supports(height:100dvh){html,body{height:100dvh;}}
 body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);overscroll-behavior:none;transition:background .3s,color .3s;}
 body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
   opacity:var(--grain,0.35);}
-#app{position:fixed;inset:0;display:flex;flex-direction:column;max-width:430px;margin:0 auto;}
+#app{position:fixed;inset:0;display:flex;flex-direction:column;width:100%;max-width:430px;margin:0 auto;}
 .view{position:absolute;inset:0;bottom:var(--nav-h);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;transition:opacity .25s,transform .25s;}
 .view::-webkit-scrollbar{display:none;}
 .view.hidden{opacity:0;pointer-events:none;transform:translateY(12px);}
@@ -172,16 +173,62 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .streak-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent-dim);border:1px solid var(--border2);border-radius:99px;padding:4px 10px;font-size:.67rem;font-weight:700;color:var(--accent);margin-bottom:10px;}
 
 /* ── BUDGET ── */
+/* ── BUDGET SECTION (collapsible) ── */
 .budget-section{margin:0 20px 12px;}
-.budget-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
-.budget-title{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);}
-.budget-edit{font-size:.67rem;color:var(--accent);cursor:pointer;font-weight:600;}
-.budget-bar-row{margin-bottom:7px;}
-.budget-bar-meta{display:flex;justify-content:space-between;margin-bottom:3px;}
-.budget-bar-name{font-size:.72rem;font-weight:600;color:var(--text2);}
-.budget-bar-nums{font-size:.67rem;color:var(--text3);}
-.budget-track{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;}
-.budget-fill{height:100%;border-radius:99px;transition:width .6s ease;}
+.budget-header{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg1);border:1px solid var(--border);border-radius:16px;cursor:pointer;transition:border-color .2s;user-select:none;}
+.budget-header:active{border-color:var(--accent);}
+.budget-header.has-over{border-color:var(--red)!important;}
+.budget-header-icon{font-size:1.1rem;flex-shrink:0;}
+.budget-header-body{flex:1;min-width:0;}
+.budget-header-title{font-size:.8rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;}
+.budget-header-sub{font-size:.62rem;color:var(--text3);margin-top:1px;}
+.budget-header-right{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.budget-overall-pill{font-size:.62rem;font-weight:700;padding:3px 8px;border-radius:99px;white-space:nowrap;}
+.budget-chevron{font-size:.75rem;color:var(--text3);transition:transform .25s;}
+.budget-chevron.open{transform:rotate(180deg);}
+.budget-body{overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1);}
+.budget-body.open{max-height:1200px;}
+.budget-cards{display:flex;flex-direction:column;gap:7px;padding-top:8px;}
+.budget-card{background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:12px 14px;cursor:pointer;transition:border-color .18s;}
+.budget-card:active{border-color:var(--accent);}
+.budget-card.over{border-color:var(--red)!important;background:var(--red-dim);}
+.budget-card.warn{border-color:var(--accent)!important;}
+.bc-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.bc-icon{width:34px;height:34px;border-radius:10px;background:var(--red-dim);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.bc-info{flex:1;min-width:0;}
+.bc-name{font-size:.82rem;font-weight:700;color:var(--text);}
+.bc-meta{font-size:.62rem;color:var(--text3);margin-top:1px;}
+.bc-right{text-align:right;flex-shrink:0;}
+.bc-spent{font-family:'Playfair Display',serif;font-size:.92rem;font-weight:700;}
+.bc-limit{font-size:.6rem;color:var(--text3);}
+.bc-bar-track{height:6px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:5px;}
+.bc-bar-fill{height:100%;border-radius:99px;transition:width .6s ease;}
+.bc-bottom{display:flex;justify-content:space-between;align-items:center;}
+.bc-remaining{font-size:.67rem;font-weight:700;}
+.bc-daily{font-size:.62rem;color:var(--text3);}
+.budget-empty{padding:16px 4px 10px;text-align:center;}
+.budget-empty-icon{font-size:2rem;margin-bottom:6px;}
+.budget-empty-txt{font-size:.78rem;color:var(--text3);line-height:1.6;margin-bottom:12px;}
+.budget-set-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:11px;background:var(--accent-dim);color:var(--accent);border:1.5px solid var(--border2);font-family:'Plus Jakarta Sans',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.budget-set-btn:active{transform:scale(.96);}
+/* improved budget modal */
+.bm-inner{background:var(--bg1);border-radius:22px 22px 0 0;width:100%;max-width:430px;padding:18px 20px 40px;max-height:85vh;overflow-y:auto;scrollbar-width:none;}
+.bm-inner::-webkit-scrollbar{display:none;}
+.bm-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:3px;}
+.bm-sub{font-size:.72rem;color:var(--text3);margin-bottom:16px;line-height:1.6;}
+.bm-cat-card{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:13px;padding:10px 12px;margin-bottom:8px;transition:border-color .18s;}
+.bm-cat-card:focus-within{border-color:var(--accent);}
+.bm-icon{width:32px;height:32px;border-radius:9px;background:var(--red-dim);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.bm-name{font-size:.83rem;font-weight:600;flex:1;}
+.bm-field-wrap{display:flex;align-items:center;gap:4px;background:var(--bg1);border:1.5px solid var(--border);border-radius:9px;padding:5px 9px;transition:border-color .2s;}
+.bm-field-wrap:focus-within{border-color:var(--accent);}
+.bm-sym{font-size:.75rem;color:var(--text3);font-weight:700;}
+.bm-field{width:78px;background:transparent;border:none;outline:none;font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--text);text-align:right;}
+.bm-clear{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.8rem;padding:2px 5px;line-height:1;flex-shrink:0;border-radius:4px;}
+.bm-clear:hover{color:var(--red);}
+.bm-save{width:100%;padding:13px;border:none;border-radius:13px;background:var(--accent);color:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;margin-top:8px;}
+.bm-section-label{font-size:.6rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);font-weight:700;margin:12px 0 8px;display:flex;align-items:center;gap:8px;}
+.bm-section-label::after{content:'';flex:1;height:1px;background:var(--border);}
 
 /* ── SEARCH ── */
 .search-wrap{padding:0 20px 8px;position:relative;}
@@ -203,8 +250,10 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 
 /* ── SWIPE TO DELETE ── */
 .tx-wrap{position:relative;margin-bottom:8px;overflow:hidden;}
-.tx-swipe-bg{position:absolute;right:0;top:0;bottom:0;width:80px;background:var(--red-dim);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;z-index:0;opacity:0;transition:opacity .15s;}
-.tx-wrap.swiping .tx-swipe-bg{opacity:1;}
+.tx-swipe-bg-left{position:absolute;right:0;top:0;bottom:0;width:82px;background:var(--red-dim);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;z-index:0;opacity:0;transition:opacity .15s;}
+.tx-swipe-bg-right{position:absolute;left:0;top:0;bottom:0;width:82px;background:var(--accent-dim);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;z-index:0;opacity:0;transition:opacity .15s;}
+.tx-wrap.swiping .tx-swipe-bg-left{opacity:1;}
+.tx-wrap.swiping-edit .tx-swipe-bg-right{opacity:1;}
 /* ── QUICK ADD TEMPLATES ── */
 .quick-add-row{display:flex;gap:7px;overflow-x:auto;padding:0 20px 10px;scrollbar-width:none;}
 .quick-add-row::-webkit-scrollbar{display:none;}
@@ -214,7 +263,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .qa-chip-amt{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:700;color:var(--blue);}
 .qa-chip-freq{font-size:.58rem;color:var(--text3);font-weight:600;}
 /* ── PROJECTION INLINE ── */
-.projection-inline{font-size:.67rem;font-weight:600;padding:4px 2px;display:flex;align-items:center;gap:5px;margin-top:4px;}
+.projection-inline{font-size:.67rem;font-weight:600;padding:4px 2px;display:block;margin-top:4px;}
+.spend-alerts{}
 /* ── PIN MODAL ── */
 .pin-overlay{position:fixed;inset:0;z-index:9000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;}
 .pin-overlay.hidden{display:none;}
@@ -322,7 +372,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .bars{display:flex;align-items:flex-end;gap:5px;height:110px;margin-bottom:6px;}
 .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;}
 .bar-col-val{font-size:.52rem;font-weight:700;margin-bottom:3px;white-space:nowrap;text-align:center;}
-.bar-col-track{flex:1;width:100%;display:flex;align-items:flex-end;}
+.bar-col-track{height:68px;width:100%;display:flex;align-items:flex-end;flex-shrink:0;}
 .bar-rect{width:100%;border-radius:5px 5px 2px 2px;min-height:4px;transition:height .5s cubic-bezier(.34,1.56,.64,1);}
 .bar-col-name{font-size:.52rem;font-weight:700;margin-top:5px;text-align:center;}
 .bar-col.is-cur .bar-col-name{color:var(--accent);}
@@ -483,16 +533,6 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 /* BUDGET MODAL */
 .budget-modal{display:none;position:fixed;inset:0;z-index:200;background:#00000090;align-items:flex-end;justify-content:center;}
 .budget-modal.open{display:flex;}
-.bm-inner{background:var(--bg1);border-radius:22px 22px 0 0;width:100%;max-width:430px;padding:18px 20px 40px;max-height:80vh;overflow-y:auto;scrollbar-width:none;}
-.bm-inner::-webkit-scrollbar{display:none;}
-.bm-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:3px;}
-.bm-sub{font-size:.72rem;color:var(--text3);margin-bottom:16px;}
-.bm-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
-.bm-icon{width:28px;height:28px;border-radius:8px;background:var(--red-dim);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
-.bm-name{font-size:.85rem;font-weight:600;flex:1;}
-.bm-field{width:88px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:9px;padding:7px 10px;color:var(--text);font-family:'Playfair Display',serif;font-size:.93rem;font-weight:700;outline:none;text-align:right;}
-.bm-field:focus{border-color:var(--accent);}
-.bm-save{width:100%;padding:13px;border:none;border-radius:13px;background:var(--accent);color:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;margin-top:8px;}
 
 /* SAVINGS GOAL FIELD */
 .goal-wrap{position:relative;}
@@ -620,6 +660,9 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .ob-btn-primary{background:var(--accent);color:var(--bg);}
 .ob-btn-secondary{background:var(--bg2);color:var(--text2);border:1.5px solid var(--border2);}
 .ob-btn-ghost{background:transparent;color:var(--text3);font-size:.75rem;text-align:center;padding:6px;}
+.ob-currency-btn{background:var(--bg2);border:1.5px solid var(--border2);border-radius:12px;padding:11px 4px 9px;font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--text);cursor:pointer;text-align:center;transition:all .18s;display:flex;flex-direction:column;align-items:center;}
+.ob-currency-btn.active-cur{border-color:var(--accent);background:var(--accent-dim);color:var(--accent);}
+.ob-currency-btn:active{transform:scale(.93);}
 .ob-pin-key{padding:12px 8px;border-radius:12px;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all .15s;}
 .ob-pin-key:active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
 
@@ -699,6 +742,136 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .bir-input{width:54px;background:var(--bg1);border:1.5px solid var(--border2);border-radius:8px;padding:5px 8px;color:var(--text);font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;text-align:center;outline:none;}
 .bir-input:focus{border-color:var(--accent);}
 .bir-unit{font-size:.75rem;color:var(--text3);font-weight:600;}
+/* ══════════════════════════════════════════
+   RESPONSIVE — DYNAMIC PHONE LAYOUT
+   All spacing scales with viewport width.
+   Target: 320px – 430px phones
+══════════════════════════════════════════ */
+
+/* ── Fluid spacing tokens ──────────────── */
+:root{
+  /* Horizontal page padding: 14px @ 320px → 20px @ 430px+ */
+  --pad:   clamp(14px, 4.2vw, 20px);
+  /* Inner card/sheet padding */
+  --pad-i: clamp(14px, 4vw, 20px);
+  /* Small gaps */
+  --gap:   clamp(6px, 1.8vw, 8px);
+  /* Large border-radius (cards, sheets) */
+  --r-lg:  clamp(16px, 5vw, 22px);
+  /* Medium border-radius */
+  --r-md:  clamp(14px, 4vw, 18px);
+  /* Small border-radius */
+  --r-sm:  clamp(10px, 3vw, 14px);
+}
+
+/* ── Layout ───────────────────────────── */
+#app{ width:100%; }
+
+/* ── Topbar ───────────────────────────── */
+.topbar{ padding:calc(env(safe-area-inset-top,0px) + 14px) var(--pad) 0; }
+.top-title{ font-size:clamp(1.25rem, 4.8vw, 1.55rem); }
+
+/* ── Cycle nav ────────────────────────── */
+.cycle-nav{ padding:0 var(--pad) 10px; }
+
+/* ── Hero card ────────────────────────── */
+.hero-card{ margin:0 var(--pad) 12px; padding:clamp(14px,3.8vw,20px) clamp(15px,4vw,22px) clamp(13px,3.5vw,18px); border-radius:var(--r-lg); }
+.hero-amount{ font-size:clamp(1.85rem, 7vw, 2.4rem); }
+.hero-amount .sign{ font-size:clamp(1rem, 3.8vw, 1.3rem); }
+.hero-stat{ padding:clamp(8px,2.4vw,10px) clamp(9px,2.8vw,12px); }
+.hs-val{ font-size:clamp(.78rem, 2.5vw, .88rem); }
+
+/* ── Feed balance bar ─────────────────── */
+.feed-balance-bar{ margin:0 var(--pad) 10px; padding:clamp(9px,2.8vw,12px) clamp(12px,3.5vw,16px); border-radius:clamp(12px,4vw,16px); }
+.fbb-amount{ font-size:clamp(1.1rem, 4.2vw, 1.5rem); }
+
+/* ── Budget section ───────────────────── */
+.budget-section{ margin:0 var(--pad) 12px; }
+.bm-inner{ padding:clamp(14px,4vw,18px) var(--pad-i) 40px; }
+
+/* ── Search / filter / quick-add rows ── */
+.search-wrap{ padding:0 var(--pad) 8px; }
+.filter-wrap{ padding:0 var(--pad) 10px; gap:clamp(5px,1.5vw,6px); }
+.quick-add-row{ padding:0 var(--pad) 10px; }
+.qa-chip{ min-width:clamp(88px, 26vw, 110px); padding:6px clamp(9px,2.8vw,12px); }
+
+/* ── Transactions ─────────────────────── */
+.tx{ gap:clamp(9px,2.8vw,12px); padding:clamp(10px,3vw,13px) clamp(12px,3.5vw,15px); border-radius:clamp(14px,4.5vw,18px); }
+.tx-icon{ width:clamp(36px,10.5vw,42px); height:clamp(36px,10.5vw,42px); border-radius:clamp(10px,3vw,13px); font-size:clamp(1.05rem,3.2vw,1.25rem); }
+.tx-amt{ font-size:clamp(.85rem,2.8vw,.98rem); }
+.tx-name{ font-size:clamp(.8rem,2.6vw,.87rem); }
+
+/* ── Dashboard sections ───────────────── */
+.section{ padding:0 var(--pad); margin-bottom:clamp(18px,5vw,24px); }
+.section-title{ font-size:clamp(.95rem,3.2vw,1.1rem); }
+.hl-mini{ width:clamp(120px,34vw,140px); }
+.ring-pct{ font-size:clamp(1.35rem,5.5vw,1.7rem); }
+
+/* SBS comparison table — fluid columns */
+.sbs-header,
+.sbs-row{ grid-template-columns:clamp(72px,22vw,100px) 1fr 1fr clamp(60px,18vw,80px); padding:clamp(8px,2.4vw,11px) clamp(10px,3vw,14px); }
+.sbs-val,.sbs-delta{ font-size:clamp(.72rem,2.3vw,.82rem); }
+.sbs-label{ font-size:clamp(.65rem,2vw,.72rem); }
+
+/* ── Bottom sheet & modals ────────────── */
+.sheet{ border-radius:clamp(18px,5vw,24px) clamp(18px,5vw,24px) 0 0; }
+.sheet-header{ padding:13px var(--pad-i) 5px; }
+.add-body{ padding:6px var(--pad-i) 28px; }
+.confirm-inner{ border-radius:clamp(18px,5vw,22px) clamp(18px,5vw,22px) 0 0; padding:clamp(18px,4.5vw,22px) var(--pad-i) calc(env(safe-area-inset-bottom,20px)+20px); }
+.pay-inner{ padding:var(--pad-i) var(--pad-i) 40px; }
+.bm-inner{ border-radius:clamp(18px,5vw,22px) clamp(18px,5vw,22px) 0 0; }
+.wn-header{ padding:4px var(--pad-i) 14px; }
+.wn-body{ padding:0 var(--pad-i) 20px; }
+.ob-page{ padding:clamp(16px,4.5vw,20px) var(--pad) 10px; }
+.ob-footer{ padding:12px var(--pad) 6px; }
+.ios-install-inner{ padding:var(--pad-i) var(--pad-i) calc(env(safe-area-inset-bottom,20px)+20px); }
+.backup-sheet{ padding:var(--pad-i) var(--pad-i) calc(env(safe-area-inset-bottom,20px)+var(--pad-i)); }
+
+/* ── Settings ─────────────────────────── */
+.settings-card{ padding:clamp(14px,3.8vw,18px); gap:clamp(10px,3vw,14px); border-radius:clamp(14px,4.5vw,18px); }
+.settings-icon{ width:clamp(38px,10vw,44px); height:clamp(38px,10vw,44px); }
+.settings-title{ font-size:clamp(.88rem,2.9vw,.98rem); }
+
+/* ── PIN keypad ───────────────────────── */
+.pin-keypad{ max-width:clamp(240px,72vw,280px); gap:clamp(9px,2.8vw,12px); }
+.pin-key{ height:clamp(54px,15vw,64px); font-size:clamp(1.25rem,4.5vw,1.5rem); border-radius:clamp(12px,4vw,16px); }
+
+/* ── FAB / bottom nav ─────────────────── */
+.bottom-nav{ padding:10px clamp(10px,3vw,16px) 0; }
+
+/* ── Category grid (3-col) ─────────────── */
+.cat-grid{ gap:clamp(5px,1.5vw,7px); }
+.cat-tile{ padding:clamp(8px,2.4vw,10px) 4px clamp(6px,2vw,8px); border-radius:clamp(11px,3.5vw,14px); }
+.cat-icon{ font-size:clamp(1.1rem,3.5vw,1.25rem); }
+.cat-name{ font-size:clamp(.56rem,1.8vw,.6rem); }
+
+/* ── Toast / undo toast ───────────────── */
+.undo-toast{ width:calc(100% - calc(var(--pad)*2)); }
+.pwa-banner{ width:calc(100% - calc(var(--pad)*2)); }
+
+/* ══ EXTRA SMALL PHONES (≤ 360px) ══════ */
+@media (max-width:360px){
+  :root{ --pad:12px; --pad-i:13px; }
+  .hero-amount{ font-size:1.7rem; }
+  .top-title{ font-size:1.2rem; }
+  .hero-grid{ gap:5px; }
+  .hs-val{ font-size:.74rem; }
+  .fbb-amount{ font-size:1rem; }
+  .fab{ width:50px; height:50px; font-size:1.5rem; border-radius:14px; }
+  .tx-icon{ width:34px; height:34px; }
+  .amt-input{ font-size:2.1rem; }
+  .sbs-th,.sbs-label{ font-size:.58rem; }
+  .filter-chip{ font-size:.64rem; padding:5px 10px; }
+  /* Compact budget cards on tiny screens */
+  .budget-card{ padding:10px 11px; }
+  .bc-name{ font-size:.76rem; }
+}
+
+/* ══ LARGE PHONES / small tablets (≥ 428px) ════ */
+@media (min-width:428px){
+  :root{ --pad:20px; --pad-i:20px; }
+}
+
 </style>
 </head>
 <body>
@@ -709,7 +882,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   <div class="topbar">
     <div class="top-row">
       <div>
-        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v1.3</span></div>
+        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v0.3</span></div>
         <div class="top-sub" id="cycle-mode-label">Pay-cycle tracker</div>
       </div>
       <div style="display:flex;align-items:center;gap:7px;">
@@ -742,7 +915,6 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     </div>
   </div>
 
-  <div id="budget-area"></div>
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
     <input type="text" class="search-input" id="search-input" placeholder="Search transactions…" oninput="onSearch()"/>
@@ -756,9 +928,14 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 <div class="view hidden" id="view-dashboard">
   <div class="topbar">
     <div class="top-row">
-      <div><div class="top-title">Dash<span>board</span></div><div class="top-sub">Trends & insights</div></div>
+      <div>
+        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v0.3</span></div>
+        <div class="top-sub">Trends & insights</div>
+      </div>
       <div style="display:flex;align-items:center;gap:7px;">
         <div class="top-date" id="dash-date-label"></div>
+        <button class="icon-btn" onclick="openWhatsNew()" title="What's New" style="position:relative;">✨</button>
+        <button class="icon-btn" onclick="nav('settings')">⚙️</button>
       </div>
     </div>
     <div class="cycle-nav">
@@ -792,8 +969,14 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 <div class="view hidden" id="view-settings">
   <div class="topbar" style="padding-bottom:14px;">
     <div class="top-row">
-      <div><div class="top-title">Set<span>tings</span></div><div class="top-sub">Preferences & backup</div></div>
-      <button class="icon-btn" onclick="nav('feed')">✕</button>
+      <div>
+        <div class="top-title">Spend<span>oodle</span> <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.55rem;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;vertical-align:middle;letter-spacing:.3px;">v0.3</span></div>
+        <div class="top-sub">Preferences & backup</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;">
+        <button class="icon-btn" onclick="openWhatsNew()" title="What's New" style="position:relative;">✨</button>
+        <button class="icon-btn" onclick="nav('feed')">✕</button>
+      </div>
     </div>
   </div>
   <div style="padding:0 20px 100px;">
@@ -823,6 +1006,22 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
           <button class="theme-btn forest" onclick="setTheme('forest')" id="theme-forest">🌿 Forest</button>
           <button class="theme-btn sunset" onclick="setTheme('sunset')" id="theme-sunset">🌅 Sunset</button>
           <button class="theme-btn midnight" onclick="setTheme('midnight')" id="theme-midnight">🔮 Midnight</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HAPTIC FEEDBACK -->
+    <div class="settings-card">
+      <div class="settings-icon" style="background:var(--blue-dim)">📳</div>
+      <div class="settings-body">
+        <div class="settings-title">Haptic Feedback</div>
+        <div class="settings-desc">Vibration on swipes, actions, PIN entry and navigation. Android only — iOS does not support vibration.</div>
+        <div class="toggle-row" onclick="toggleHaptic()" style="cursor:pointer;">
+          <div>
+            <div class="toggle-label">Vibration</div>
+            <div class="toggle-sub" id="haptic-toggle-sub">On — feel every action</div>
+          </div>
+          <div class="toggle on" id="haptic-toggle"></div>
         </div>
       </div>
     </div>
@@ -913,14 +1112,14 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     <div class="settings-card">
       <div class="settings-icon" style="background:var(--blue-dim)">🗂</div>
       <div class="settings-body">
-        <div class="settings-title">Cycle History Limit</div>
+        <div class="settings-title">History Limit</div>
         <div class="settings-desc">
-          Max number of cycles to keep. Oldest cycles are <strong>automatically deleted</strong> when the limit is reached — the current cycle is always kept.<br/>
-          <span style="color:var(--text3);font-size:.68rem;">Min: 3 · Max: 60 · Default: 24</span>
+          Max number of <strong>months</strong> of history to keep. Cycles older than this are <strong>automatically deleted</strong> — the current cycle is always kept.<br/>
+          <span style="color:var(--text3);font-size:.68rem;">Min: 3 · Max: 60 · Default: 12 months</span>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
-          <input class="cf-input" id="cycle-limit-input" type="number" min="3" max="60" value="24" style="width:76px;"/>
-          <span style="font-size:.75rem;color:var(--text3);flex:1;">cycles stored</span>
+          <input class="cf-input" id="cycle-limit-input" type="number" min="3" max="60" value="12" style="width:76px;"/>
+          <span style="font-size:.75rem;color:var(--text3);flex:1;">months stored</span>
           <button class="settings-btn btn-blue" style="margin:0;padding:11px 16px;" onclick="saveCycleLimit()">Apply</button>
         </div>
         <div id="cycle-limit-preview" style="margin-top:8px;font-size:.7rem;color:var(--text3);line-height:1.6;"></div>
@@ -954,11 +1153,23 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
           Choose ledger-data.json
           <input type="file" accept=".json" style="display:none;" onchange="importData(event)"/>
         </label>
+        <div style="font-size:.68rem;color:var(--text3);margin-top:6px;line-height:1.6;" id="last-import-label"></div>
+      </div>
+    </div>
+
+    <!-- BUDGETS -->
+    <div class="settings-card" id="sc-budgets">
+      <div class="settings-icon" style="background:var(--green-dim)">💰</div>
+      <div class="settings-body">
+        <div class="settings-title">Spending Budgets</div>
+        <div class="settings-desc">Set monthly limits per expense category. The app will warn you when you're overspending — right on the dashboard. Set once and they stay forever.</div>
+        <div id="settings-budget-summary" style="margin:8px 0 10px;font-size:.75rem;color:var(--text3);line-height:1.7;"></div>
+        <button class="settings-btn btn-accent" onclick="openBudgetModal()">💰 Edit Budgets</button>
       </div>
     </div>
 
     <!-- PIN LOCK -->
-    <div class="settings-card">
+    <div class="settings-card" id="sc-pin">
       <div class="settings-icon" style="background:var(--blue-dim)">🔐</div>
       <div class="settings-body">
         <div class="settings-title">PIN Lock</div>
@@ -978,7 +1189,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     </div>
 
     <!-- CREDIT CARDS -->
-    <div class="settings-card">
+    <div class="settings-card" id="sc-cards">
       <div class="settings-icon" style="background:#a855f718">💳</div>
       <div class="settings-body">
         <div class="settings-title">Credit Cards</div>
@@ -1083,409 +1294,200 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     <div class="ob-handle"></div>
     <div class="ob-pages" id="ob-pages">
 
-      <!-- ── SLIDE 1: Welcome / What the app does ── -->
+      <!-- ══ SLIDE 0: Make It Yours (Currency + Theme) ══ -->
       <div class="ob-page">
-        <div style="height:4px;"></div>
-        <div class="ob-emoji" style="font-size:3rem;">🤑</div>
-        <div class="ob-title">Oh hey, <em>broke bestie.</em></div>
-        <div class="ob-sub" style="margin-bottom:14px;">Spendoodle is a <strong style="color:var(--accent)">pay-cycle money tracker</strong> that actually makes sense — because it works around <em style="color:var(--accent)">your</em> payday, not some random calendar month.</div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
-          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:16px;padding:13px 12px;">
-            <div style="font-size:1.4rem;margin-bottom:5px;">💸</div>
-            <div style="font-size:.78rem;font-weight:800;color:var(--text);margin-bottom:3px;">Log it fast</div>
-            <div style="font-size:.68rem;color:var(--text3);line-height:1.55;">Tap +, pick a category, type the amount. Done in 5 seconds. Yes, really.</div>
-          </div>
-          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:16px;padding:13px 12px;">
-            <div style="font-size:1.4rem;margin-bottom:5px;">📅</div>
-            <div style="font-size:.78rem;font-weight:800;color:var(--text);margin-bottom:3px;">Your payday, your rules</div>
-            <div style="font-size:.68rem;color:var(--text3);line-height:1.55;">Set when you get paid and everything resets automatically. No more mental math.</div>
-          </div>
-          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:16px;padding:13px 12px;">
-            <div style="font-size:1.4rem;margin-bottom:5px;">📊</div>
-            <div style="font-size:.78rem;font-weight:800;color:var(--text);margin-bottom:3px;">See where it went</div>
-            <div style="font-size:.68rem;color:var(--text3);line-height:1.55;">Charts, trends, and a forecast that tells you if you're about to go broke.</div>
-          </div>
-          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:16px;padding:13px 12px;">
-            <div style="font-size:1.4rem;margin-bottom:5px;">🔒</div>
-            <div style="font-size:.78rem;font-weight:800;color:var(--text);margin-bottom:3px;">100% offline & private</div>
-            <div style="font-size:.68rem;color:var(--text3);line-height:1.55;">No account. No cloud. No one snooping. Your data lives on your phone, period.</div>
-          </div>
+        <div style="height:2px;"></div>
+        <div class="ob-page-tag">Step 1 of 3 · Make It Yours</div>
+        <div style="text-align:center;margin-bottom:12px;">
+          <div style="font-size:2.6rem;line-height:1.1;">🤑</div>
+          <div class="ob-title" style="margin-bottom:4px;">Ooh, a new <em>money app.</em></div>
+          <div style="font-size:.78rem;color:var(--text3);line-height:1.5;">Two taps and you're in. Literally. We clocked it at 18 seconds.</div>
         </div>
 
-        <div class="ob-tip" style="margin-top:0;margin-bottom:0;">
-          ⚡ <strong>4 quick steps and you're set:</strong> pick a vibe · set payday · name a savings goal · add a card (optional) — then go touch some grass 🌿
+        <!-- Currency -->
+        <div class="ob-setup-block" style="margin-bottom:10px;">
+          <div class="ob-setup-label">💱 What's your money called? <span style="font-weight:400;color:var(--text3);">(tap one)</span></div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:8px 0 4px;">
+            <button class="ob-currency-btn" onclick="gSetCurrency('₱')">₱<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">PHP</div></button>
+            <button class="ob-currency-btn" onclick="gSetCurrency('$')">$<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">USD</div></button>
+            <button class="ob-currency-btn" onclick="gSetCurrency('€')">€<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">EUR</div></button>
+            <button class="ob-currency-btn" onclick="gSetCurrency('£')">£<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">GBP</div></button>
+            <button class="ob-currency-btn" onclick="gSetCurrency('¥')">¥<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">JPY</div></button>
+            <button class="ob-currency-btn" onclick="gSetCurrency('₩')">₩<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">KRW</div></button>
+            <button class="ob-currency-btn" onclick="gSetCurrency('₹')">₹<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">INR</div></button>
+            <button class="ob-currency-btn" onclick="gSetCurrency('Rp')">Rp<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">IDR</div></button>
+            <button class="ob-currency-btn" onclick="gSetCurrency('RM')">RM<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">MYR</div></button>
+            <button class="ob-currency-btn" onclick="gSetCurrency('฿')">฿<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">THB</div></button>
+            <button class="ob-currency-btn" onclick="gSetCurrency('₫')">₫<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">VND</div></button>
+            <button class="ob-currency-btn" onclick="gSetCurrency('S$')">S$<div style="font-size:.5rem;color:var(--text3);margin-top:2px;">SGD</div></button>
+          </div>
+          <div id="g-currency-preview" style="font-size:.75rem;font-weight:700;color:var(--accent);text-align:center;min-height:18px;margin-top:2px;"></div>
         </div>
-      </div>
 
-      <!-- ── SLIDE 2: Theme (interactive) ── -->
-      <div class="ob-page">
-        <div style="height:4px;"></div>
-        <div class="ob-page-tag">Step 1 of 5 · Theme</div>
-        <div class="ob-emoji">🎨</div>
-        <div class="ob-title">Choose Your <em>Look</em></div>
-        <div class="ob-sub">Tap any card below — the <strong style="color:var(--accent)">whole app changes instantly</strong>. Try them all before you decide.</div>
-        <div class="ob-theme-cards" style="gap:8px;display:grid;grid-template-columns:repeat(4,1fr);">
-          <div class="ob-theme-card" id="g-theme-dark" onclick="gSetTheme('dark')">
-            <div class="ob-theme-preview" style="background:#141420;border-color:#252538;padding:11px 10px 9px;">
-              <div class="ob-theme-prev-bar" style="background:#d4a853;margin-bottom:7px;"></div>
-              <div style="display:flex;gap:5px;">
-                <div class="ob-theme-prev-dot" style="background:#4fd87c;"></div>
-                <div class="ob-theme-prev-dot" style="background:#f06464;"></div>
-              </div>
-            </div>
-            <div class="ob-theme-name" style="font-size:.72rem;">🌑 Noir</div>
-          </div>
-          <div class="ob-theme-card" id="g-theme-pink" onclick="gSetTheme('pink')">
-            <div class="ob-theme-preview" style="background:#2e1426;border-color:#5c2846;padding:11px 10px 9px;">
-              <div class="ob-theme-prev-bar" style="background:#f472b6;margin-bottom:7px;"></div>
-              <div style="display:flex;gap:5px;">
-                <div class="ob-theme-prev-dot" style="background:#34d399;"></div>
-                <div class="ob-theme-prev-dot" style="background:#f87171;"></div>
-              </div>
-            </div>
-            <div class="ob-theme-name" style="font-size:.72rem;">🌸 Rose</div>
-          </div>
-          <div class="ob-theme-card" id="g-theme-white" onclick="gSetTheme('white')">
-            <div class="ob-theme-preview" style="background:#f0ede8;border-color:#ccc8c0;padding:11px 10px 9px;">
-              <div class="ob-theme-prev-bar" style="background:#b8860b;margin-bottom:7px;"></div>
-              <div style="display:flex;gap:5px;">
-                <div class="ob-theme-prev-dot" style="background:#16a34a;"></div>
-                <div class="ob-theme-prev-dot" style="background:#dc2626;"></div>
-              </div>
-            </div>
-            <div class="ob-theme-name" style="font-size:.72rem;">🤍 Pearl</div>
-          </div>
-          <div class="ob-theme-card" id="g-theme-navy" onclick="gSetTheme('navy')">
-            <div class="ob-theme-preview" style="background:#0d1626;border-color:#1d2d55;padding:11px 10px 9px;">
-              <div class="ob-theme-prev-bar" style="background:#3b82f6;margin-bottom:7px;"></div>
-              <div style="display:flex;gap:5px;">
-                <div class="ob-theme-prev-dot" style="background:#22d3a5;"></div>
-                <div class="ob-theme-prev-dot" style="background:#f87171;"></div>
-              </div>
-            </div>
-            <div class="ob-theme-name" style="font-size:.72rem;">🌊 Navy</div>
-          </div>
-          <div class="ob-theme-card" id="g-theme-ice" onclick="gSetTheme('ice')">
-            <div class="ob-theme-preview" style="background:#102535;border-color:#234560;padding:11px 10px 9px;">
-              <div class="ob-theme-prev-bar" style="background:#06b6d4;margin-bottom:7px;"></div>
-              <div style="display:flex;gap:5px;">
-                <div class="ob-theme-prev-dot" style="background:#34d399;"></div>
-                <div class="ob-theme-prev-dot" style="background:#fb7185;"></div>
-              </div>
-            </div>
-            <div class="ob-theme-name" style="font-size:.72rem;">🧊 Ice</div>
-          </div>
-          <div class="ob-theme-card" id="g-theme-forest" onclick="gSetTheme('forest')">
-            <div class="ob-theme-preview" style="background:#0b1c15;border-color:#1c3a28;padding:11px 10px 9px;">
-              <div class="ob-theme-prev-bar" style="background:#10b981;margin-bottom:7px;"></div>
-              <div style="display:flex;gap:5px;">
-                <div class="ob-theme-prev-dot" style="background:#4ade80;"></div>
-                <div class="ob-theme-prev-dot" style="background:#f87171;"></div>
-              </div>
-            </div>
-            <div class="ob-theme-name" style="font-size:.72rem;">🌿 Forest</div>
-          </div>
-          <div class="ob-theme-card" id="g-theme-sunset" onclick="gSetTheme('sunset')">
-            <div class="ob-theme-preview" style="background:#221500;border-color:#503400;padding:11px 10px 9px;">
-              <div class="ob-theme-prev-bar" style="background:#f97316;margin-bottom:7px;"></div>
-              <div style="display:flex;gap:5px;">
-                <div class="ob-theme-prev-dot" style="background:#4ade80;"></div>
-                <div class="ob-theme-prev-dot" style="background:#f87171;"></div>
-              </div>
-            </div>
-            <div class="ob-theme-name" style="font-size:.72rem;">🌅 Sunset</div>
-          </div>
-          <div class="ob-theme-card" id="g-theme-midnight" onclick="gSetTheme('midnight')">
-            <div class="ob-theme-preview" style="background:#120c2c;border-color:#2e2460;padding:11px 10px 9px;">
-              <div class="ob-theme-prev-bar" style="background:#a855f7;margin-bottom:7px;"></div>
-              <div style="display:flex;gap:5px;">
-                <div class="ob-theme-prev-dot" style="background:#34d399;"></div>
-                <div class="ob-theme-prev-dot" style="background:#f87171;"></div>
-              </div>
-            </div>
-            <div class="ob-theme-name" style="font-size:.72rem;">🔮 Midnight</div>
-          </div>
-        </div>
-        <div class="ob-tip" style="margin-top:14px;">💡 <strong>Tip:</strong> You can change your theme anytime in <strong>⚙️ Settings</strong>.</div>
-        <div class="ob-inline-tip" style="margin-top:8px;">Theme is saved when you tap <strong>Save &amp; Next →</strong></div>
-      </div>
-
-      <!-- ── SLIDE 3: Pay Cycle (interactive) ── -->
-      <div class="ob-page">
-        <div style="height:4px;"></div>
-        <div class="ob-page-tag">Step 2 of 5 · Pay Cycle</div>
-        <div class="ob-emoji">📅</div>
-        <div class="ob-title">When Do You Get <em>Paid?</em></div>
-        <div class="ob-sub">Transactions are grouped by <strong style="color:var(--accent)">pay period</strong>, not calendar month — so your balance always reflects your real financial cycle.</div>
+        <!-- Theme -->
         <div class="ob-setup-block">
-          <div class="ob-setup-label">Select your pay frequency</div>
+          <div class="ob-setup-label">🎨 Pick a vibe — <span style="font-weight:400;color:var(--text3);">whole app changes live 👇</span></div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;">
+            <div class="ob-theme-card" id="g-theme-dark" onclick="gSetTheme('dark')">
+              <div class="ob-theme-preview" style="background:#141420;border-color:#252538;padding:9px 8px 7px;">
+                <div class="ob-theme-prev-bar" style="background:#d4a853;margin-bottom:5px;"></div>
+                <div style="display:flex;gap:4px;"><div class="ob-theme-prev-dot" style="background:#4fd87c;"></div><div class="ob-theme-prev-dot" style="background:#f06464;"></div></div>
+              </div>
+              <div class="ob-theme-name" style="font-size:.66rem;">🌑 Noir</div>
+            </div>
+            <div class="ob-theme-card" id="g-theme-pink" onclick="gSetTheme('pink')">
+              <div class="ob-theme-preview" style="background:#2e1426;border-color:#5c2846;padding:9px 8px 7px;">
+                <div class="ob-theme-prev-bar" style="background:#f472b6;margin-bottom:5px;"></div>
+                <div style="display:flex;gap:4px;"><div class="ob-theme-prev-dot" style="background:#34d399;"></div><div class="ob-theme-prev-dot" style="background:#f87171;"></div></div>
+              </div>
+              <div class="ob-theme-name" style="font-size:.66rem;">🌸 Rose</div>
+            </div>
+            <div class="ob-theme-card" id="g-theme-white" onclick="gSetTheme('white')">
+              <div class="ob-theme-preview" style="background:#f0ede8;border-color:#ccc8c0;padding:9px 8px 7px;">
+                <div class="ob-theme-prev-bar" style="background:#b8860b;margin-bottom:5px;"></div>
+                <div style="display:flex;gap:4px;"><div class="ob-theme-prev-dot" style="background:#16a34a;"></div><div class="ob-theme-prev-dot" style="background:#dc2626;"></div></div>
+              </div>
+              <div class="ob-theme-name" style="font-size:.66rem;">🤍 Pearl</div>
+            </div>
+            <div class="ob-theme-card" id="g-theme-navy" onclick="gSetTheme('navy')">
+              <div class="ob-theme-preview" style="background:#0d1626;border-color:#1d2d55;padding:9px 8px 7px;">
+                <div class="ob-theme-prev-bar" style="background:#3b82f6;margin-bottom:5px;"></div>
+                <div style="display:flex;gap:4px;"><div class="ob-theme-prev-dot" style="background:#22d3a5;"></div><div class="ob-theme-prev-dot" style="background:#f87171;"></div></div>
+              </div>
+              <div class="ob-theme-name" style="font-size:.66rem;">🌊 Navy</div>
+            </div>
+            <div class="ob-theme-card" id="g-theme-ice" onclick="gSetTheme('ice')">
+              <div class="ob-theme-preview" style="background:#102535;border-color:#234560;padding:9px 8px 7px;">
+                <div class="ob-theme-prev-bar" style="background:#06b6d4;margin-bottom:5px;"></div>
+                <div style="display:flex;gap:4px;"><div class="ob-theme-prev-dot" style="background:#34d399;"></div><div class="ob-theme-prev-dot" style="background:#fb7185;"></div></div>
+              </div>
+              <div class="ob-theme-name" style="font-size:.66rem;">🧊 Ice</div>
+            </div>
+            <div class="ob-theme-card" id="g-theme-forest" onclick="gSetTheme('forest')">
+              <div class="ob-theme-preview" style="background:#0b1c15;border-color:#1c3a28;padding:9px 8px 7px;">
+                <div class="ob-theme-prev-bar" style="background:#10b981;margin-bottom:5px;"></div>
+                <div style="display:flex;gap:4px;"><div class="ob-theme-prev-dot" style="background:#4ade80;"></div><div class="ob-theme-prev-dot" style="background:#f87171;"></div></div>
+              </div>
+              <div class="ob-theme-name" style="font-size:.66rem;">🌿 Forest</div>
+            </div>
+            <div class="ob-theme-card" id="g-theme-sunset" onclick="gSetTheme('sunset')">
+              <div class="ob-theme-preview" style="background:#221500;border-color:#503400;padding:9px 8px 7px;">
+                <div class="ob-theme-prev-bar" style="background:#f97316;margin-bottom:5px;"></div>
+                <div style="display:flex;gap:4px;"><div class="ob-theme-prev-dot" style="background:#4ade80;"></div><div class="ob-theme-prev-dot" style="background:#f87171;"></div></div>
+              </div>
+              <div class="ob-theme-name" style="font-size:.66rem;">🌅 Sunset</div>
+            </div>
+            <div class="ob-theme-card" id="g-theme-midnight" onclick="gSetTheme('midnight')">
+              <div class="ob-theme-preview" style="background:#120c2c;border-color:#2e2460;padding:9px 8px 7px;">
+                <div class="ob-theme-prev-bar" style="background:#a855f7;margin-bottom:5px;"></div>
+                <div style="display:flex;gap:4px;"><div class="ob-theme-prev-dot" style="background:#34d399;"></div><div class="ob-theme-prev-dot" style="background:#f87171;"></div></div>
+              </div>
+              <div class="ob-theme-name" style="font-size:.66rem;">🌙 Midnight</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 1: Pay Cycle ══ -->
+      <div class="ob-page">
+        <div style="height:4px;"></div>
+        <div class="ob-page-tag">Step 2 of 3 · The Important Bit</div>
+        <div class="ob-emoji">📅</div>
+        <div class="ob-title">When does the <em>money drop?</em></div>
+        <div class="ob-sub">Every budget app resets on Jan 1st like some kind of financial New Year's resolution. <strong style="color:var(--accent)">We reset on YOUR payday.</strong> Radical concept, we know.</div>
+        <div class="ob-setup-block">
+          <div class="ob-setup-label">How often does your wallet get refilled?</div>
           <div class="cycle-mode-row" style="gap:7px;">
             <div class="cycle-mode-opt" id="g-cmo-monthly" onclick="gSelectCycleMode('monthly')">
               <div class="cmo-radio"><div class="cmo-radio-dot"></div></div>
-              <div class="cmo-text">
-                <div class="cmo-title">Once a month</div>
-                <div class="cmo-sub">e.g. paid on the 25th every month</div>
-              </div>
+              <div class="cmo-text"><div class="cmo-title">Once a month</div><div class="cmo-sub">e.g. 25th of every month — the day you feel rich 🗓</div></div>
             </div>
             <div class="cycle-mode-opt" id="g-cmo-bimonthly" onclick="gSelectCycleMode('bimonthly')">
               <div class="cmo-radio"><div class="cmo-radio-dot"></div></div>
-              <div class="cmo-text">
-                <div class="cmo-title">Twice a month</div>
-                <div class="cmo-sub">e.g. 25th–10th and 11th–24th</div>
-              </div>
-            </div>
-            <div class="cycle-mode-opt" id="g-cmo-custom" onclick="gSelectCycleMode('custom')">
-              <div class="cmo-radio"><div class="cmo-radio-dot"></div></div>
-              <div class="cmo-text">
-                <div class="cmo-title">Custom interval</div>
-                <div class="cmo-sub">Weekly, fortnightly, any length</div>
-              </div>
+              <div class="cmo-text"><div class="cmo-title">Twice a month</div><div class="cmo-sub">e.g. 10th & 25th — two chances to overspend</div></div>
             </div>
             <div class="cycle-mode-opt" id="g-cmo-weekly" onclick="gSelectCycleMode('weekly')">
               <div class="cmo-radio"><div class="cmo-radio-dot"></div></div>
-              <div class="cmo-text">
-                <div class="cmo-title">Weekly</div>
-                <div class="cmo-sub">Paid every week — pick your pay day</div>
-              </div>
+              <div class="cmo-text"><div class="cmo-title">Every week</div><div class="cmo-sub">Living that YOLO lifestyle 💸</div></div>
+            </div>
+            <div class="cycle-mode-opt" id="g-cmo-custom" onclick="gSelectCycleMode('custom')">
+              <div class="cmo-radio"><div class="cmo-radio-dot"></div></div>
+              <div class="cmo-text"><div class="cmo-title">Custom interval</div><div class="cmo-sub">Fortnightly, 10-day, whatever chaos works</div></div>
             </div>
           </div>
-          <!-- Monthly fields -->
           <div class="cycle-fields" id="g-fields-monthly" style="display:none;">
-            <div class="cf-row">
-              <span class="cf-label">Which day of month do you get paid?</span>
-              <input class="cf-input" id="g-pay-day" type="number" min="1" max="28" value="25"/>
-            </div>
-            <div class="cf-note">💡 e.g. enter 25 → cycle runs 25th → 24th of next month.</div>
+            <div class="cf-row"><span class="cf-label">Which day do you get paid?</span><input class="cf-input" id="g-pay-day" type="number" min="1" max="28" value="25"/></div>
+            <div class="cf-note">💡 Enter 25 → your cycle runs 25th → 24th next month.</div>
           </div>
-          <!-- Bi-monthly fields -->
           <div class="cycle-fields" id="g-fields-bimonthly" style="display:none;">
-            <div class="cf-note" style="margin-bottom:6px;">💡 Supports cross-month splits (e.g. 25th → 10th next month).</div>
-            <div class="cf-row"><span class="cf-label">Period A — starts on day</span><input class="cf-input" id="g-bi-s1" type="number" min="1" max="31" value="25"/></div>
-            <div class="cf-row"><span class="cf-label">Period A — ends on day</span><input class="cf-input" id="g-bi-e1" type="number" min="1" max="31" value="10"/></div>
-            <div class="cf-row"><span class="cf-label">Period B — starts on day</span><input class="cf-input" id="g-bi-s2" type="number" min="1" max="31" value="11"/></div>
-            <div class="cf-row"><span class="cf-label">Period B — ends on day</span><input class="cf-input" id="g-bi-e2" type="number" min="1" max="31" value="24"/></div>
+            <div class="cf-note" style="margin-bottom:6px;">💡 Handles cross-month splits perfectly (e.g. 25th → 10th).</div>
+            <div class="cf-row"><span class="cf-label">Period A — starts day</span><input class="cf-input" id="g-bi-s1" type="number" min="1" max="31" value="25"/></div>
+            <div class="cf-row"><span class="cf-label">Period A — ends day</span><input class="cf-input" id="g-bi-e1" type="number" min="1" max="31" value="10"/></div>
+            <div class="cf-row"><span class="cf-label">Period B — starts day</span><input class="cf-input" id="g-bi-s2" type="number" min="1" max="31" value="11"/></div>
+            <div class="cf-row"><span class="cf-label">Period B — ends day</span><input class="cf-input" id="g-bi-e2" type="number" min="1" max="31" value="24"/></div>
           </div>
-          <!-- Custom fields -->
-          <div class="cycle-fields" id="g-fields-custom" style="display:none;">
-            <div class="cf-note" style="margin-bottom:6px;">💡 e.g. start = 1, length = 14 → fortnightly from the 1st.</div>
-            <div class="cf-row"><span class="cf-label">Cycle starts on which day of month?</span><input class="cf-input" id="g-cust-start" type="number" min="1" max="28" value="1"/></div>
-            <div class="cf-row"><span class="cf-label">How many days in each cycle?</span><input class="cf-input" id="g-cust-len" type="number" min="7" max="90" value="30"/></div>
-          </div>
-          <!-- Weekly fields -->
           <div class="cycle-fields" id="g-fields-weekly" style="display:none;">
-            <div class="cf-note" style="margin-bottom:6px;">💡 Your pay week will run 7 days starting from your pay day.</div>
-            <div class="cf-row">
-              <span class="cf-label">Which day do you get paid?</span>
+            <div class="cf-note" style="margin-bottom:6px;">💡 7-day window starting from your payday.</div>
+            <div class="cf-row"><span class="cf-label">Payday of the week?</span>
               <select class="cf-input" id="g-pay-dow" style="font-family:'Plus Jakarta Sans',sans-serif;">
-                <option value="0">Sunday</option>
-                <option value="1" selected>Monday</option>
-                <option value="2">Tuesday</option>
-                <option value="3">Wednesday</option>
-                <option value="4">Thursday</option>
-                <option value="5">Friday</option>
-                <option value="6">Saturday</option>
+                <option value="0">Sunday</option><option value="1" selected>Monday</option>
+                <option value="2">Tuesday</option><option value="3">Wednesday</option>
+                <option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option>
               </select>
             </div>
           </div>
+          <div class="cycle-fields" id="g-fields-custom" style="display:none;">
+            <div class="cf-note" style="margin-bottom:6px;">💡 e.g. start = 1, length = 14 → fortnightly from the 1st.</div>
+            <div class="cf-row"><span class="cf-label">Cycle starts which day of month?</span><input class="cf-input" id="g-cust-start" type="number" min="1" max="28" value="1"/></div>
+            <div class="cf-row"><span class="cf-label">Days per cycle?</span><input class="cf-input" id="g-cust-len" type="number" min="7" max="90" value="30"/></div>
+          </div>
         </div>
-        <div class="ob-inline-tip" style="margin-top:10px;">Saved when you tap <strong>Save &amp; Next →</strong> · Changeable anytime in ⚙️ Settings.</div>
+        <div class="ob-inline-tip">Saved when you tap <strong>Next →</strong> · Panic-editable anytime in ⚙️ Settings.</div>
       </div>
 
-      <!-- ── SLIDE 4: History Limit + Savings Goal (combined) ── -->
+      <!-- ══ SLIDE 2: Done + Customize prompts ══ -->
       <div class="ob-page">
-        <div style="height:4px;"></div>
-        <div class="ob-page-tag">Step 3 of 5 · History &amp; Goal</div>
-        <div class="ob-emoji">🎯</div>
-        <div class="ob-title">History &amp; Your <em>First Goal</em></div>
-        <div class="ob-sub">Two quick picks — how far back to store cycles, and what you're saving for.</div>
-        <!-- History limit -->
-        <div class="ob-setup-block" style="margin-bottom:12px;">
-          <div class="ob-setup-label">🗂 How many past cycles to keep?</div>
-          <div class="ob-limit-row" style="margin:8px 0 8px;">
-            <button class="ob-limit-minus" onclick="gAdjLimit(-1)">−</button>
-            <div class="ob-limit-display">
-              <span class="ob-limit-num" id="g-limit-num">24</span>
-              <span class="ob-limit-unit">cycles</span>
-            </div>
-            <button class="ob-limit-plus" onclick="gAdjLimit(1)">+</button>
-          </div>
-          <div class="ob-limit-presets" style="justify-content:center;">
-            <button class="ob-chip" onclick="gSetLimit(6)">6 mo</button>
-            <button class="ob-chip" onclick="gSetLimit(12)">1 yr</button>
-            <button class="ob-chip ob-chip-sel" onclick="gSetLimit(24)">2 yrs ⭐</button>
-            <button class="ob-chip" onclick="gSetLimit(36)">3 yrs</button>
-          </div>
-          <div class="ob-limit-hint" id="g-limit-hint" style="margin-top:7px;"></div>
-        </div>
-        <!-- Savings goal -->
-        <div class="ob-setup-block">
-          <div class="ob-setup-label">🎯 What's your #1 savings goal right now?</div>
-          <div class="ob-goal-chips" style="margin-bottom:8px;gap:6px;">
-            <button class="ob-chip" onclick="gPickGoal('Emergency Fund')">🛡 Emergency</button>
-            <button class="ob-chip" onclick="gPickGoal('Vacation')">✈️ Vacation</button>
-            <button class="ob-chip" onclick="gPickGoal('New Phone')">📱 Phone</button>
-            <button class="ob-chip" onclick="gPickGoal('Car')">🚗 Car</button>
-            <button class="ob-chip" onclick="gPickGoal('House')">🏠 House</button>
-            <button class="ob-chip" onclick="gPickGoal('Education')">🎓 Education</button>
-          </div>
-          <input class="goal-input" id="g-savings-goal-input"
-            type="text" maxlength="40"
-            placeholder="Or type your own goal…"
-            oninput="gOnGoalType()"
-            style="width:100%;"/>
-          <!-- Target amount — slides in after goal is chosen -->
-          <div id="g-goal-target-wrap" style="display:none;margin-top:10px;transition:all .3s;">
-            <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:700;margin-bottom:6px;">💰 Target amount to reach</div>
-            <div style="position:relative;">
-              <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:.9rem;font-weight:700;color:var(--text3);pointer-events:none;" id="g-goal-currency-sym"></span>
-              <input class="goal-input" id="g-savings-goal-target"
-                type="number" min="1" placeholder="e.g. 50000"
-                oninput="gOnGoalTargetType()"
-                style="width:100%;padding-left:28px;"/>
-            </div>
-            <div id="g-goal-target-hint" style="margin-top:6px;font-size:.72rem;color:var(--text3);line-height:1.5;"></div>
-          </div>
-          <div class="ob-goal-preview" id="g-goal-preview" style="margin-top:8px;font-size:.78rem;">🛡 Defaults to "Emergency Fund" if left blank</div>
-        </div>
-        <div class="ob-inline-tip" style="margin-top:10px;">Saved when you tap <strong>Save &amp; Next →</strong></div>
-      </div>
+        <div style="height:6px;"></div>
+        <div class="ob-page-tag">Step 3 of 3 · You're Dangerous Now</div>
+        <div class="ob-emoji" style="font-size:2.8rem;">🎉</div>
+        <div class="ob-title" style="margin-bottom:5px;"><em>That's it.</em> You're in.</div>
+        <div class="ob-sub" style="margin-bottom:14px;">Look at you, making financial decisions. The app is ready — but if you want to go full <em>responsible adult mode,</em> these are worth setting up:</div>
 
-      <!-- ── SLIDE 5: Credit Cards (optional) ── -->
-      <div class="ob-page">
-        <div style="height:4px;"></div>
-        <div class="ob-page-tag">Step 4 of 5 · Credit Cards <span style="color:var(--text3);font-weight:400;">(optional)</span></div>
-        <div class="ob-emoji">💳</div>
-        <div class="ob-title">Do You Have <em>Credit Cards?</em></div>
-        <div class="ob-sub">Add your cards so the app can track your <strong style="color:var(--accent)">credit limit</strong> and <strong style="color:var(--accent)">outstanding balance</strong>. Charge expenses to a card instead of your cash, then pay the bill when you're ready.</div>
-
-        <!-- How it works steps -->
-        <div class="ob-steps" style="gap:7px;margin-bottom:14px;">
-          <div class="ob-step">
-            <div class="ob-step-icon" style="background:#a855f718;font-size:1rem;">💳</div>
-            <div class="ob-step-body">
-              <div class="ob-step-title">Set your credit limit</div>
-              <div class="ob-step-desc">Enter your card's total credit limit — e.g. ₱10,000. The app tracks how much of it you've used.</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:11px 13px;display:flex;gap:11px;align-items:center;">
+            <span style="font-size:1.15rem;flex-shrink:0;">🎯</span>
+            <div style="flex:1;">
+              <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:1px;">Savings Goal</div>
+              <div style="font-size:.66rem;color:var(--text3);line-height:1.4;">Tell the app what you're actually saving for. Emergency fund? Vacation? New sneakers? No judgment.</div>
             </div>
+            <button onclick="obClose();setTimeout(()=>{nav('feed');openSheetType('savings');},300)" style="background:var(--accent);color:#000;border:none;border-radius:8px;padding:6px 10px;font-size:.68rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;flex-shrink:0;">Set up →</button>
           </div>
-          <div class="ob-step">
-            <div class="ob-step-icon" style="background:#a855f718;font-size:1rem;">📊</div>
-            <div class="ob-step-body">
-              <div class="ob-step-title">Enter what you owe today</div>
-              <div class="ob-step-desc">Already have a balance? Enter it so your available credit is accurate from day one. Leave it 0 if the card is clear.</div>
+          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:11px 13px;display:flex;gap:11px;align-items:center;">
+            <span style="font-size:1.15rem;flex-shrink:0;">💰</span>
+            <div style="flex:1;">
+              <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:1px;">Spending Budgets</div>
+              <div style="font-size:.66rem;color:var(--text3);line-height:1.4;">Set per-category limits. The app will yell at you (politely) before you blow past them.</div>
             </div>
+            <button onclick="obClose();setTimeout(()=>{nav('settings');document.getElementById('sc-budgets')?.scrollIntoView({behavior:'smooth',block:'center'});openBudgetModal();},400)" style="background:var(--accent);color:#000;border:none;border-radius:8px;padding:6px 10px;font-size:.68rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;flex-shrink:0;">Set up →</button>
           </div>
-          <div class="ob-step">
-            <div class="ob-step-icon" style="background:var(--green-dim);font-size:1rem;">✅</div>
-            <div class="ob-step-body">
-              <div class="ob-step-title">Pay the bill to restore credit</div>
-              <div class="ob-step-desc">When you pay your bill, tap <strong>Pay Bill</strong> — it deducts from your cash and restores your available credit automatically.</div>
+          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:11px 13px;display:flex;gap:11px;align-items:center;">
+            <span style="font-size:1.15rem;flex-shrink:0;">💳</span>
+            <div style="flex:1;">
+              <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:1px;">Credit Cards</div>
+              <div style="font-size:.66rem;color:var(--text3);line-height:1.4;">Track limits and balances. Charge expenses to the card, pay the bill later. Like real life but organised.</div>
             </div>
+            <button onclick="obClose();setTimeout(()=>{nav('settings');document.getElementById('sc-cards')?.scrollIntoView({behavior:'smooth',block:'center'});},400)" style="background:var(--accent);color:#000;border:none;border-radius:8px;padding:6px 10px;font-size:.68rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;flex-shrink:0;">Set up →</button>
+          </div>
+          <div style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:11px 13px;display:flex;gap:11px;align-items:center;">
+            <span style="font-size:1.15rem;flex-shrink:0;">🔐</span>
+            <div style="flex:1;">
+              <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:1px;">PIN Lock</div>
+              <div style="font-size:.66rem;color:var(--text3);line-height:1.4;">Stop your nosy relatives from seeing how much you spent on bubble tea. We see you.</div>
+            </div>
+            <button onclick="obClose();setTimeout(()=>{nav('settings');document.getElementById('sc-pin')?.scrollIntoView({behavior:'smooth',block:'center'});},400)" style="background:var(--accent);color:#000;border:none;border-radius:8px;padding:6px 10px;font-size:.68rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;flex-shrink:0;">Set up →</button>
           </div>
         </div>
-
-        <!-- Add card form -->
-        <div class="ob-setup-block">
-          <div class="ob-setup-label">Add a card</div>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <input class="cf-input" id="g-cc-name" type="text" maxlength="20"
-              placeholder="Card name  (e.g. BDO Visa, GCash)"
-              style="width:100%;text-align:left;font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;padding:10px 13px;"/>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <div>
-                <div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:700;margin-bottom:5px;">Credit Limit</div>
-                <input class="cf-input" id="g-cc-limit" type="number" min="1" placeholder="e.g. 10000"
-                  style="width:100%;text-align:left;font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;" oninput="gUpdateCCHint()"/>
-              </div>
-              <div>
-                <div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:700;margin-bottom:5px;">Owe Right Now</div>
-                <input class="cf-input" id="g-cc-balance" type="number" min="0" placeholder="0 if clear"
-                  style="width:100%;text-align:left;font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;" oninput="gUpdateCCHint()"/>
-              </div>
-            </div>
-            <div>
-              <div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:700;margin-bottom:5px;">Billing Fee per Cycle <span style="color:var(--text3);font-weight:400;">(optional)</span></div>
-              <input class="cf-input" id="g-cc-interest" type="number" min="0" step="0.01" placeholder="e.g. 50 flat billing fee (optional)"
-                style="width:100%;text-align:left;font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;"/>
-            </div>
-            <div id="g-cc-form-hint" style="font-size:.68rem;color:var(--text3);line-height:1.5;display:none;padding:7px 10px;background:var(--bg2);border-radius:9px;border:1px solid var(--border);"></div>
-            <button style="width:100%;padding:12px;border-radius:11px;border:1.5px solid #a855f730;background:#a855f718;color:#a855f7;font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:700;cursor:pointer;transition:all .18s;" onclick="gAddCreditCard()">+ Add This Card</button>
-          </div>
-        </div>
-
-        <!-- Added cards list -->
-        <div id="g-cc-list" style="margin-top:10px;display:flex;flex-direction:column;gap:7px;"></div>
-
-        <div class="ob-inline-tip" style="margin-top:10px;">
-          <strong>Optional</strong> — you can skip and add cards anytime in <strong>⚙️ Settings → Credit Cards</strong>.
-        </div>
-      </div>
-
-
-      <!-- ── PIN SLIDE — Step 5 of 5 ── -->
-      <div class="ob-page" id="ob-page-pin">
-        <div style="height:4px;"></div>
-        <div class="ob-page-tag">Step 5 of 5 · PIN Lock <span style="color:var(--text3);font-weight:400;">(optional)</span></div>
-        <div class="ob-emoji">🔐</div>
-        <div class="ob-title">Protect Your <em>Ledger</em></div>
-        <div class="ob-sub">Add a 4-digit PIN so only you can open the app. Great if others use your phone.</div>
-
-        <div class="ob-steps" style="gap:7px;margin-bottom:16px;">
-          <div class="ob-step">
-            <div class="ob-step-icon c-acc">🔒</div>
-            <div class="ob-step-body">
-              <div class="ob-step-title">Lock on every open</div>
-              <div class="ob-step-desc">The PIN screen appears every time you launch Spendoodle, keeping your finances private.</div>
-            </div>
-          </div>
-          <div class="ob-step">
-            <div class="ob-step-icon c-grn">🔑</div>
-            <div class="ob-step-body">
-              <div class="ob-step-title">Easy to change or remove</div>
-              <div class="ob-step-desc">Head to <strong>⚙️ Settings → PIN Lock</strong> anytime to update or remove your PIN.</div>
-            </div>
-          </div>
-          <div class="ob-step">
-            <div class="ob-step-icon c-blu">🛡️</div>
-            <div class="ob-step-body">
-              <div class="ob-step-title">Stored securely</div>
-              <div class="ob-step-desc">Your PIN is hashed with SHA-256 — it's never stored in plain text on your device.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- PIN setup inline -->
-        <div class="ob-setup-block" id="ob-pin-block">
-          <div class="ob-setup-label">Set your PIN</div>
-          <div id="ob-pin-status" style="font-size:.78rem;color:var(--text3);text-align:center;margin-bottom:12px;">Enter a 4-digit PIN to activate lock</div>
-          <!-- dots -->
-          <div style="display:flex;justify-content:center;gap:12px;margin-bottom:16px;">
-            <div class="pin-dot" id="ob-pin-d0" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:background .15s;"></div>
-            <div class="pin-dot" id="ob-pin-d1" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:background .15s;"></div>
-            <div class="pin-dot" id="ob-pin-d2" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:background .15s;"></div>
-            <div class="pin-dot" id="ob-pin-d3" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:background .15s;"></div>
-          </div>
-          <!-- numpad -->
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:220px;margin:0 auto;">
-            <button onclick="obPinKey('1')" class="ob-pin-key">1</button>
-            <button onclick="obPinKey('2')" class="ob-pin-key">2</button>
-            <button onclick="obPinKey('3')" class="ob-pin-key">3</button>
-            <button onclick="obPinKey('4')" class="ob-pin-key">4</button>
-            <button onclick="obPinKey('5')" class="ob-pin-key">5</button>
-            <button onclick="obPinKey('6')" class="ob-pin-key">6</button>
-            <button onclick="obPinKey('7')" class="ob-pin-key">7</button>
-            <button onclick="obPinKey('8')" class="ob-pin-key">8</button>
-            <button onclick="obPinKey('9')" class="ob-pin-key">9</button>
-            <div></div>
-            <button onclick="obPinKey('0')" class="ob-pin-key">0</button>
-            <button onclick="obPinDel()" class="ob-pin-key" style="font-size:.85rem;">⌫</button>
-          </div>
-          <div id="ob-pin-set-msg" style="margin-top:12px;text-align:center;font-size:.75rem;font-weight:700;color:var(--green);min-height:18px;"></div>
-        </div>
-
-        <div class="ob-inline-tip" style="margin-top:12px;">
-          <strong>Optional</strong> — tap "Finish" to skip and set a PIN later via <strong>⚙️ Settings → PIN Lock</strong>.
-        </div>
+        <div class="ob-tip" style="margin-top:12px;">💾 <strong>Heads up:</strong> data lives on this device only — no cloud, no backup, no crying. Export regularly from ⚙️ Settings.</div>
       </div>
 
     </div><!-- end ob-pages -->
@@ -1549,33 +1551,39 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
     <div class="wn-handle" id="wn-handle" style="cursor:grab;touch-action:none;"></div>
     <div class="wn-header">
       <div class="wn-title">What's New ✨</div>
-      <div class="wn-sub">Latest features added to Spendoodle</div>
+      <div class="wn-sub">Spendoodle v0.3 — latest updates</div>
     </div>
     <div class="wn-body">
+
+      <!-- v0.3 items -->
       <div class="wn-item">
-        <div class="wn-icon" style="background:var(--accent-dim)">➕</div>
+        <div class="wn-icon" style="background:var(--red-dim)">💰</div>
         <div class="wn-info">
-          <div class="wn-name">Circular FAB Speed-Dial <span class="wn-new-pill">v1.3</span></div>
-          <div class="wn-desc">Income, Expense, Savings buttons are now circular and float higher above the nav bar.</div>
+          <div class="wn-name">Smarter Budget Alerts <span class="wn-new-pill">v0.3</span></div>
+          <div class="wn-desc">Budget Tracker removed from the feed — no clutter. A single alert line appears on the dashboard when you're overspending: total amount over + which categories. Tap to expand the full breakdown.</div>
         </div>
       </div>
       <div class="wn-item">
-        <div class="wn-icon" style="background:var(--red-dim)">💳</div>
+        <div class="wn-icon" style="background:var(--green-dim)">🔁</div>
         <div class="wn-info">
-          <div class="wn-name">Payment Method Selector <span class="wn-new-pill">v1.3</span></div>
-          <div class="wn-desc">Cash or Credit Card pill selector when logging expenses — replaces the old toggle.</div>
+          <div class="wn-name">Weekly Recurring Backfill <span class="wn-new-pill">v0.3</span></div>
+          <div class="wn-desc">Weekly recurring transactions now backfill all missed weeks in one go — even across cycle boundaries. No gaps even if you haven't opened the app in weeks.</div>
         </div>
       </div>
       <div class="wn-item">
-        <div class="wn-icon" style="background:var(--green-dim)">🎯</div>
+        <div class="wn-icon" style="background:var(--accent-dim)">⚙️</div>
         <div class="wn-info">
-          <div class="wn-name">Smarter Defaults & 8 Themes <span class="wn-new-pill">v1.3</span></div>
-          <div class="wn-desc">Income opens with Salary pre-selected. Savings skips the category picker. Plus 5 new themes: Navy, Ice, Forest, Sunset, Midnight.</div>
+          <div class="wn-name">Budgets in Settings & Guide <span class="wn-new-pill">v0.3</span></div>
+          <div class="wn-desc">Set spending limits once from Settings → Spending Budgets. Also added as Step 5 in the onboarding guide so you can configure it from the very start.</div>
         </div>
       </div>
-      <div style="padding:10px 0 6px;font-size:.58rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);font-weight:700;">Earlier</div>
+
+      <div style="padding:10px 0 6px;font-size:.58rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);font-weight:700;">Earlier Updates</div>
       <div class="wn-item" style="padding:10px 0;">
         <div class="wn-info" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">➕</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">Circular FAB</div><div style="font-size:.68rem;color:var(--text3);">Floating speed-dial for Income, Expense, Savings.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">💳</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">Payment Method</div><div style="font-size:.68rem;color:var(--text3);">Cash or Credit Card selector on expenses.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">🎨</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">8 Themes</div><div style="font-size:.68rem;color:var(--text3);">Navy, Ice, Forest, Sunset, Midnight & more.</div></div></div>
           <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">👆</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">Swipe to Delete</div><div style="font-size:.68rem;color:var(--text3);">Swipe left on any transaction.</div></div></div>
           <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">⚡</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">Quick Add</div><div style="font-size:.68rem;color:var(--text3);">One-tap recurring templates.</div></div></div>
           <div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:1rem;">🔁</span><div><div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:1px;">Recurring</div><div style="font-size:.68rem;color:var(--text3);">Weekly or monthly, auto-logged.</div></div></div>
@@ -1668,10 +1676,16 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 
 <!-- ══ BUDGET MODAL ══ -->
 <div class="budget-modal" id="budget-modal" onclick="closeBudgetModal(event)">
-  <div class="bm-inner" onclick="e=>e.stopPropagation()">
+  <div class="bm-inner" onclick="event.stopPropagation()">
     <div class="sheet-handle" style="margin:0 auto 14px;"></div>
-    <div class="bm-title">Budget per Cycle</div>
-    <div class="bm-sub">Set spending limits per category (0 = no limit)</div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
+      <div>
+        <div class="bm-title">💰 Set Budgets</div>
+        <div class="bm-sub">Enter a limit per category. Leave empty for no limit.<br/>Tap ✕ next to a field to clear that budget.</div>
+      </div>
+      <button onclick="document.getElementById('budget-modal').classList.remove('open')" style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:10px;width:30px;height:30px;font-size:.85rem;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+    </div>
+    <div class="bm-section-label">Expense Categories</div>
     <div id="budget-inputs"></div>
     <button class="bm-save" onclick="saveBudgets()">Save Budgets ✓</button>
   </div>
@@ -1736,6 +1750,13 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 </div>
 
 <script>
+// ╔══════════════════════════════════════════════════════╗
+// ║  Built with ☕ & questionable life choices by        ║
+// ║            W r a l f f f f                          ║
+// ║  "If it works, don't touch it."                      ║
+// ║  "If it breaks, it was like that when I got here."   ║
+// ╚══════════════════════════════════════════════════════╝
+
 // ════════════════════════════════════════════════════════════
 //  CONSTANTS
 // ════════════════════════════════════════════════════════════
@@ -1780,7 +1801,8 @@ let cycleConfig    = JSON.parse(localStorage.getItem('ledger_cycleConfig') || JS
 }));
 // Ensure weekly key exists for old saves
 if(!cycleConfig.weekly) cycleConfig.weekly = { payDow: 1 };
-let cycleLimit     = Math.max(3, parseInt(localStorage.getItem('ledger_cycleLimit') || '24'));
+let cycleLimit     = Math.max(3, parseInt(localStorage.getItem('ledger_cycleLimit') || '12'));
+let hapticEnabled  = localStorage.getItem('ledger_haptic') !== 'off'; // on by default
 
 // UI state
 let currentView  = 'feed';
@@ -1810,20 +1832,44 @@ function persist(){
   localStorage.setItem('ledger_cycleLimit',  String(cycleLimit));
   localStorage.setItem('ledger_cc',          JSON.stringify(creditCards));
   localStorage.setItem('ledger_goalTargets', JSON.stringify(goalTargets));
+  localStorage.setItem('ledger_haptic',      hapticEnabled ? 'on' : 'off');
 }
+
+// ════════════════════════════════════════════════════════════
+//  HAPTIC FEEDBACK
+// ════════════════════════════════════════════════════════════
+function haptic(pattern){
+  if(!hapticEnabled || !navigator.vibrate) return;
+  navigator.vibrate(pattern);
+}
+// Preset patterns
+const HX = {
+  tap:      15,           // subtle tick — nav, PIN digit
+  soft:     25,           // light confirm — undo, save
+  success:  [15,30,40],   // add transaction
+  warning:  [30,20,30],   // swipe threshold reached
+  delete:   [20,10,20,10,40], // delete confirm
+  error:    [40,20,40],   // wrong PIN
+};
 
 // ════════════════════════════════════════════════════════════
 //  CYCLE LIMIT — trim oldest cycles, keep newest N
 // ════════════════════════════════════════════════════════════
 function enforceCycleLimit(){
-  const cycleKeys = [...new Set(transactions.map(t => getCycleKey(t.date)))]
-    .sort((a,b) => cycleRange(b).start.localeCompare(cycleRange(a).start)); // newest first by start date
-
-  if(cycleKeys.length <= cycleLimit) return 0;
+  // cycleLimit is now in MONTHS — delete cycles whose start date is older than N months ago
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - cycleLimit);
+  const cutoffStr = ymd(cutoff.getFullYear(), cutoff.getMonth()+1, cutoff.getDate());
 
   const curKey = currentCycleKey();
-  const keepSet = new Set(cycleKeys.slice(0, cycleLimit));
-  keepSet.add(curKey);
+  const cycleKeys = [...new Set(transactions.map(t => getCycleKey(t.date)))]
+    .sort((a,b) => cycleRange(b).start.localeCompare(cycleRange(a).start));
+
+  const keepSet = new Set();
+  cycleKeys.forEach(k => {
+    const { start } = cycleRange(k);
+    if(start >= cutoffStr || k === curKey) keepSet.add(k);
+  });
 
   const before = transactions.length;
   transactions = transactions.filter(t => keepSet.has(getCycleKey(t.date)));
@@ -2113,40 +2159,114 @@ function goalsData(){
   return [...map.values()].sort((a,b)=>b.total-a.total);
 }
 
-/** Generate missed recurring transactions for the current cycle */
+/** Generate missed recurring transactions.
+ *
+ *  Works independently of cycle mode — a "weekly" recurring fires every
+ *  7 days no matter whether the user's pay cycle is monthly, bimonthly,
+ *  weekly, or custom.  A "monthly" recurring fires once per pay cycle.
+ *
+ *  On each call the function:
+ *  • Monthly → adds one entry at the current cycle's start date (payday)
+ *              if none exists yet for this cycle and ≥28 days have passed.
+ *  • Weekly  → backfills EVERY missed 7-day interval from the last known
+ *              occurrence up to (and including) today across ALL cycles,
+ *              so no gaps appear when the user navigates between cycles.
+ */
 function autoGenerateRecurring(){
-  const curKey=currentCycleKey();
-  const {start:cStart, end:cEnd}=cycleRange(curKey);
-  const today=todayStr();
-  // Get all unique recurring templates (use the latest version of each unique label+category)
-  const templates=new Map();
-  [...transactions].sort((a,b)=>a.date.localeCompare(b.date)).filter(t=>t.recurring).forEach(t=>{
-    const key=`${t.category}::${t.label}::${t.recurFreq||'monthly'}`;
-    templates.set(key,t);
-  });
-  let added=0;
-  templates.forEach(tmpl=>{
-    // Only auto-generate monthly recurring into this cycle if none exists yet
-    if((tmpl.recurFreq||'monthly')!=='monthly') return; // only monthly auto-generate (weekly is too frequent)
-    const alreadyExists=cycleTxs(curKey).some(t=>
-      t.category===tmpl.category && t.label===tmpl.label && t.recurring && t.id!==tmpl.id
+  const curKey = currentCycleKey();
+  const today  = todayStr();
+
+  // Collect the "canonical" template for each unique recurring item.
+  // Sort ascending so the last occurrence wins (most up-to-date amount/note).
+  const templates = new Map();
+  [...transactions]
+    .sort((a,b) => a.date.localeCompare(b.date))
+    .filter(t => t.recurring)
+    .forEach(t => {
+      const key = `${t.category}::${t.label}::${t.recurFreq||'monthly'}`;
+      templates.set(key, t);
+    });
+
+  let added = 0;
+
+  templates.forEach(tmpl => {
+    const freq = tmpl.recurFreq || 'monthly';
+
+    // All dates that already have an entry for this recurring item
+    const existingDates = new Set(
+      transactions
+        .filter(t => t.category===tmpl.category && t.label===tmpl.label && t.recurring)
+        .map(t => t.date)
     );
-    if(!alreadyExists){
-      const newTx={
+
+    // Latest date among existing entries
+    const sortedExisting = [...existingDates].sort((a,b) => b.localeCompare(a));
+    const lastDate = sortedExisting.length > 0 ? sortedExisting[0] : null;
+
+    // ─────────────────────────────────────────────
+    //  MONTHLY — once per pay cycle
+    // ─────────────────────────────────────────────
+    if(freq === 'monthly'){
+      // Already logged for this cycle → nothing to do
+      const inThisCycle = cycleTxs(curKey).some(t =>
+        t.category===tmpl.category && t.label===tmpl.label && t.recurring
+      );
+      if(inThisCycle) return;
+
+      // Require at least 28 days since the last occurrence
+      if(lastDate){
+        const daysSince = Math.floor(
+          (new Date(today+'T00:00:00') - new Date(lastDate+'T00:00:00')) / 86400000
+        );
+        if(daysSince < 28) return;
+      }
+
+      // Date the entry on the cycle's actual start (payday), capped to today
+      const {start: cStart} = cycleRange(curKey);
+      const dateToUse = cStart <= today ? cStart : null;
+      if(!dateToUse) return; // cycle hasn't started yet
+
+      transactions.push({
         ...tmpl,
-        id:Date.now()+Math.random(),
-        date: cStart<=today ? (cStart>today?cStart:today) : cStart,
-        autoGenerated:true
-      };
-      // Don't auto-generate into future
-      if(newTx.date<=today){
-        transactions.push(newTx);
-        added++;
+        id: Date.now() + Math.random(),
+        date: dateToUse,
+        autoGenerated: true
+      });
+      added++;
+
+    // ─────────────────────────────────────────────
+    //  WEEKLY — every 7 days, regardless of cycle mode
+    //  Backfills ALL missed weeks up to today.
+    // ─────────────────────────────────────────────
+    } else if(freq === 'weekly'){
+      if(!lastDate) return; // no anchor to start from
+
+      // Walk forward in 7-day steps from lastDate until we reach today
+      let cursor = new Date(lastDate + 'T00:00:00');
+      cursor.setDate(cursor.getDate() + 7); // start at "next expected"
+
+      while(true){
+        const dateStr = ymd(cursor.getFullYear(), cursor.getMonth()+1, cursor.getDate());
+        if(dateStr > today) break; // hasn't arrived yet
+
+        if(!existingDates.has(dateStr)){
+          transactions.push({
+            ...tmpl,
+            id: Date.now() + Math.random() + added, // unique even in same ms
+            date: dateStr,
+            autoGenerated: true
+          });
+          existingDates.add(dateStr); // prevent double-add in this same loop
+          added++;
+        }
+
+        cursor.setDate(cursor.getDate() + 7); // next week
       }
     }
   });
-  if(added>0){
-    transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+
+  if(added > 0){
+    transactions.sort((a,b) => b.date.localeCompare(a.date) || b.id - a.id);
     persist();
   }
   return added;
@@ -2286,22 +2406,28 @@ function updateBiPreview(){
 function saveCycleSettings(){
   const prevMode=cycleMode;
   cycleMode=document.querySelector('.cycle-mode-opt.selected')?.id.replace('cmo-','')||'monthly';
+  let detail='';
   if(cycleMode==='monthly'){
     cycleConfig.monthly.payDay=Math.min(28,Math.max(1,parseInt(document.getElementById('pay-day').value)||25));
+    detail=`Monthly · pay day ${cycleConfig.monthly.payDay}`;
   } else if(cycleMode==='bimonthly'){
     cycleConfig.bimonthly.s1=parseInt(document.getElementById('bi-s1').value)||25;
     cycleConfig.bimonthly.e1=parseInt(document.getElementById('bi-e1').value)||10;
     cycleConfig.bimonthly.s2=parseInt(document.getElementById('bi-s2').value)||11;
     cycleConfig.bimonthly.e2=parseInt(document.getElementById('bi-e2').value)||24;
+    detail=`Bi-monthly · ${cycleConfig.bimonthly.s1}–${cycleConfig.bimonthly.e1} & ${cycleConfig.bimonthly.s2}–${cycleConfig.bimonthly.e2}`;
   } else if(cycleMode==='weekly'){
     cycleConfig.weekly.payDow=parseInt(document.getElementById('pay-dow').value)||1;
+    const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    detail=`Weekly · every ${days[cycleConfig.weekly.payDow]}`;
   } else {
     cycleConfig.custom.start=parseInt(document.getElementById('cust-start').value)||1;
     cycleConfig.custom.len  =Math.max(7,parseInt(document.getElementById('cust-len').value)||30);
+    detail=`Custom · ${cycleConfig.custom.len}-day cycle from the ${cycleConfig.custom.start}${['st','nd','rd'][cycleConfig.custom.start-1]||'th'}`;
   }
   persist();
   activeCycleKey=currentCycleKey();
-  showSettingsToast('📅 Cycle settings saved!');
+  showSettingsToast('📅 Pay cycle saved — ' + detail, 4000);
   renderFeed();
 }
 function renderSettingsInputs(){
@@ -2328,36 +2454,48 @@ function renderSettingsInputs(){
 function updateCycleLimitPreview(){
   const raw = parseInt(document.getElementById('cycle-limit-input')?.value);
   const val = isNaN(raw)?cycleLimit:Math.max(3,Math.min(60,raw));
+
+  // Calculate cutoff date for this many months
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - val);
+  const cutoffStr = ymd(cutoff.getFullYear(), cutoff.getMonth()+1, cutoff.getDate());
+
   const existingKeys = [...new Set(transactions.map(t=>getCycleKey(t.date)))]
     .sort((a,b)=>cycleRange(b).start.localeCompare(cycleRange(a).start));
-  const existing = existingKeys.length;
   const curKey = currentCycleKey();
+
+  const willKeep = existingKeys.filter(k => cycleRange(k).start >= cutoffStr || k === curKey);
+  const willRemove = existingKeys.filter(k => cycleRange(k).start < cutoffStr && k !== curKey);
+
   const preview = document.getElementById('cycle-limit-preview');
   if(!preview) return;
-  if(existing === 0){
+  if(existingKeys.length === 0){
     preview.innerHTML = `Currently no cycles stored.`;
+    preview.style.color = 'var(--text3)';
     return;
   }
-  if(existing <= val){
-    preview.innerHTML = `You have <strong>${existing}</strong> cycle${existing!==1?'s':''} stored — all will be kept.`;
+  if(willRemove.length === 0){
+    const years = val >= 12 ? ` (${(val/12).toFixed(1)} yr${val!==12?'s':''})` : '';
+    preview.innerHTML = `All <strong>${willKeep.length}</strong> cycle${willKeep.length!==1?'s':''} stored fall within the last <strong>${val} months</strong>${years} — nothing will be deleted.`;
+    preview.style.color = 'var(--text3)';
     return;
   }
-  const willDelete = existing - val;
-  const oldestKept = existingKeys[val-1] ? cycleLabel(existingKeys[val-1]) : '—';
-  const willRemove = existingKeys.slice(val).filter(k=>k!==curKey);
-  preview.innerHTML = `⚠️ <strong>${willDelete}</strong> oldest cycle${willDelete!==1?'s':''} will be deleted. Oldest kept: <strong>${oldestKept}</strong>.`;
+  const oldestKept = willKeep.length ? cycleLabel(willKeep[willKeep.length-1]) : '—';
+  preview.innerHTML = `⚠️ <strong>${willRemove.length}</strong> old cycle${willRemove.length!==1?'s':''} will be deleted (older than ${val} months). Oldest kept: <strong>${oldestKept}</strong>.`;
   preview.style.color = 'var(--red)';
-  if(existing <= val) preview.style.color = 'var(--text3)';
 }
 
 // ════════════════════════════════════════════════════════════
 //  NAV
 // ════════════════════════════════════════════════════════════
 function nav(v){
+  haptic(HX.tap);
   currentView=v;
   document.querySelectorAll('.view').forEach(el=>el.classList.add('hidden'));
   document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
-  document.getElementById(`view-${v}`).classList.remove('hidden');
+  const viewEl=document.getElementById(`view-${v}`);
+  viewEl.classList.remove('hidden');
+  viewEl.scrollTop=0;
   if(v!=='settings'){ const nb=document.getElementById(`nav-${v}`); if(nb)nb.classList.add('active'); }
   if(v==='feed')      renderFeed();
   if(v==='dashboard') renderDash();
@@ -2688,7 +2826,7 @@ function saveTransaction(){
   persist(); // auto-save everything
   activeCycleKey=getCycleKey(tx.date);
   expandedTx=null; deleteConfirm=null;
-  if(navigator.vibrate) navigator.vibrate(30);
+  haptic(HX.success);
   document.getElementById('add-toast').style.display='flex';
   setTimeout(()=>{closeSheet();renderFeed();renderDash();},900);
 }
@@ -2702,7 +2840,7 @@ function deleteTx(id){
   // Remove from array immediately
   transactions = transactions.filter(t => t.id !== id);
   persist(); deleteConfirm=null; expandedTx=null;
-  if(navigator.vibrate) navigator.vibrate([20,10,20]);
+  haptic(HX.delete);
   renderFeed(); renderDash();
 
   // Clear any existing undo toast
@@ -2747,7 +2885,7 @@ function undoDelete(){
   transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
   _undoTx=null;
   persist();
-  if(navigator.vibrate) navigator.vibrate(30);
+  haptic(HX.success);
   dismissUndoToast();
   renderFeed(); renderDash();
 }
@@ -2777,34 +2915,76 @@ function renderFilterChips(){
 // ════════════════════════════════════════════════════════════
 //  BUDGET
 // ════════════════════════════════════════════════════════════
-function openBudgetModal(){
-  document.getElementById('budget-inputs').innerHTML=EXPENSE_CATS.map(c=>`
-    <div class="bm-row"><div class="bm-icon">${c.i}</div><div class="bm-name">${c.l}</div>
-    <input class="bm-field" type="number" id="bud-${c.k}" placeholder="0" value="${budgets[c.k]||''}"/></div>`).join('');
-  document.getElementById('budget-modal').classList.add('open');
-}
-function closeBudgetModal(e){ if(e&&e.target!==document.getElementById('budget-modal'))return; document.getElementById('budget-modal').classList.remove('open'); }
-function saveBudgets(){
-  EXPENSE_CATS.forEach(c=>{ const v=parseFloat(document.getElementById(`bud-${c.k}`)?.value)||0; if(v>0)budgets[c.k]=v; else delete budgets[c.k]; });
-  persist(); document.getElementById('budget-modal').classList.remove('open'); renderFeed();
-}
-function renderBudgets(){
-  const txs=cycleTxs(activeCycleKey).filter(t=>t.type==='expense');
-  const active=EXPENSE_CATS.filter(c=>budgets[c.k]);
-  if(!active.length){document.getElementById('budget-area').innerHTML='';return;}
-  const rows=active.map(c=>{
-    const spent=txs.filter(t=>t.category===c.k).reduce((s,t)=>s+t.amount,0);
-    const limit=budgets[c.k], pct=Math.min((spent/limit)*100,100);
-    const color=pct>=100?'var(--red)':pct>=80?'var(--accent)':'var(--green)';
-    return `<div class="budget-bar-row">
-      <div class="budget-bar-meta"><span class="budget-bar-name">${c.i} ${c.l}</span><span class="budget-bar-nums" style="color:${color}">${c$(spent)} / ${c$(limit)}</span></div>
-      <div class="budget-track"><div class="budget-fill" style="width:${pct}%;background:${color};"></div></div>
+// ── Budget collapsed state ──
+let budgetCollapsed = localStorage.getItem('ledger_budget_collapsed') === '1';
+
+function openBudgetModal(focusCat){
+  document.getElementById('budget-inputs').innerHTML = EXPENSE_CATS.map(c => {
+    const val = budgets[c.k] || '';
+    const hasVal = val > 0;
+    return `<div class="bm-cat-card" id="bm-card-${c.k}">
+      <div class="bm-icon">${c.i}</div>
+      <div class="bm-name">${c.l}</div>
+      <div class="bm-field-wrap">
+        <span class="bm-sym">${currencySymbol}</span>
+        <input class="bm-field" type="number" inputmode="decimal" id="bud-${c.k}"
+          placeholder="no limit" value="${val}"
+          oninput="onBudgetFieldInput('${c.k}')"/>
+      </div>
+      <button class="bm-clear" id="bm-clear-${c.k}" onclick="clearBudgetField('${c.k}')"
+        style="opacity:${hasVal?1:0.3}"
+        title="Remove budget">✕</button>
     </div>`;
   }).join('');
-  document.getElementById('budget-area').innerHTML=`<div class="budget-section">
-    <div class="budget-label-row"><span class="budget-title">Budget Tracker</span><span class="budget-edit" onclick="openBudgetModal()">✏️ Edit</span></div>${rows}</div>`;
+  document.getElementById('budget-modal').classList.add('open');
+  if(focusCat){
+    setTimeout(()=>{
+      const inp = document.getElementById('bud-'+focusCat);
+      if(inp){ inp.focus(); inp.select(); }
+    }, 320);
+  }
 }
-
+function onBudgetFieldInput(catKey){
+  const val = parseFloat(document.getElementById('bud-'+catKey)?.value)||0;
+  const clearBtn = document.getElementById('bm-clear-'+catKey);
+  if(clearBtn) clearBtn.style.opacity = val > 0 ? '1' : '0.3';
+}
+function clearBudgetField(catKey){
+  const inp = document.getElementById('bud-'+catKey);
+  if(inp){ inp.value=''; inp.focus(); }
+  const clearBtn = document.getElementById('bm-clear-'+catKey);
+  if(clearBtn) clearBtn.style.opacity = '0.3';
+}
+function closeBudgetModal(e){
+  // Called directly (no event) or via backdrop click
+  if(e && e.target && e.target !== document.getElementById('budget-modal')) return;
+  document.getElementById('budget-modal').classList.remove('open');
+}
+function saveBudgets(){
+  EXPENSE_CATS.forEach(c=>{
+    const v = parseFloat(document.getElementById(`bud-${c.k}`)?.value)||0;
+    if(v > 0) budgets[c.k] = v; else delete budgets[c.k];
+  });
+  persist();
+  document.getElementById('budget-modal').classList.remove('open');
+  // Auto-expand after setting budgets
+  if(Object.keys(budgets).length > 0) budgetCollapsed = false;
+  renderFeed(); renderSettings();
+  const activeCount = Object.keys(budgets).length;
+  if(activeCount > 0){
+    showSettingsToast(`💰 Budgets saved — ${activeCount} categor${activeCount!==1?'ies':'y'} with limits set`, 3500);
+  } else {
+    showSettingsToast('💰 Budgets cleared — no limits active', 3000);
+  }
+}
+function toggleBudgetCollapse(){
+  budgetCollapsed = !budgetCollapsed;
+  localStorage.setItem('ledger_budget_collapsed', budgetCollapsed ? '1' : '0');
+  const body  = document.getElementById('budget-body');
+  const chev  = document.getElementById('budget-chevron');
+  if(body) body.classList.toggle('open', !budgetCollapsed);
+  if(chev) chev.classList.toggle('open', !budgetCollapsed);
+}
 // ════════════════════════════════════════════════════════════
 //  CREDIT CARD HELPERS
 // ════════════════════════════════════════════════════════════
@@ -3128,7 +3308,7 @@ function renderFeed(){
   if(expEl) expEl.textContent = c$(bs.expense);
   if(savEl) savEl.textContent = c$(bs.savings);
 
-  renderBudgets(); renderFilterChips();
+  renderFilterChips();
 
   let txs=[...cycleTxs(activeCycleKey)];
   // When searching, expand to ALL transactions across all stored cycles
@@ -3197,9 +3377,9 @@ function renderTxCard(tx){
     ccTag=`<span class="cc-tag">💳 ${card?card.name:'Card'} Payment</span>`;
   }
   let actions='';
-  if(isOpen) actions=`<div class="tx-actions"><button class="act act-edit" onclick="openSheet(getTx(${tx.id}))">✏️ Edit</button><button class="act act-del" onclick="deleteTx(${tx.id})">🗑 Delete</button></div>`;
   return `<div class="tx-wrap" data-id="${tx.id}">
-    <div class="tx-swipe-bg">🗑</div>
+    <div class="tx-swipe-bg-right">✏️</div>
+    <div class="tx-swipe-bg-left">🗑</div>
     <div class="tx ${isOpen?'open':''}" data-id="${tx.id}" onclick="toggleTx(${tx.id})">
       <div class="tx-glow" style="background:radial-gradient(circle,${glowC},transparent 70%)"></div>
       <div class="tx-icon ${tx.type==='credit_payment'?'expense':tx.type}">${tx.icon}</div>
@@ -3281,6 +3461,7 @@ function renderDash(){
   const streak=calcStreak();
   document.getElementById('dash-streak-area').innerHTML=streak>=2?`<div class="streak-badge">🔥 ${streak}-day streak</div>`:'';
   renderProjection();
+  renderSpendAlerts();
 
   if(!transactions.length){
     dash.innerHTML=`<div class="empty" style="padding-top:80px;"><div class="empty-icon">📊</div><div class="empty-txt">No data yet.<br/>Add transactions first!</div></div>`;
@@ -3500,13 +3681,19 @@ function renderDash(){
   const metricColor={income:'var(--green)',expense:'var(--red)',savings:'var(--accent)',net:'var(--blue)'};
   const metricClass={income:'mt-inc',expense:'mt-exp',savings:'mt-sav',net:'mt-net'};
   const maxVal=Math.max(...trendData.map(d=>Math.abs(d[dashMetric])),1);
+  // Past-bar colour: a fixed dim neutral so every metric clearly contrasts with current
+  const pastBarColor='var(--border2)';
   const barsHtml=trendData.length?trendData.map(d=>{
     const val=d[dashMetric], pct=Math.max((Math.abs(val)/maxVal)*100,3);
     const col=metricColor[dashMetric], isCur=d.ck===curKey;
+    // Use explicit pixel height (track is 68px) so bars always render correctly
+    const barPx=Math.max(Math.round(pct*0.68),3);
+    const barBg=isCur?col:pastBarColor;
+    const barOpacity=isCur?1:0.55;
     return `<div class="bar-col ${isCur?'is-cur':''}">
-      <div class="bar-col-val" style="color:${isCur?'var(--accent)':col}">${fmtS(val)}</div>
-      <div class="bar-col-track"><div class="bar-rect" style="height:${pct}%;background:${isCur?'var(--accent)':col};opacity:${isCur?1:.7};${isCur?'box-shadow:0 0 8px var(--accent-dim)':''}"></div></div>
-      <div class="bar-col-name" style="color:${isCur?'var(--accent)':col};opacity:${isCur?1:.65};">${cycleLabel(d.ck,true).split(' ')[0]}</div>
+      <div class="bar-col-val" style="color:${isCur?col:'var(--text3)'};">${fmtS(val)}</div>
+      <div class="bar-col-track"><div class="bar-rect" style="height:${barPx}px;background:${barBg};opacity:${barOpacity};${isCur?'border-radius:6px 6px 2px 2px;filter:brightness(1.15);':''}"></div></div>
+      <div class="bar-col-name" style="color:${isCur?col:'var(--text3)'};opacity:${isCur?1:.7};">${cycleLabel(d.ck,true).split(' ')[0]}</div>
     </div>`;
   }).join(''):'<div style="color:var(--text3);font-size:.8rem;padding:20px;text-align:center;">Log more cycles to see the trend</div>';
   const trendHtml=`<div class="section">
@@ -3537,55 +3724,98 @@ function setMetric(m){ dashMetric=m; renderDash(); }
 function renderSettings(){
   renderSettingsInputs();
   renderSettingsCCList();
+  syncHapticToggle();
   document.getElementById('cycle-limit-input').value = cycleLimit;
   // Backup interval
   const bii=document.getElementById('backup-interval-input');
   if(bii) bii.value=getBackupInterval();
   updateLastBackupLabel();
+  updateLastImportLabel();
   const cycleKeys=[...new Set(transactions.map(t=>getCycleKey(t.date)))];
   const cycleCount=cycleKeys.length;
   const recur=transactions.filter(t=>t.recurring).length;
   const size=new Blob([JSON.stringify(transactions)]).size;
   const limitNote = cycleCount >= cycleLimit
-    ? `<span style="color:var(--accent)">⚠️ At limit (${cycleLimit})</span>`
-    : `<span style="color:var(--text3)">${cycleCount}/${cycleLimit}</span>`;
+    ? `<span style="color:var(--accent)">⚠️ At limit (${cycleLimit} mo)</span>`
+    : `<span style="color:var(--text3)">${cycleCount} cycles / ${cycleLimit} mo limit</span>`;
   document.getElementById('settings-stats').innerHTML=
     `📊 <strong>${transactions.length}</strong> transactions<br/>
      🔄 <strong>${recur}</strong> recurring<br/>
      📅 <strong>${cycleCount}</strong> cycles stored ${limitNote}<br/>
      💾 <strong>${(size/1024).toFixed(1)} KB</strong> stored in browser`;
+  // Budget summary in settings
+  const bss = document.getElementById('settings-budget-summary');
+  if(bss){
+    const active = EXPENSE_CATS.filter(c=>budgets[c.k]);
+    if(!active.length){
+      bss.innerHTML = '<span style="color:var(--text3)">No budgets set yet.</span>';
+    } else {
+      const curKey = currentCycleKey();
+      const txs = cycleTxs(curKey).filter(t=>t.type==='expense');
+      bss.innerHTML = active.map(c=>{
+        const spent = txs.filter(t=>t.category===c.k).reduce((s,t)=>s+t.amount,0);
+        const limit = budgets[c.k];
+        const pct   = Math.round((spent/limit)*100);
+        const color = spent>limit?'var(--red)':pct>=80?'var(--accent)':'var(--green)';
+        return `<span>${c.i} ${c.l}: <strong style="color:${color}">${c$(spent)}</strong> / ${c$(limit)}</span>`;
+      }).join(' &nbsp;·&nbsp; ');
+    }
+  }
+
   // PIN card
   const pinBtns=document.getElementById('pin-settings-btns');
   if(pinBtns){
     if(pinHash){
-      pinBtns.innerHTML=`<div style="display:flex;gap:8px;">
-        <button class="settings-btn btn-blue" style="flex:1;margin:0;" onclick="openPinSetup(()=>renderSettings())">🔄 Change PIN</button>
-        <button class="settings-btn btn-red" style="flex:1;margin:0;" onclick="removePin()">🔓 Remove PIN</button>
-      </div>`;
-      document.getElementById('pin-settings-desc').textContent='PIN is active. Your data is protected on app open.';
+      pinBtns.innerHTML=`
+        <div style="font-size:.72rem;color:var(--green);font-weight:700;margin-bottom:8px;">✅ PIN is active — your app is protected</div>
+        <div style="display:flex;gap:8px;">
+          <button class="settings-btn btn-blue" style="flex:1;margin:0;" onclick="openPinSetup(()=>renderSettings())">🔄 Change PIN</button>
+          <button class="settings-btn btn-red" style="flex:1;margin:0;" onclick="removePin()">🔓 Remove PIN</button>
+        </div>
+        <div style="font-size:.67rem;color:var(--text3);margin-top:7px;">Change PIN: you'll be asked to verify your current PIN first. Remove PIN: same deal — confirm before it's gone.</div>`;
+      document.getElementById('pin-settings-desc').textContent='PIN is active. Required every time you open the app.';
     } else {
       pinBtns.innerHTML=`<button class="settings-btn btn-blue" onclick="openPinSetup(()=>renderSettings())">🔐 Set PIN Lock</button>`;
-      document.getElementById('pin-settings-desc').textContent='No PIN set. Add a 4-digit PIN to protect your data.';
+      document.getElementById('pin-settings-desc').textContent='No PIN set. Tap below to protect your data with a 4-digit PIN.';
     }
   }
 }
 function saveCurrency(){
   const v=document.getElementById('currency-input').value.trim(); if(!v)return;
-  currencySymbol=v; persist(); showSettingsToast('💱 Currency updated!'); renderFeed();
+  const prev=currencySymbol;
+  currencySymbol=v; persist();
+  showSettingsToast(`💱 Currency changed${prev!==v?' from '+prev+' to '+v:''} — applied everywhere!`, 4000);
+  renderFeed(); renderDash();
+}
+function toggleHaptic(){
+  hapticEnabled = !hapticEnabled;
+  localStorage.setItem('ledger_haptic', hapticEnabled ? 'on' : 'off');
+  const toggle = document.getElementById('haptic-toggle');
+  const sub    = document.getElementById('haptic-toggle-sub');
+  if(toggle) toggle.classList.toggle('on', hapticEnabled);
+  if(sub)    sub.textContent = hapticEnabled ? 'On — feel every action' : 'Off — silent mode';
+  if(hapticEnabled) haptic(HX.soft); // test buzz when turning on
+}
+function syncHapticToggle(){
+  const toggle = document.getElementById('haptic-toggle');
+  const sub    = document.getElementById('haptic-toggle-sub');
+  if(toggle) toggle.classList.toggle('on', hapticEnabled);
+  if(sub)    sub.textContent = hapticEnabled ? 'On — feel every action' : 'Off — silent mode';
 }
 function saveCycleLimit(){
   const raw = parseInt(document.getElementById('cycle-limit-input').value);
-  const val = Math.max(3, Math.min(60, isNaN(raw)?24:raw));
+  const val = Math.max(3, Math.min(60, isNaN(raw)?12:raw));
   document.getElementById('cycle-limit-input').value = val;
   cycleLimit = val;
   const removed = enforceCycleLimit();
   persist();
   activeCycleKey = currentCycleKey();
   renderSettings(); renderFeed();
+  const monthLabel = val >= 12 ? `${(val/12).toFixed(1).replace(/\.0$/,'')} year${val!==12?'s':''}` : `${val} months`;
   if(removed > 0){
-    showSettingsToast(`🗂 Limit set to ${val} cycles · ${removed} old transaction${removed!==1?'s':''} removed`);
+    showSettingsToast(`🗂 History limit set to ${monthLabel} — ${removed} old record${removed!==1?'s':''} pruned`, 4000);
   } else {
-    showSettingsToast(`🗂 Cycle history limited to ${val} cycles`);
+    showSettingsToast(`🗂 History limit saved — keeping up to ${monthLabel} of history`, 3500);
   }
 }
 
@@ -3654,7 +3884,7 @@ function importData(e){
       if(data.activeTheme)    { activeTheme=data.activeTheme; setTheme(activeTheme); }
       if(data.cycleMode)      cycleMode=data.cycleMode;
       if(data.cycleConfig)    cycleConfig={...cycleConfig,...data.cycleConfig};
-      if(data.cycleLimit)     cycleLimit=Math.max(3,parseInt(data.cycleLimit)||24);
+      if(data.cycleLimit)     cycleLimit=Math.max(3,parseInt(data.cycleLimit)||12);
       // Merge credit cards by ID — don't duplicate
       if(data.creditCards&&Array.isArray(data.creditCards)){
         const existingCCIds=new Set(creditCards.map(c=>c.id));
@@ -3673,8 +3903,21 @@ function importData(e){
       transactions=[...transactions,...newOnes];
       transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
       persist(); activeCycleKey=currentCycleKey();
+      // ── Save import metadata ──
+      const incCount=newOnes.filter(t=>t.type==='income').length;
+      const expCount=newOnes.filter(t=>t.type==='expense').length;
+      const savCount=newOnes.filter(t=>t.type==='savings').length;
+      localStorage.setItem('ledger_lastImport',JSON.stringify({ts:Date.now(),total:newOnes.length,inc:incCount,exp:expCount,sav:savCount,file:file.name}));
       renderSettings(); renderFeed(); renderDash();
-      showSettingsToast(`✅ Merged ${newOnes.length} new transaction${newOnes.length!==1?'s':''}!`);
+      // ── Rich toast with time + breakdown ──
+      const _now=new Date();
+      const _time=_now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      const _parts=[];
+      if(incCount) _parts.push(`${incCount} income`);
+      if(expCount) _parts.push(`${expCount} expense`);
+      if(savCount) _parts.push(`${savCount} savings`);
+      const _detail=_parts.length?` · ${_parts.join(', ')}`:'';
+      showSettingsToast(`✅ Imported ${newOnes.length} new record${newOnes.length!==1?'s':''}${_detail} at ${_time}`,5000);
     }catch{
       document.getElementById('settings-err').style.display='block';
       setTimeout(()=>document.getElementById('settings-err').style.display='none',3500);
@@ -3704,6 +3947,25 @@ function updateLastBackupLabel(){
   if(!last){ el.textContent='⚠️ No backup recorded yet'; return; }
   const days=Math.floor((Date.now()-parseInt(last))/(86400000));
   el.textContent = days===0 ? '✅ Last backup: today' : `📅 Last backup: ${days} day${days!==1?'s':''} ago`;
+}
+function updateLastImportLabel(){
+  const el=document.getElementById('last-import-label');
+  if(!el) return;
+  const raw=localStorage.getItem('ledger_lastImport');
+  if(!raw){ el.innerHTML=''; return; }
+  try{
+    const m=JSON.parse(raw);
+    const d=new Date(m.ts);
+    const dateStr=d.toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'});
+    const timeStr=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const parts=[];
+    if(m.inc) parts.push(m.inc+' income');
+    if(m.exp) parts.push(m.exp+' expense');
+    if(m.sav) parts.push(m.sav+' savings');
+    const detail=parts.length?' <span style="color:var(--text3)">· '+parts.join(', ')+'</span>':'';
+    const fileName=m.file?' <span style="color:var(--text3);font-style:italic;">'+m.file+'</span>':'';
+    el.innerHTML='📥 Last import: <strong>'+dateStr+'</strong> at '+timeStr+' — <strong>'+m.total+'</strong> record'+(m.total!==1?'s':'')+detail+fileName;
+  }catch{ el.innerHTML=''; }
 }
 function checkBackupReminder(){
   // Don't nag on first use (no transactions yet)
@@ -3743,29 +4005,53 @@ function backupNow(){
   exportData();
 }
 function clearAllData(){
+  // Step 1: first confirm
   showConfirm({
     icon:'🗑',
     title:'Delete Everything?',
-    msg:'All transactions, budgets, credit cards and settings will be permanently deleted. Export a backup first!',
-    okLabel:'Delete Everything',
+    msg:'This will permanently erase all your transactions, budgets, credit cards, goals and settings. There is no undo. Export a backup first if you need to keep anything.',
+    okLabel:'Yes, continue →',
+    cancelLabel:'Cancel',
     onOk:()=>{
-      transactions=[]; budgets={}; creditCards=[]; goalTargets={};
-      persist(); activeCycleKey=currentCycleKey();
-      renderSettings(); renderFeed();
-      showSettingsToast('🗑 All data cleared.');
+      // Step 2: second confirm (harder to tap accidentally)
+      showConfirm({
+        icon:'⚠️',
+        title:'Last Chance — Are You Sure?',
+        msg:'Seriously, everything will be gone. Like it never happened. 💀 This is the point of no return.',
+        okLabel:'🗑 Delete Everything',
+        cancelLabel:'← No, go back',
+        onOk:()=>{
+          // Step 3: if PIN is set, verify it first
+          if(pinHash){
+            _pinMode='verify-delete'; _pinBuffer=''; updatePinDots();
+            document.getElementById('pin-sub').textContent='Enter your PIN to confirm deletion';
+            document.getElementById('pin-error').textContent='';
+            document.getElementById('pin-skip-btn').style.display='none';
+            document.getElementById('pin-overlay').classList.remove('hidden');
+          } else {
+            doDeleteEverything();
+          }
+        }
+      });
     }
   });
 }
-function showSettingsToast(msg){
+function doDeleteEverything(){
+  transactions=[]; budgets={}; creditCards=[]; goalTargets={};
+  persist(); activeCycleKey=currentCycleKey();
+  renderSettings(); renderFeed(); renderDash();
+  showSettingsToast('🗑 All data cleared. Fresh start!', 4000);
+}
+function showSettingsToast(msg,dur){
   const t=document.getElementById('settings-toast');
   t.textContent=msg; t.style.display='flex';
-  setTimeout(()=>t.style.display='none',3000);
+  setTimeout(()=>t.style.display='none',dur||3000);
 }
 
 // ════════════════════════════════════════════════════════════
 //  ONBOARDING — 5 slides: Welcome · Theme · Pay Cycle · History+Goal · Done
 // ════════════════════════════════════════════════════════════
-const OB_TOTAL = 6;
+const OB_TOTAL = 3;
 let obPage = 0;
 let gCycleMode = cycleMode;
 let gLimitVal  = cycleLimit;
@@ -3795,38 +4081,25 @@ function obRender(){
   document.getElementById('ob-back').style.display = obPage>0 ? 'block':'none';
   const nextBtn = document.getElementById('ob-next');
   if(obPage===OB_TOTAL-1){
-    nextBtn.textContent = "Save & Finish 🎉";
+    nextBtn.textContent = "Let's Go 🚀";
     nextBtn.onclick = ()=>{ obSaveCurrentPage(); obClose(); };
-  } else if(obPage===0){
-    nextBtn.textContent = 'Begin Setup →';
-    nextBtn.onclick = ()=>obNav(1);
   } else {
-    nextBtn.textContent = 'Save & Next →';
+    nextBtn.textContent = 'Next →';
     nextBtn.onclick = ()=>obNav(1);
   }
   document.getElementById('ob-skip').style.display = obPage===OB_TOTAL-1 ? 'none':'block';
-  // Reset PIN pad when entering PIN slide
-  if(obPage===5){
-    _obPinBuf=''; _obPinFirst=''; _obPinStep='set';
-    obUpdatePinDots();
-    document.querySelectorAll('.ob-pin-key').forEach(b=>b.disabled=false);
-    document.getElementById('ob-pin-set-msg').textContent='';
-    if(pinHash){
-      document.getElementById('ob-pin-status').textContent='✅ PIN already set — you\'re protected!';
-      document.getElementById('ob-pin-set-msg').textContent='Tap keys below to change it.';
-    } else {
-      document.getElementById('ob-pin-status').textContent='Enter a 4-digit PIN to activate lock';
-    }
-  }
+  // Slide 0: Currency — sync preview
+  if(obPage===0){ gUpdateCurrencyPreview(); }
 }
 
 /* Save settings for the page we're leaving */
 function obSaveCurrentPage(){
   switch(obPage){
-    case 1: // Theme — already applied live; persist
-      persist();
+    case 0: // Currency + Theme — theme already applied live; save currency
+      currencySymbol = (document.getElementById('g-currency-custom')?.value.trim()) || currencySymbol;
+      persist(); renderFeed();
       break;
-    case 2: // Pay Cycle
+    case 1: // Pay Cycle
       cycleMode = gCycleMode;
       if(cycleMode==='monthly'){
         const pd = parseInt(document.getElementById('g-pay-day')?.value)||25;
@@ -3850,23 +4123,7 @@ function obSaveCurrentPage(){
       const pdS=document.getElementById('pay-day');if(pdS)pdS.value=cycleConfig.monthly.payDay;
       persist(); activeCycleKey=currentCycleKey(); renderFeed(); renderSettings();
       break;
-    case 3: // History limit + Savings goal
-      cycleLimit = gLimitVal;
-      enforceCycleLimit();
-      const li=document.getElementById('cycle-limit-input');if(li)li.value=cycleLimit;
-      const raw=(document.getElementById('g-savings-goal-input')?.value||'').trim();
-      const goalName = raw ? normGoal(raw) : 'Emergency Fund';
-      if(raw) localStorage.setItem('ledger_defaultGoal', goalName);
-      else     localStorage.setItem('ledger_defaultGoal','Emergency Fund');
-      // Save target amount if provided
-      const targetAmt=parseFloat(document.getElementById('g-savings-goal-target')?.value)||0;
-      if(targetAmt>0) goalTargets[goalName.toLowerCase()]=targetAmt;
-      persist(); activeCycleKey=currentCycleKey(); renderFeed(); renderSettings();
-      break;
-    case 4: // Credit Cards — already saved live when added; just persist & refresh
-      persist(); renderSettingsCCList(); renderFeed(); renderCreditSection();
-      break;
-    case 5: // PIN — saved live via obPinKey; nothing extra needed
+    case 2: // Done slide — nothing to save
       break;
   }
 }
@@ -3895,7 +4152,6 @@ function gAdjLimit(delta){
 function gSetLimit(val){
   gLimitVal = val;
   document.querySelectorAll('.ob-limit-presets .ob-chip').forEach(b=>{
-    const match = b.textContent.includes(val === 6 ? '6' : val === 12 ? '1 yr' : val === 24 ? '2' : '3');
     b.classList.toggle('ob-chip-sel', b.onclick && b.onclick.toString().includes(String(val)));
   });
   gUpdateLimitDisplay();
@@ -3904,11 +4160,9 @@ function gUpdateLimitDisplay(){
   const el=document.getElementById('g-limit-num'); if(el) el.textContent=gLimitVal;
   const hint=document.getElementById('g-limit-hint');
   if(!hint) return;
-  const perYear = cycleMode==='bimonthly' ? 24 : cycleMode==='monthly' ? 12
-    : cycleMode==='weekly' ? 52
-    : Math.round(365/Math.max(7, cycleConfig.custom.len||30));
-  const years = (gLimitVal/perYear).toFixed(1);
-  hint.textContent = `≈ ${years} year${parseFloat(years)!==1?'s':''} of history — enough to spot trends and seasonal patterns.`;
+  const val = gLimitVal;
+  const years = val >= 12 ? ` — about ${(val/12).toFixed(1).replace(/\.0$/,'')} year${val!==12?'s':''}` : '';
+  hint.textContent = `Keeping ${val} months of history${years}. Enough to spot trends and seasonal patterns.`;
 }
 function gPickGoal(name){
   const inp=document.getElementById('g-savings-goal-input');
@@ -4007,6 +4261,10 @@ function gAddCreditCard(){
   hint.style.display='none';
 
   gRenderGuideCards();
+  // Sync currency slide
+  const ci=document.getElementById('g-currency-custom');
+  if(ci) ci.value=currencySymbol;
+  gUpdateCurrencyPreview();
 }
 function gRenderGuideCards(){
   const el=document.getElementById('g-cc-list'); if(!el) return;
@@ -4054,6 +4312,33 @@ function gRemoveGuideCard(id){
   persist(); gRenderGuideCards();
 }
 
+function gSetCurrency(sym){
+  if(!sym) return;
+  currencySymbol = sym;
+  // Update custom input to match
+  const ci = document.getElementById('g-currency-custom');
+  if(ci && !['₱','$','€','£','¥','₩','₹','Rp','RM','฿','₫','S$'].includes(sym)) ci.value = sym;
+  // Highlight active button
+  document.querySelectorAll('.ob-currency-btn').forEach(b=>{
+    b.classList.toggle('active-cur', b.textContent.trim().startsWith(sym));
+  });
+  gUpdateCurrencyPreview();
+  // update currency input in settings too
+  const si = document.getElementById('currency-input'); if(si) si.value = sym;
+  // update amount sym in add sheet
+  const amtSym = document.getElementById('amt-sym'); if(amtSym) amtSym.textContent = sym;
+  persist();
+}
+function gUpdateCurrencyPreview(){
+  const el = document.getElementById('g-currency-preview');
+  if(!el) return;
+  const sym = currencySymbol || '₱';
+  el.textContent = `✓ Amounts will show as ${sym}1,234`;
+  // also highlight the matching button
+  document.querySelectorAll('.ob-currency-btn').forEach(b=>{
+    b.classList.toggle('active-cur', b.textContent.trim().startsWith(sym));
+  });
+}
 function gSyncGuideState(){
   gCycleMode = cycleMode;
   gLimitVal  = cycleLimit;
@@ -4084,11 +4369,49 @@ function gSyncGuideState(){
   gOnGoalType();
   // Render any already-added credit cards in the guide list
   gRenderGuideCards();
+  // Sync currency slide
+  const ci=document.getElementById('g-currency-custom');
+  if(ci) ci.value=currencySymbol;
+  gUpdateCurrencyPreview();
 }
 
 // ════════════════════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════════════════════
+
+// ════════════════════════════════════════════════════════════
+//  DYNAMIC VIEWPORT — adapts to real phone dimensions
+// ════════════════════════════════════════════════════════════
+function applyViewport(){
+  const r = document.documentElement;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  // True viewport height (handles mobile browser chrome)
+  const trueVh = window.visualViewport ? window.visualViewport.height : vh;
+  r.style.setProperty('--vh', trueVh * 0.01 + 'px');
+
+  // Dynamic nav height — taller on very small screens to keep tap targets
+  const safeBottom = parseInt(getComputedStyle(document.documentElement)
+    .getPropertyValue('--sab') || '0') || 0;
+  const navH = Math.min(74, Math.max(58, Math.round(trueVh * 0.094))) + safeBottom;
+  r.style.setProperty('--nav-h', navH + 'px');
+
+  // Fluid horizontal padding (14px–20px across 320–430px)
+  const pad = Math.max(14, Math.min(20, Math.round(vw * 0.047)));
+  r.style.setProperty('--pad', pad + 'px');
+  r.style.setProperty('--pad-i', pad + 'px');
+}
+
+applyViewport();
+
+// Re-apply on resize and orientation change
+window.addEventListener('resize', applyViewport, {passive:true});
+window.addEventListener('orientationchange', () => setTimeout(applyViewport, 100), {passive:true});
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', applyViewport, {passive:true});
+}
+
 window.addEventListener('DOMContentLoaded',()=>{
   setTheme(activeTheme);
   activeCycleKey = currentCycleKey();
@@ -4260,7 +4583,7 @@ function closeIosSheet(e){
 
 // ════════════════════════════════════════════════════════════
 let _pinBuffer='';
-let _pinMode='unlock'; // 'unlock' | 'set' | 'confirm'
+let _pinMode='unlock'; // 'unlock' | 'set' | 'confirm' | 'verify-delete' | 'verify-change'
 let _pinFirst='';
 let _pinCallback=null;
 
@@ -4270,6 +4593,7 @@ async function sha256(str){
 }
 function pinKey(d){
   if(_pinBuffer.length>=4) return;
+  haptic(HX.tap);
   _pinBuffer+=d;
   updatePinDots();
   if(_pinBuffer.length===4) setTimeout(pinSubmit,120);
@@ -4284,11 +4608,53 @@ async function pinSubmit(){
   const hash=await sha256(_pinBuffer);
   if(_pinMode==='unlock'){
     if(hash===pinHash){ pinUnlock(); }
-    else { document.getElementById('pin-error').textContent='Wrong PIN. Try again.'; _pinBuffer=''; updatePinDots(); setTimeout(()=>{ const e=document.getElementById('pin-error');if(e)e.textContent=''; },1500); }
+    else { haptic(HX.error); document.getElementById('pin-error').textContent='Wrong PIN. Try again.'; _pinBuffer=''; updatePinDots(); setTimeout(()=>{ const e=document.getElementById('pin-error');if(e)e.textContent=''; },1500); }
+  } else if(_pinMode==='verify-remove'){
+    if(hash===pinHash){
+      pinHash=''; localStorage.removeItem('ledger_pin');
+      document.getElementById('pin-overlay').classList.add('hidden');
+      _pinBuffer=''; _pinMode='unlock'; updatePinDots();
+      showSettingsToast('🔓 PIN removed — app is now unlocked.', 3500);
+      renderSettings();
+    } else {
+      document.getElementById('pin-error').textContent='Wrong PIN. Removal cancelled.';
+      _pinBuffer=''; updatePinDots();
+      setTimeout(()=>{
+        document.getElementById('pin-overlay').classList.add('hidden');
+        _pinMode='unlock';
+        const e=document.getElementById('pin-error');if(e)e.textContent='';
+      },1800);
+    }
+  } else if(_pinMode==='verify-delete'){
+    if(hash===pinHash){
+      document.getElementById('pin-overlay').classList.add('hidden');
+      _pinBuffer=''; _pinMode='unlock'; updatePinDots();
+      doDeleteEverything();
+    } else {
+      document.getElementById('pin-error').textContent='Wrong PIN. Deletion cancelled.';
+      _pinBuffer=''; updatePinDots();
+      setTimeout(()=>{
+        document.getElementById('pin-overlay').classList.add('hidden');
+        _pinMode='unlock';
+        const e=document.getElementById('pin-error');if(e)e.textContent='';
+      },1800);
+    }
+  } else if(_pinMode==='verify-change'){
+    if(hash===pinHash){
+      // Current PIN verified — now set new one
+      _pinBuffer=''; _pinFirst=''; _pinMode='set';
+      document.getElementById('pin-sub').textContent='Choose your new PIN';
+      document.getElementById('pin-error').textContent='';
+      updatePinDots();
+    } else {
+      document.getElementById('pin-error').textContent='Wrong current PIN. Try again.';
+      _pinBuffer=''; updatePinDots();
+      setTimeout(()=>{ const e=document.getElementById('pin-error');if(e)e.textContent=''; },1800);
+    }
   } else if(_pinMode==='set'){
     _pinFirst=_pinBuffer; _pinBuffer='';
     _pinMode='confirm';
-    document.getElementById('pin-sub').textContent='Confirm your PIN';
+    document.getElementById('pin-sub').textContent='Confirm your new PIN';
     updatePinDots();
   } else if(_pinMode==='confirm'){
     if(_pinBuffer===_pinFirst){
@@ -4296,12 +4662,12 @@ async function pinSubmit(){
       localStorage.setItem('ledger_pin',hash);
       _pinBuffer=''; _pinFirst=''; _pinMode='unlock';
       document.getElementById('pin-overlay').classList.add('hidden');
-      showSettingsToast('🔐 PIN set successfully!');
+      showSettingsToast('🔐 PIN changed successfully!');
       if(_pinCallback){ _pinCallback(); _pinCallback=null; }
     } else {
       document.getElementById('pin-error').textContent='PINs don\'t match. Start again.';
       _pinBuffer=''; _pinFirst=''; _pinMode='set';
-      document.getElementById('pin-sub').textContent='Choose a 4-digit PIN';
+      document.getElementById('pin-sub').textContent='Choose your new PIN';
       updatePinDots();
       setTimeout(()=>{ const e=document.getElementById('pin-error');if(e)e.textContent=''; },1800);
     }
@@ -4328,11 +4694,18 @@ function pinSkip(){
   });
 }
 function openPinSetup(cb){
-  _pinBuffer=''; _pinFirst=''; _pinMode='set'; _pinCallback=cb||null;
+  _pinBuffer=''; _pinFirst=''; _pinCallback=cb||null;
   updatePinDots();
-  document.getElementById('pin-sub').textContent='Choose a 4-digit PIN';
   document.getElementById('pin-error').textContent='';
   document.getElementById('pin-skip-btn').style.display='none';
+  if(pinHash){
+    // Has existing PIN — verify it first before allowing change
+    _pinMode='verify-change';
+    document.getElementById('pin-sub').textContent='Enter your current PIN first';
+  } else {
+    _pinMode='set';
+    document.getElementById('pin-sub').textContent='Choose a 4-digit PIN';
+  }
   document.getElementById('pin-overlay').classList.remove('hidden');
 }
 /* ── Guide inline PIN pad ── */
@@ -4380,9 +4753,20 @@ function obUpdatePinDots(){
 }
 
 function removePin(){
-  pinHash=''; localStorage.removeItem('ledger_pin');
-  showSettingsToast('🔓 PIN removed.');
-  renderSettings();
+  if(!pinHash){ renderSettings(); return; }
+  _pinBuffer=''; _pinFirst=''; _pinMode='verify-delete';
+  _pinCallback=()=>{
+    // After doDeleteEverything is called — but for remove we just want to clear the PIN
+    // Override: we handle this via a special flag
+  };
+  // Use a dedicated remove flow — hijack verify-delete to just remove PIN
+  // We'll use a custom mode
+  _pinMode='verify-remove';
+  updatePinDots();
+  document.getElementById('pin-sub').textContent='Enter your current PIN to remove it';
+  document.getElementById('pin-error').textContent='';
+  document.getElementById('pin-skip-btn').style.display='none';
+  document.getElementById('pin-overlay').classList.remove('hidden');
 }
 function checkPinOnLoad(){
   if(pinHash){
@@ -4506,7 +4890,7 @@ function quickAdd(templateId){
   transactions.push(newTx);
   transactions.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
   enforceCycleLimit(); persist();
-  if(navigator.vibrate) navigator.vibrate(30);
+  haptic(HX.success);
   // Show brief toast
   const list=document.getElementById('feed-list');
   const toast=document.createElement('div');
@@ -4517,86 +4901,193 @@ function quickAdd(templateId){
 }
 
 // ════════════════════════════════════════════════════════════
-//  CASH FLOW PROJECTION
+//  COMBINED PROJECTION + BUDGET ALERT (single row, tap to expand)
 // ════════════════════════════════════════════════════════════
+let spendAlertOpen = false;
+function toggleSpendAlert(){ spendAlertOpen = !spendAlertOpen; renderProjection(); }
+// Keep renderSpendAlerts as a no-op alias so existing call sites don't break
+function renderSpendAlerts(){ /* merged into renderProjection */ }
+
 function renderProjection(){
-  const el=document.getElementById('projection-inline');
+  const el = document.getElementById('projection-inline');
   if(!el) return;
-  const curKey=currentCycleKey();
-  if(activeCycleKey!==curKey){ el.style.display='none'; return; }
-  const {start,end}=cycleRange(curKey);
-  const today=todayStr();
-  const s=cycleStats(curKey);
-  const startD=new Date(start+'T00:00:00'), endD=new Date(end+'T00:00:00'), todayD=new Date(today+'T00:00:00');
-  const totalDays=Math.round((endD-startD)/86400000)+1;
-  const elapsedDays=Math.min(Math.round((todayD-startD)/86400000)+1, totalDays);
-  const remainingDays=totalDays-elapsedDays;
-  if(elapsedDays<2||s.income===0){ el.style.display='none'; return; }
-  const dailySpend=s.expense/elapsedDays;
-  const projectedSpend=dailySpend*totalDays;
-  const projectedLeft=s.income - projectedSpend - s.savings;
-  let icon, color, msg;
-  if(projectedLeft<0){ icon='⚠️'; color='var(--red)'; msg=`On track to overspend by ${c$(Math.abs(projectedLeft))}`; }
-  else if(projectedLeft<s.income*0.1){ icon='😬'; color='var(--accent)'; msg=`Tight — ${c$(projectedLeft)} projected left`; }
-  else { icon='📈'; color='var(--green)'; msg=`${c$(projectedLeft)} projected remaining`; }
-  el.style.display='flex';
-  el.style.color=color;
-  el.innerHTML=`<span>${icon}</span><span>${msg} · ${remainingDays}d left</span>`;
+  const curKey = currentCycleKey();
+  if(activeCycleKey !== curKey){ el.style.display='none'; return; }
+
+  const {start, end} = cycleRange(curKey);
+  const today = todayStr();
+  const s = cycleStats(curKey);
+  const startD = new Date(start+'T00:00:00'), endD = new Date(end+'T00:00:00'), todayD = new Date(today+'T00:00:00');
+  const totalDays   = Math.round((endD - startD)/86400000) + 1;
+  const elapsedDays = Math.min(Math.round((todayD - startD)/86400000) + 1, totalDays);
+  const remainingDays = totalDays - elapsedDays;
+
+  // ── Projection numbers ──
+  const hasEnoughData = elapsedDays >= 2 && s.income > 0;
+  let projIcon, projColor, projMsg;
+  if(hasEnoughData){
+    const dailySpend = s.expense / elapsedDays;
+    const projectedLeft = s.income - dailySpend * totalDays - s.savings;
+    if(projectedLeft < 0){
+      projIcon='⚠️'; projColor='var(--red)';
+      projMsg=`On track to overspend ${c$(Math.abs(projectedLeft))}`;
+    } else if(projectedLeft < s.income * 0.1){
+      projIcon='😬'; projColor='var(--accent)';
+      projMsg=`Tight — ${c$(projectedLeft)} projected left`;
+    } else {
+      projIcon='📈'; projColor='var(--green)';
+      projMsg=`${c$(projectedLeft)} projected remaining`;
+    }
+  }
+
+  // ── Budget alerts ──
+  const alerts = [];
+  if(Object.keys(budgets).length && elapsedDays >= 1){
+    const txs = cycleTxs(curKey).filter(t => t.type==='expense');
+    EXPENSE_CATS.forEach(c => {
+      if(!budgets[c.k]) return;
+      const spent = txs.filter(t=>t.category===c.k).reduce((a,t)=>a+t.amount, 0);
+      const limit = budgets[c.k];
+      const pct = spent / limit;
+      if(spent > limit){
+        alerts.push({cat:c, spent, limit, pct, isOver:true, projected:null});
+      } else if(elapsedDays >= 3){
+        const projected = (spent / elapsedDays) * totalDays;
+        if(projected > limit * 1.05)
+          alerts.push({cat:c, spent, limit, pct, isOver:false, projected});
+      }
+    });
+  }
+
+  // Nothing to show at all
+  if(!hasEnoughData && !alerts.length){ el.style.display='none'; return; }
+
+  // ── Decide final color & message ──
+  // Budget alerts take priority on color when there's an overspend
+  const hasOver  = alerts.some(a=>a.isOver);
+  const hasPace  = alerts.some(a=>!a.isOver);
+  const hasBudgetAlert = alerts.length > 0;
+
+  // Budget tag appended to projection line (or standalone if no projection data)
+  let budgetTag = '';
+  if(hasBudgetAlert){
+    const tagColor = hasOver ? 'var(--red)' : 'var(--accent)';
+    const tagIcon  = hasOver ? '⚠️' : '📊';
+    const count = alerts.length;
+    budgetTag = ` <span style="display:inline-flex;align-items:center;gap:3px;background:${hasOver?'var(--red-dim)':'var(--accent-dim)'};color:${tagColor};border-radius:99px;padding:1px 7px;font-size:.6rem;font-weight:800;cursor:pointer;vertical-align:middle;" onclick="event.stopPropagation();toggleSpendAlert()">${tagIcon} ${count} budget${count>1?'s':''} ${spendAlertOpen?'▴':'▾'}</span>`;
+  }
+
+  // ── Expanded budget category rows ──
+  let detail = '';
+  if(spendAlertOpen && hasBudgetAlert){
+    const catRows = alerts.map(a => {
+      const barPct  = Math.min(Math.round(a.pct*100), 100);
+      const barColor = a.isOver ? 'var(--red)' : 'var(--accent)';
+      const badge = a.isOver
+        ? `<span style="color:var(--red);font-weight:700;font-size:.6rem;">+${c$(a.spent-a.limit)} over</span>`
+        : `<span style="color:var(--accent);font-weight:700;font-size:.6rem;">~${c$(a.projected)} proj.</span>`;
+      return `<div style="display:flex;flex-direction:column;gap:3px;padding:5px 0;border-top:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:5px;font-size:.67rem;font-weight:600;">
+          <span>${a.cat.i}</span>
+          <span style="flex:1;color:var(--text2);">${a.cat.l}</span>
+          <span style="color:var(--text3);font-size:.6rem;">${c$(a.spent)} / ${c$(a.limit)}</span>
+          ${badge}
+        </div>
+        <div style="height:3px;background:var(--bg3);border-radius:99px;overflow:hidden;">
+          <div style="height:100%;width:${barPct}%;background:${barColor};border-radius:99px;transition:width .4s;"></div>
+        </div>
+      </div>`;
+    }).join('');
+    detail = `<div style="padding-top:2px;">${catRows}</div>`;
+  }
+
+  // ── Render ──
+  el.style.display = 'block';
+  el.style.borderTop = '1px solid var(--border)';
+  el.style.marginTop = '10px';
+  el.style.paddingTop = '8px';
+  el.style.color = projColor || (hasOver ? 'var(--red)' : 'var(--accent)');
+
+  const mainLine = hasEnoughData
+    ? `<span>${projIcon}</span><span style="flex:1;">${projMsg} · ${remainingDays}d left${budgetTag}</span>`
+    : `<span>${hasOver?'⚠️':'📊'}</span><span style="flex:1;">${hasOver?alerts.filter(a=>a.isOver).length+' budget':alerts.length+' budget'} alert${alerts.length>1?'s':''} this cycle${budgetTag}</span>`;
+
+  el.innerHTML = `<div style="display:flex;align-items:center;gap:5px;font-size:.67rem;font-weight:600;">${mainLine}</div>${detail}`;
 }
 
 // ════════════════════════════════════════════════════════════
-//  SWIPE TO DELETE
+//  SWIPE GESTURES — left: delete · right: edit
 // ════════════════════════════════════════════════════════════
 function setupSwipeToDelete(){
-  const list=document.getElementById('feed-list');
-  let startX=0, startY=0, activeWrap=null, swipeDist=0, dirLocked=false;
+  const list = document.getElementById('feed-list');
+  let startX=0, startY=0, activeWrap=null, swipeDist=0, dirLocked=false, thresholdFired=false;
+  const THRESHOLD = 72;
 
-  list.addEventListener('touchstart',e=>{
-    const wrap=e.target.closest('.tx-wrap');
+  list.addEventListener('touchstart', e=>{
+    const wrap = e.target.closest('.tx-wrap');
     if(!wrap) return;
-    startX=e.touches[0].clientX;
-    startY=e.touches[0].clientY;
-    activeWrap=wrap; swipeDist=0; dirLocked=false;
+    startX=e.touches[0].clientX; startY=e.touches[0].clientY;
+    activeWrap=wrap; swipeDist=0; dirLocked=false; thresholdFired=false;
   },{passive:true});
 
-  list.addEventListener('touchmove',e=>{
+  list.addEventListener('touchmove', e=>{
     if(!activeWrap) return;
-    const dx=e.touches[0].clientX-startX;
-    const dy=e.touches[0].clientY-startY;
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
 
-    // Lock direction on first significant move
     if(!dirLocked){
-      if(Math.abs(dx)<4&&Math.abs(dy)<4) return; // too small, wait
-      if(Math.abs(dy)>Math.abs(dx)){
-        // Vertical — cancel swipe tracking, let scroll happen
-        activeWrap=null; return;
-      }
-      dirLocked=true; // horizontal locked
+      if(Math.abs(dx)<4 && Math.abs(dy)<4) return;
+      if(Math.abs(dy) > Math.abs(dx)){ activeWrap=null; return; }
+      dirLocked=true;
     }
 
     swipeDist=dx;
-    if(dx<0){
-      const clamped=Math.max(dx,-82);
+    const txEl = activeWrap.querySelector('.tx');
+    if(!txEl) return;
+
+    if(dx < 0){
+      // ── Swipe LEFT → delete (red) ──
+      const clamped = Math.max(dx, -THRESHOLD-10);
       activeWrap.classList.add('swiping');
-      const txEl=activeWrap.querySelector('.tx');
-      if(txEl) txEl.style.transform=`translateX(${clamped}px)`;
-      e.preventDefault(); // block scroll only once direction confirmed horizontal
+      activeWrap.classList.remove('swiping-edit');
+      txEl.style.transform = `translateX(${clamped}px)`;
+      // Haptic pulse when threshold hit
+      if(!thresholdFired && dx < -THRESHOLD){ thresholdFired=true; haptic(HX.warning); }
+    } else if(dx > 0){
+      // ── Swipe RIGHT → edit (accent) ──
+      const clamped = Math.min(dx, THRESHOLD+10);
+      activeWrap.classList.add('swiping-edit');
+      activeWrap.classList.remove('swiping');
+      txEl.style.transform = `translateX(${clamped}px)`;
+      if(!thresholdFired && dx > THRESHOLD){ thresholdFired=true; haptic(HX.tap); }
     }
+    e.preventDefault();
   },{passive:false});
 
-  list.addEventListener('touchend',()=>{
+  list.addEventListener('touchend', ()=>{
     if(!activeWrap) return;
-    const txEl=activeWrap.querySelector('.tx');
-    if(swipeDist<-65){
-      const id=parseInt(activeWrap.dataset.id);
-      if(txEl) txEl.style.transform='';
+    const txEl = activeWrap.querySelector('.tx');
+    const id   = parseInt(activeWrap.dataset.id);
+
+    if(swipeDist < -THRESHOLD){
+      // Confirmed delete
+      haptic(HX.delete);
+      if(txEl){ txEl.style.transition='transform .15s ease'; txEl.style.transform='translateX(-110%)'; }
       activeWrap.classList.remove('swiping');
-      if(id) deleteTx(id);
-    } else {
+      setTimeout(()=>{ if(id) deleteTx(id); }, 150);
+    } else if(swipeDist > THRESHOLD){
+      // Confirmed edit
+      haptic(HX.soft);
       if(txEl){ txEl.style.transition='transform .2s ease'; txEl.style.transform=''; setTimeout(()=>{ if(txEl) txEl.style.transition=''; },200); }
-      activeWrap.classList.remove('swiping');
+      activeWrap.classList.remove('swiping-edit');
+      const tx = getTx(id);
+      if(tx) openSheet(tx);
+    } else {
+      // Snap back
+      if(txEl){ txEl.style.transition='transform .2s ease'; txEl.style.transform=''; setTimeout(()=>{ if(txEl) txEl.style.transition=''; },200); }
+      activeWrap.classList.remove('swiping','swiping-edit');
     }
-    activeWrap=null; swipeDist=0; dirLocked=false;
+    activeWrap=null; swipeDist=0; dirLocked=false; thresholdFired=false;
   },{passive:true});
 }
 
