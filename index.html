@@ -1015,14 +1015,16 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
       <div class="settings-icon" style="background:var(--blue-dim)">📳</div>
       <div class="settings-body">
         <div class="settings-title">Haptic Feedback</div>
-        <div class="settings-desc">Vibration on swipes, actions, PIN entry and navigation. Android only — iOS does not support vibration.</div>
-        <div class="toggle-row" onclick="toggleHaptic()" style="cursor:pointer;">
+        <div class="settings-desc">Vibration on swipes, actions, PIN and navigation. <strong>Android Chrome only</strong> — iOS does not support vibration via browser.</div>
+        <div class="toggle-row" onclick="toggleHaptic()" style="cursor:pointer;margin-bottom:10px;">
           <div>
             <div class="toggle-label">Vibration</div>
             <div class="toggle-sub" id="haptic-toggle-sub">On — feel every action</div>
           </div>
           <div class="toggle on" id="haptic-toggle"></div>
         </div>
+        <button class="settings-btn btn-blue" onclick="testHaptic(this)" style="margin:0;">📳 Test Vibration</button>
+        <div id="haptic-support-note" style="margin-top:8px;font-size:.68rem;color:var(--text3);display:none;"></div>
       </div>
     </div>
 
@@ -1839,8 +1841,9 @@ function persist(){
 //  HAPTIC FEEDBACK
 // ════════════════════════════════════════════════════════════
 function haptic(pattern){
-  if(!hapticEnabled || !navigator.vibrate) return;
-  navigator.vibrate(pattern);
+  if(!hapticEnabled) return;
+  if(!navigator.vibrate) return;
+  try{ navigator.vibrate(0); navigator.vibrate(pattern); }catch(e){}
 }
 // Preset patterns
 const HX = {
@@ -3794,7 +3797,28 @@ function toggleHaptic(){
   const sub    = document.getElementById('haptic-toggle-sub');
   if(toggle) toggle.classList.toggle('on', hapticEnabled);
   if(sub)    sub.textContent = hapticEnabled ? 'On — feel every action' : 'Off — silent mode';
-  if(hapticEnabled) haptic(HX.soft); // test buzz when turning on
+  if(hapticEnabled) haptic(HX.soft);
+}
+function testHaptic(btn){
+  const note = document.getElementById('haptic-support-note');
+  if(!navigator.vibrate){
+    if(note){ note.style.display='block'; note.style.color='var(--red)'; note.textContent='❌ Vibration API not supported on this device/browser. Requires Android Chrome.'; }
+    return;
+  }
+  // Fire a strong test pattern
+  navigator.vibrate(0);
+  const result = navigator.vibrate([50,80,50,80,100]);
+  if(note){
+    note.style.display='block';
+    if(result){
+      note.style.color='var(--green)';
+      note.textContent='✅ Vibration fired! If you felt nothing, check your phone\'s vibration is not muted in system settings.';
+    } else {
+      note.style.color='var(--accent)';
+      note.textContent='⚠️ Vibrate returned false — your browser may be blocking it. Try opening as a PWA (Add to Home Screen).';
+    }
+  }
+  if(btn){ btn.textContent='📳 Fired!'; setTimeout(()=>{ btn.textContent='📳 Test Vibration'; },1500); }
 }
 function syncHapticToggle(){
   const toggle = document.getElementById('haptic-toggle');
